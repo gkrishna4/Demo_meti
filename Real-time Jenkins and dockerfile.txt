@@ -1,0 +1,171 @@
+Jenkins file
+
+pipeline {
+  agent { label ('GenericLinuxDocker') }
+  parameters {
+    string(name: 'branch', defaultValue: 'feature/toolkit_ci', description: 'Branch to pick')
+    string(name: 'ImageTag', defaultValue: '0.0.1', description: 'Specific revision for images')
+  }
+  stages {
+    stage ('Checkout git') {
+agent {
+    dockerfile {
+      filename 'Dockerfile'
+      dir 'ci'
+      label 'GenericLinuxDocker'
+      args '-v /var/run/docker.sock:/var/run/docker.sock'
+      args '-v ${env.WORKSPACE}:/opt/build'
+      args '-e BUILD_NUMBER=${env.BUILD_NUMBER}'
+    }
+  }
+      steps {
+        script{
+            sh('echo ${branch}')
+            git branch: '${branch}',
+              credentialsId: 'bitbucket_access',
+              url: ''
+        }
+      }
+    }
+    stage('Build Jar') {
+agent {
+    dockerfile {
+      filename 'Dockerfile'
+      dir 'ci'
+      label 'GenericLinuxDocker'
+      args '-v /var/run/docker.sock:/var/run/docker.sock'
+      args '-v ${env.WORKSPACE}:/opt/build'
+      args '-e BUILD_NUMBER=${env.BUILD_NUMBER}'
+    }
+  }
+      steps {
+        script{
+	    sh 'gradle clean'
+            sh 'gradle --no-daemon build - -x test'
+          }
+
+        }
+      }
+        stage('Build Docker Image') {
+            steps {
+                script{
+//                  sh "docker rmi "
+                    sh "ls -ltr build/*" 
+                    sh "cp -r $WORKSPACE@2 build/libs"
+		    sh "./buildImages"
+		    
+
+
+            }
+
+        }
+            }
+     
+     stage(' ') {
+       parallel {
+        stage('Artifactory') {
+agent {
+    dockerfile {
+      filename 'Dockerfile'
+      dir 'ci'
+      label 'GenericLinuxDocker'
+      args '-v /var/run/docker.sock:/var/run/docker.sock'
+      args '-v ${env.WORKSPACE}:/opt/build'
+      args '-e BUILD_NUMBER=${env.BUILD_NUMBER}'
+    }
+  }
+                steps {
+                  script{
+                    rtServer(
+                        id: "ARTIFACTORY_SERVER",
+                        url: ',
+                        credentialsId: 'jfrog',
+                        bypassProxy: true,
+                    )
+
+                    rtUpload(
+                        serverId: 'ARTIFACTORY_SERVER',
+                        spec:
+                        '''{
+                        "files": [{
+                            "pattern": "build/libs/printer-manager-api*.jar",
+                            "target": "printer_manager_api_local/1.0.${BUILD_NUMBER}/",
+                            "recursive": "false"
+                        }]
+                    }''',
+
+                    failNoOp: true
+                )
+                rtPublishBuildInfo(
+                    serverId: 'ARTIFACTORY_SERVER',
+                    buildName: 'printer-manager-api-test',
+                    buildNumber: "${branch}",
+                )
+
+        }
+                }
+        }
+ stage('SonarQube') {
+agent {
+    dockerfile {
+      filename 'Dockerfile'
+      dir 'ci'
+      label 'GenericLinuxDocker'
+      args '-v /var/run/docker.sock:/var/run/docker.sock'
+      args '-v ${env.WORKSPACE}:/opt/build'
+      args '-e BUILD_NUMBER=${env.BUILD_NUMBER}'
+    }
+  }
+       steps {
+       script{
+	      sh 'gradle sonarqube -Dsonar.login=params.sonarqube -Dsonar.projectKey=tlc-pm-api -Dsonar.host.url= -d'
+         }
+         }
+       }
+    stage('WhiteSource') {
+agent {
+    dockerfile {
+      filename 'Dockerfile'
+      dir 'ci'
+      label 'GenericLinuxDocker'
+      args '-v /var/run/docker.sock:/var/run/docker.sock'
+      args '-v ${env.WORKSPACE}:/opt/build'
+      args '-e BUILD_NUMBER=${env.BUILD_NUMBER}'
+    }
+  }
+      steps {
+        script{
+	    sh 'find .'
+            sh 'java -jar wss-unified-agent-19.5.2.jar'
+          }
+        }
+      }
+    }
+
+  }
+
+  }
+
+  }
+  
+  
+  
+  
+  
+  
+Dockerfile
+
+FROM ubuntu:20.04
+
+RUN apt-get -y update
+RUN useradd -d /home/jenkins -u 1001 -m -s /bin/bash jenkins
+RUN apt-get -y update && apt-get install -y unzip wget curl net-tools git vim xz-utils docker.io
+RUN apt-get -y update && DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-11-jdk
+#ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+#RUN mkdir -p /var/lib
+RUN wget https://services.gradle.org/distributions/gradle-6.9-bin.zip -O /opt/gradle.zip
+RUN (cd /opt && unzip gradle.zip)
+USER jenkins
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
+ENV PATH /usr/local/bin:/usr/bin:/bin:/opt/gradle-6.9/bin
+WORKDIR /home/jenkins
