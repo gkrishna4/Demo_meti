@@ -112,3 +112,86 @@ How can you get a static IP for a Kubernetes load balancer?
 ============================================================================================================
 
 
+
+========================================================
+please find below interview question which i have faced.
+=========================================================
+Tell about yourself?
+>> what is NsLookup?
+>> what is FQDN?
+>> what happend in jenkins one agent is go offline? 
+>> what is the scope of jenkins credintials?
+0. How can u shedule the Builds in jenkins?
+1. Difference between gitpull and git fetch?
+2. why maven takes much time for 1st execution and from 2nd execution it will take less time?
+3. how can we reuse yaml files in ansible?
+4. what is difference between Continuous delivery and continous deployment?
+5. explain a devops pipeline that you have implemented
+6. diff between security groups and NACL
+7. tell me about a challenge you faced in devops?
+8. what is git stash?
+9. tell some git commands that you have used?
+10. why should we register our name and email id intially while configuring the git? At which step do we get error if we don't resiter ?
+11. what language do you use for automation?
+12.what automation have impletemented in your project? explain few of them
+13. explain maven life cycle?
+14. explain the background process what happends in maven when we give maven package?
+15. In your company from where did u get depenedcies ? where is it stored? who will maintain th dependecies artifcats?
+16.how do u push the artifact to nexus? where do u configure?
+17. explain sonarqube architecture? what is quality profiles and quality gates? what is use of sonar scanner?
+18. what is the purpose nexus is used for?
+19.what type jenkins pipeline do u use?
+20. can we import extranal plugins to jenkins? how?
+21. explain your project pipeline steps?
+22. what do u mean by shared libraries in jenkins?
+23. how to take backup in jenkins?
+24. how do u migrate the jenkins?without downtime.
+25. what is difference between scripted and declarative pipleine?
+26. what is experience in terraform?
+27. what have u implemented in terraform?
+28. where do u store ur statefiles?
+29. what services do u know in AWS? explain them in brief.
+30. what is docker> why should we go for docker and containers?
+31. what is best practises in devops?
+32. what is docker architecture?
+33. what is dockerfile? explain the commands used in docker file
+34. diff between CMD and ENTRYPOINT
+35. what is andvantages and disadvantages of docker?
+36. what is docker swarm?
+37. Tell some docker command which u have day to day life?
+38. what is docker swarm?
+39. what is docker compose file?
+40. what is docker components?
+41. what is SSL certificate? can you explain how SSL certificate works?
+42. what is kubernets architecture?
+43. what is advantages and disadvantages of kubernetes?
+44. Can we keep ETCD in different machine?
+45. what is use of kubelet?
+46. what is kube-proxy how it works?
+47. what is mean by statefulset?
+48. what is headless service?
+49. how do u troubleshoot , if pods are in pending state in one of the nodes?
+50. what type network do u use in docker?
+51. what is mean by overlay network?
+53. what security tools u have in project to protect against vulnerability of code?
+54. Have you used AWS lamda?what script have u used?
+55. have integrated terramorn with jenkins pipelines?
+56. what  deployment strategy in kubernets ur using?
+57. explain ur company infrastructure ? number cluster? how it works?
+58. difference between replication set and replication controller?
+59. difference between application and network loabalancer?
+60. what is ingress controller?
+61. how is kubernetes infrsture build? standalone or eks or kops?
+62. what is difference types of kubernetes services?
+63. explain abt ingress controller?
+64. what is kubenertes namesspace? write kubernetes command to create the namespace?
+65. how many default namespace in kubernetes?
+66. what is helm?
+67. explain kubernetes RBAC?
+68. have u worked on ansible? ansible tower?
+69. what is ansible galaxy?
+70. what is ansible roles?
+71. what is ansible vaults?
+72.what are the Devops kpi?
+73.what is the life cycle of DevOps?
+74.Difference b/w Webserver and Apllication Server?
