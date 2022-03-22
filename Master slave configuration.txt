@@ -1,0 +1,198 @@
+Master - Slave configuration
+------------------------------------
+==>master:-Dev-server/where the jenkins are installed ,that server is call it as master server
+==>slave:- slave server(another Ec2 instance) to reduce the worklode for the dev-server
+
+-->for the master server can have a limited configuration,so at the time of lode increases on the dev- server
+-->master server will go down to reduce the downtime of master server we can create the slave-server 
+-->instead of running the jobs in master mission, will be running at slave server
+
+
+==>for the jenkins java is the pre-requisite,for that we are installed the java in the Dev-server
+  at the same time we can install the java in the slave mission also
+
+==> we have to create the password for the slave mission
+
+
+==> We need to establish password less connection between Dev server and Slave machine 
+   for that we can go (cd /etc/ssh) ssh directory there we can find the  sshd_config file 
+and we can modify that file where password authantication by default no, so we can make that one as yes
+                                                       -----------------------------------------------------------
+by using the command called  ------->sudo vim sshd_config
+
+after that we can restart the ssh service------->sudo service ssh restart
+
+then after we connect to slave server through dev server by using the command 
+ssh ubuntu@private_ip_slave_machine
+
+when we enter the above command in the dev server ,it will ask the password of slave-machine 
+** here we are connecting with password,but our requirement is to connect with out password
+for that we can genarate the keys in Dev-server(master mission) by using the command 
+===>ssh_keygen
+**the key what ever we genrated in the master-mission ,those key are copied in to the slave mission
+===>{ssh-copy-id ubuntu@private-ip-of slavemachine}
+we can copy the key's into the slave mission by making use of command called
+ copy the keys to slave server
+--------------------------------------------
+ssh-copy-id  ubuntu@private_ip_slave_server
+
+when we downlode the jenkins in the master  mission ,autoatically slave.jar file also downloded in the master mission and it is avilable in "jnlpJars/slave.jar".
+so we have to downlode that slave.jar file in slave mission also by using the bellow command
+
+Download slave.jar in slave machine
+sudo  wget http://172.31.41.7:8080/jnlpJars/slave.jar
+                                  -------------------
+                                 private ip of master server
+   
+===========================================================================================
+
+Same version of java should exist.
+Master and slave should have password less SSH
+
+Step 1: Create slave machine  , connect to slave
+
+1) Update the apt repository
+sudo apt-get update
+
+
+2)  sudo apt install openjdk-8-jdk -y
+
+
+3) Check the Java Version
+java -version
+
+------------------
+We need to establish password less connection between Dev server and Slave machine
+----------------------
+
+Connect to slave
+7) Check you user
+$ whoami       (  ubuntu )
+
+
+8) set password  for  ubuntu  user
+syntax: sudo  passwd  <user_name>
+Ex:        sudo passwd ubuntu
+enter password
+
+
+$  cd /etc/ssh
+
+$ ls   ( we get list of files )   Look for   sshd_config
+
+To edit sshd_config
+$ sudo vim sshd_config
+
+Go to insert mode
+
+) change password authentication to yes
+
+13) Save and quit :wq
+
+14) Restart the service
+$ sudo service ssh restart
+
+Lets test the connection
+-------------------------------
+
+ 15) Connect to the development server  ( Master )
+
+16) connect to slave server through dev server
+ssh ubuntu@private_ip_slave_machine
+
+$ ssh ubuntu@172.31.1.107
+
+
+
+exit  ( to come back to master )
+
++++++++++++++++++++++++++++++++++++++++
+
+
+17)  To connect to slave  without password
+$ ssh-keygen      ( In master)
+
+
+18) copy the keys to slave server
+ssh-copy-id  ubuntu@private_ip_slave_server
+cd 
+
+19) now we are able to connect to the slave user without password
+$  ssh ubuntu@172.31.10.176
+
+
+
+-------------------
+
+Download slave.jar in slave machine
+
+
+sudo  wget http://172.31.46.185:8080/jnlpJars/slave.jar
+
+
+
+Check the file is download or not
+$ ls
+
+check the file permissions
+$ ls -l
+we want    rwxrw-r--
+
+3) Give execute permissions of this file
+sudo chmod u+x slave.jar
+
+
+
+4) Create an empty folder which will work like workspace for jenkins to use on the slave machine
+$ mkdir workspace
+$ cd workspace
+$ pwd         ( note the path of the workspace )--    /home/ubuntu/workspace
+
+
+
+++++++++++++++++++++++++++++
+
+
+
+
+Creating node in Jenkins
+---------------------------
+
+ Open the dashboard of jenkins
+
+manage jenkins --- manage nodes
+
+7) Click on new node ----  node name -  Myslave
+		       - select permanent agent
+
+Remote root directory   -/home/ubuntu/workspace
+Label - Slave_lab
+
+
+10) Go to Launch methods
+Select------> Launch agent via execution of command on the controller
+
+11) In Launch command
+ssh ubuntu@private_ip_of_slave java -jar slave.jar
+ssh ubuntu@172.31.8.232 java  -jar   slave.jar
+
+
+13) Click on save
+
+++++++++++++++++++++++++++++++
+Configure job to run on slave
+------------------------------
+
+14) Select Testing Job
+
+15) Go to Configure  --> General Tab
+
+17) Check ---->Restrict where this project can be run
+
+18) Enter Label Expression ( Slave_lab)
+
+Apply ---> Save  
+Run the job, In console output, we can see the job is executed in slave machine
++++++++++++++++++++++++++++++++++++++
+
+

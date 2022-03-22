@@ -1,0 +1,452 @@
+SonarQube is an open source software Quaity management tool & it will continuously analyse
+and measures quality of the source code,and genarate the report if any issues in html format/pdf formate.
+
+it will identify diff diff issues like
+> Duplicated code
+> coding standards
+> unit tests
+> complex code
+> comments
+> potential bugs
+> Architecture & Design 
+
+=====================================================================================
+HOW TO CHANGE THE DEFAULT PORT NUMBER FROM 9000 TO CUSTOM PORT IN SONARQUBE SERVER?
+
+Go to the conf directory and open the sonar.properties and search for
+
+Sonar.web.port=9000 and 
+replace 9000 with custum port EX:-9001
+===========================================================================================
+HOW TO EXECUTE THE SONARQUBE REPORT FOR ANT JAVA PROJECTS?
+
+create a file called sonar-project.properties file in the project-root-directory, for which
+project need to execute the report with bellow properties
+
+sonar.projectName=Rk Technologies
+sonar.projectKey=com.rk
+sonar.projectversion=1.0
+sonar.sources=src
+
+===============================================================================================
+HOW TO EXECUTE THE SONARQUBE REPORT FOR MAVEN JAVA PROJECTS?
+
+mvn sonar:sonar
+   (or)
+mvn clean install sonar:sonar
+
+if we don't mention the sonarqube server details in the pom.xml,we can use the bellow commands
+mvn clean sonar:sonar package -Dsonar.host.url=http://localhost:9000
+
+          (or)
+mvn clean package sonar:sonar -Dsonar.host.url=http://localhost:9000
+Dsonar.login=admin -Dsonar.password=admin
+
+           (or)
+mvn clean package sonar:sonar -Dsonar.host.url=http://localhost:9000
+Dsonar.login=token
+
+NOTE: As a best practice create token and use for the Authontication
+================================================================================================
+
+#Hardware Requirements for SonarQube
+#----------------------------------------------------
+#The SonarQube server requires at least 2GB of RAM to run efficiently and 1GB of free RAM for the OS.
+
+#Login as a root user.
+sudo su -
+
+#Download the SonarqQube Server software.
+cd /opt
+yum install wget unzip -y
+wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.8.zip
+unzip sonarqube-7.8.zip
+
+
+#As a good security practice, SonarQube Server is not advised to run sonar service as a root user, 
+so create a new user called sonar and grant sudo access to manage sonar services as follows.
+
+useradd sonar
+
+Give the sudo access to sonar user
+visudo
+
+sonar   ALL=(ALL)       NOPASSWD: ALL
+
+Change the owner and group permissions to /opt/sonarqube-7.8/ directory.
+chown -R sonar:sonar /opt/sonarqube-7.8/
+chmod -R 775 /opt/sonarqube-7.8/
+su - sonar
+cd /opt/sonarqube-7.8/bin/linux-x86-64/
+
+./sonar.sh start
+
+Troubleshooting
+--------------------
+
+sonar service is not starting?
+
+a)make sure you need to change the ownership and group to /opt/sonarqube-7.6/ directory for sonar user.
+b)make sure you are trying to start sonar service with sonar user.
+c)check java is installed or not using java -version command.
+
+Unable to access SonarQube server URL in browser?
+
+a)make sure port 9000 is opened in security groups - AWS ec2 instance.
+
+Create SonarQube server as a sonar service
+--------------------------------------------------------
+
+ln /opt/sonarqube-7.8/bin/linux-x86-64/sonar.sh /etc/init.d/sonar
+
+vi /etc/init.d/sonar
+
+#add below lines in /etc/init.d/sonar
+
+SONAR_HOME=/opt/sonarqube-7.8
+PLATFORM=linux-x86-64
+
+WRAPPER_CMD="${SONAR_HOME}/bin/${PLATFORM}/wrapper"
+WRAPPER_CONF="${SONAR_HOME}/conf/wrapper.conf"
+PIDDIR="/opt/sonarqube-7.8/"
+
+#Enable the sonar service
+sudo systemctl enable sonar
+
+#Start the sonar service
+sudo systemctl start sonar
+
+#Check the status of the  sonar service
+sudo systemctl status sonar
+
+
+
+==================================================================================
+how to change the portnumber of SonarQube and it's context path
+------------------------------------------------------------------------------------------
+the default port number of sonarQube is----> 9000
+and the default context path is forword slash---> /
+
+we can change the port number in sonar.properties file which is available in sonarQube home Directory 
+nothing but where we have extrated ------->there we can find conf directory inside this directory we can find 
+sonar.properties file we can update
+
+step1:- switch the user where the sonarQube is running
+               $sudo su - username
+step2:-goto opt directory
+              $cd /opt       
+               under this we can find which version we have installed
+               for example we installed ----->sonarqube-7.8 
+               $cd  sonarqube-7.8
+ Here we can find the directorys like
+
+bin    conf    copying    data    elesticsearch    extenctions    lib     logs     temp   web
+
+so here we go through -----> conf directory
+$cd  conf----------->here we can find sonar.properties and update this file with any of editter
+$vi  sonar.properties
+
+under webserver session we can change the port number and contextpath where 
+sonar.web.context=/rkreddy
+sonar.web.port=9980
+ sonarQube server supports 4 database
+Oracle
+Microsoft Sql
+Postgrase Sql
+MySql
+--->if we want to configure external databases we can configure this sonar.properties file
+
+
+if we do any changes in sonar.properties file we can restart the sonarQube server
+
+for that we have to go for bin directory there we can find ---->linux-x86-64
+$cd linux-x86-64
+there we can find  the files and directorys 
+lib   sonarQube.pid      sonar.sh      wrapper
+
+here we can restart the sonar.sh(is the shell script) by using the command 
+$sh sonar.sh restart
+first it will stoped the sonarQube and the restarted the SonarQube
+after thet we can see the status wether the server is running are not by using the command called 
+$sh sonar.sh status
+ earlier we can access sonarQube server with ------>http://public-ip:9000/
+now we can access the sonarQube server with----->http://public-ip:9980/rkreddy
+
+ Default credintials for the sonarQube server is 
+ --->username=admin
+---->password =admin
+
+SonarQube Server intigration with Postgre SQL DB
+------------------------------------------------------------------
+  
+instalation of postgre SQL DB in linux server
+-----------------------------------------------------------
+step1:-
+----------
+we have to launch the linux server (ubuntu,redhat,centos,openSuse)
+ 
+after that we can connect with that linux server using putty,gitBash,
+and change the user from ubuntu/ec2-user to root user
+
+step2:-
+---------
+after that by using this link---->http://https://www.postgresql.org/download/
+there we can find out------>Packages and Installers
+                                                     Select your operating system family:-linux
+
+after click on linux  we can find out--->Select your Linux distribution:
+ 
+ Debian     readHat/Rocky/centOs    SUSE     ubuntu   otherlinux
+
+amoung those we can select one like: readHat
+
+after that we can see the options like
+
+To use the PostgreSQL Yum Repository, follow these steps:
+
+1.select Version:
+2.select platform
+3.select architecture
+4.copy,paste and run the relevent parts of the setup script
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+#Switch to to postgres user
+-------------------------------------
+sudo su - postgres
+
+#Start PostgreSQL CLI.
+-----------------------------
+psql
+
+#Set the password for postgres user as follows.
+--------------------------------------------------------------
+\password postgres
+
+#Create a user in PostgreSQL
+---------------------------------------
+create user mithuntechnologies with encrypted password 'passw0rd';
+#Create a database in PostgreSQL
+-----------------------------------------------
+create database employees;
+
+#Grant all privileges to the user mithuntechnologies to employees database.
+--------------------------------------------------------------------------------------------------------
+grant all privileges on database employees to mithuntechnologies;
+
+#To Quit the PostgreSQL Client type as follows
+---------------------------------------------------------------
+ \q
+
+#Search the pg_hba.conf in Linux server as follows.
+--------------------------------------------------------------------
+find / -name pg_hba.conf  
+
+#Need enable pg_hba.conf file to access the Postgre SQL server from out side (Remote Connections).  
+---------------------------------------------------------------------------------------------------------------------------------------
+vi /var/lib/pgsql/11/data/pg_hba.conf 
+
+# IPv4 local connections:
+----------------------------------
+host    all             all             127.0.0.1/32        ident
+Replace Ip address and authentication method as follows.
+
+# IPv4 local connections:
+------------------------------------
+host    all             all             0.0.0.0/0            md5
+find / -name postgresql.conf
+vi /var/lib/pgsql/11/data/postgresql.conf 
+
+# - Connection Settings -
+
+#listen_addresses = 'localhost'
+
+listen_addresses = '*'
+Important Points 
+Default Port number for Postgre SQL server is 5432
+
+Create a table called EMPLOYEE.
+================================
+CREATE TABLE EMPLOYEES (
+	ID INT PRIMARY KEY NOT NULL,
+	NAME TEXT NOT NULL,
+	DESIGNATION TEXT NOT NULL,
+	SALARY REAL NOT NULL,
+	JOIN_DATE DATE
+);
+
+INSERT INTO EMPLOYEES (ID, NAME, DESIGNATION,SALARY,JOIN_DATE) VALUES (1, 'Radha Reddy L', 'Director', '100000.00', '2019-08-01');
+INSERT INTO EMPLOYEES (ID, NAME, DESIGNATION,SALARY,JOIN_DATE) VALUES (2, 'Supriya Reddy L', 'Director', '100000.00', '2019-08-01');
+INSERT INTO EMPLOYEES (ID, NAME, DESIGNATION,SALARY,JOIN_DATE) VALUES (3, 'Ruthvik Reddy L', 'CTO', '50000.00', '2019-08-01');
+INSERT INTO EMPLOYEES (ID, NAME, DESIGNATION,SALARY,JOIN_DATE) VALUES (4, 'Mithun Reddy L', 'CA', '50000.00', '2019-08-01');
+INSERT INTO EMPLOYEES (ID, NAME, DESIGNATION,SALARY,JOIN_DATE) VALUES (5, 'Shishir Reddy L', 'Software Engineer', '40000.00', '2019-08-01');
+INSERT INTO EMPLOYEES (ID, NAME, DESIGNATION,SALARY,JOIN_DATE) VALUES (6, 'Manan Reddy L', 'DevOps Engineer', '40000.00', '2019-08-01');
+ 
+COMMIT; 
+
+To see the EMPLOYEES table data use below SQL Query
+
+SELECT * FROM EMPLOYEES;
+
+
+Upto now we can install the postgre SQL DB in remote(aws)  linux server
+now i want access the DataBase from my local machine for that we have to install DB-client is SQL workbench/j 
+if want to install the Sql workbench inour local machine prerequisite is java
+after downloding the workbench we have to extract it
+open the command promt and open the directory where we extrated in  comand promt
+there we can find --->sqlworkbench.sh ---->we need to start that by using the comand called ------->sh sqlworkbench.sh
+once we start the shell script it is going to open -->select connection profile dashbord
+there we can configure
+here we have to downlode the postgre SQL DRIVER
+if we want establish the connection from DB-CLIENT to DATABASE-SERVER we have to downlode one JDBC jar file from
+ ---->maven central repository there we can search the driver called--->postgre sql jdbc driver and downlode the latest version there we can find---> jar
+after that we can go to dashbord there we can find ---->manage Driver click on that ----->from there we can select jar file what we downlode in the last step
+after thet we can add the public-ip-address of linux-server where we can install the postgre Sql 
+and change the port number of linux-server because the default port number of postgreSql is--->5432
+if not we will get an error
+and also change the context path of the url as employees
+
+===================================================================================================================================================
+Changeing the DB in the Sonarqube server
+======================================
+
+sonarQube server have the deault Database server called H2DB
+insted of using this H2DB for storing the report we are going to integrate postgre SQL DB with sonarQube server
+step1:
+---------
+we should install postgre SQL and sonarQube in the linux-server
+
+and if we abserve in the sonarQube server showing Embeded database means H2DB 
+
+we can find that----->goto administration tab-----> and click on system
+there we can find under database section is going to show currently which database we are using in the sonarQube server 
+
+step:-1
+--------------
+now we can cunnect the server where we can install the sonarQube and postgre SQL
+step:2
+-----------
+execute some command's  to increse elastic search connection type
+sysctl vm.max_map_count
+sysctl fs.file-max
+ulimit -n
+ulimit -u
+
+and check status wether the postgre SQL is running are not by using the command 
+systemctl status postgresql-11
+                                  -------------    -----
+                                    service        version
+
+step:3
+---------
+now we can connect postgre Sql and create the DataBase
+for that first we switch the default user called postgres  by using the command called -----> su  -  postgres
+and connect that postgreSql console for that we can use the comand called -------->psql
+
+step:4
+---------
+now we can create a database for that we can use the follwing quary
+
+create database mithuntechnodb;
+
+in the same way we can create the user by using the following quary
+
+create user sonarqubeuser with encrypted password 'password';
+
+step5
+--------
+what ever the data base(mithuntechnodb) we are created for that database to this user(sonarqubeuser) we need to provide the access by using the following command
+
+grant all privileges on database mithuntechnodb to sonarqubeuser;
+
+
+if we want to configure these details with sonarQube server we are going to use one configuration file called --------->sonar.properties  which is available in conf ditectory ------>this conf directory is avilable in sonarQube server homedirectory(mans where we extracted)
+
+now come out from console of postgre sql   by using ----->/q
+and logout byusing the command called--------->exit
+
+step:6
+----------
+switch to sonar user why because we sholud not run sonarqube server with root user 
+
+su - sonar
+
+cd  /opt------>here we can extract the software files
+ cd  sonarqube-7.8
+
+/opt/sonarqube-7.8  ------->home directory of sonarqube server
+
+here we can find the files and directorys
+
+bin  conf  COPYING   data  elesticsearch    extenstion   lib   logs   temp  web
+
+inside the conf directory we can find out files i
+
+sonar.properties    wrapper.conf
+
+here we can update ------> sonar.properties file
+with these details under DATABASE by default commanted we have to un comment that values and give username and password what we are created 
+------------------------
+#sonar.jdbc.username=
+#sonar.jdbc.password=
+
+
+sonar.jdbc.username=mithuntechnodb
+sonar.jdbc.password=password
+
+
+and under postgreSQL 
+------------------------------
+sonar.jdbc.url=jdbc:postgresql://localhost/mithuntechnodb
+                                                               -------------   ----------------------
+                                                                                      database name
+
+in the above we gave the localhost because our postgreSql and sonarQube is running in the same mission
+if at all sonarqube  and postgre sql is running in the different sql servres then we have to specify  in the place of localhost  we can specify postgresql server ip address where it is running 
+
+under WEB SERVER
+--------------------------
+we can uncomment 
+sonar.web.host=0.0.0.0
+
+step:7
+---------
+
+goto bin directory there we can find linux-x86-64
+under linux-x86-64---------->we can find sonar.sh
+here we can restart  sonar.sh--------->by using ------>sh sonar.sh restart
+
+and check if the sonarQube is running or not by using the command
+
+------>sh sonar.sh status
+
+if it is not running then we can go to the --->logs  directory
+here we can find file called -------->sonar.log
+here we not going to see much information because in log level we have enabled as INFO insted of info  we can enable as DEBUG
+
+so goto the conf Directory there we can see ----------->sonar.properties file
+here we can search as DEBUG
+there can find out ---------->sonar.log.level=INFO----------->we can make it as ------------->sonar.log.level=DEBUG --------->and uncomment it
+
+and goto bin  directory--------->under bin directory we can find -------->linux-x86-64  directory-------->under this we can find   sonar.sh and restart it 
+
+now if abserve it is not running
+
+
+at that time goto ----->logs directory and check it------->cat  sonar.log
+if we abserve we can get an error like------>connectTransportException
+when we get this exception means ---------->our elastic search is not establishing the connection
+
+
+for that we can goto the--------->conf directiry-------->under this we can find sonar.properties file------->under this file we can see DATABASE there we can change the user name
+
+
+now we can go bin directory there we can find linux-x86-64 directory under this we can find sonar.sh and restart it by using the comand -------->sh sonar.sh restart
+and check the status by using the command ----------->sh sonar.sh status
+
+
+step:8
+----------
+and go to the dashbord of sonarqube server ------click on adminstartion------>we can find system and click on that----->and expand 
+now we can see the ---->Default H2 DB server is changed to------->postgreSQL  
+
