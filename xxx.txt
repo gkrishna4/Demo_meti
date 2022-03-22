@@ -1,0 +1,396 @@
+
+what is continuous intigration
+==============================
+Let's say we have multiple devlopers working on the same application, each of them have their own feature (or) bug-fix that they are 
+working-on and they all are contributing the same application, by pushing their code into the same code repository like GitHub. when the 
+devloper pushes the code to the repository it will link to a build mangement system like jenkins, that takes the code and build's it, 
+so here multiple devlopers pushing their code to the same application, we would like to make shore it build currectly & it will not 
+intraduce new issues into the application for this we can configure the build system to run testcases on  build package. once the 
+testcase's pass successfull, we can conform that the build cycle complete this whole process we call it as continuous intigration
+
+
+how to maintain the end to end software devlopment and what are the tools using there?
+=======================================================================================
+when ever devloper commited the feature branch, performing few stages like cloning, compileing 
+and then performing the unit testing and sonarQube analasis and all, so once these stages are completed 
+then the notification will get the devloper, if the changes are good and we can mearge the changes into the
+dev environment, by creating the PR(pull request). but here we have a the break down its not continuous becouse some manual
+approvals are required before moving to the UAT Pre-prod
+
+what is the default path of the jenkins?
+========================================
+the default  path of the jenkins is:  /var/lib/jenkins/jobs/project-Name/workspace/target/webapps/java-web-app.war
+
+the path where we can store the war/ear files in the tomcat server?
+===================================================================
+/usr/local/tomcat/webapps/java-web-app.war
+
+what are all the daily responsibilitys when you login to the system  test.txt 
+===================================================================
+Daily when i am login to the system, firstly i can check the mails, wether any ticket is genrated regarding the daily tasks.
+for example the ticket is regarding Git, & i will execute the git related commands and all. to creating the user account's, 
+creating the new braches & etc..
+And i Monitor the CI jobs, that means in our organization some nightly jobs are sheduled. so here every next day morning
+we have to see the status of the nightly job, wether the nighly job is successful/not. if it is failed, it is my responsibility 
+to escalate that failure to the respective dev-team, they look into that.
+so here what happend, devlopers will fix the issue, so here my responsibility is to monitor the ci jobs make sure everything green.
+
+Note:
+====
+if the same build will fail 2nd day now we have to escalate it to manager
+if the same build will fail 3rd day also, we have to escalate it to director,so this kind of metricess are explain by the manager
+whom to escalate and all so here we have to fallow same instuctions 
+
+what are the Release types using in Your Organization?
+======================================================
+MAJOR: 3 to 6 months                    [ here Major and Minor came into the Feature Devlopment]
+MINOR: 2 weeks to 3 months
+HOTFIX: 1 day to 2 weeks (BugFix)
+
+major.minor.hotfix.BuildNo
+----  ----  -----  -------
+  x  . x   .  x   .  x
+
+for example we can see the QA/Release Build
+------------------------------------------------
+when ever the release is sheduled, here the release manger is going to coardinate with all the teams to release the project
+
+here all the teams sence 
+
+--> Requirement analysis
+--> design
+--> Devlopment
+--> testing 
+--> Production
+
+he is the persion monitor wether the release is going smooth /not
+and he will maintain the Release-calander.
+
+Release manager will prepare XL sheet it will defind Who needs to do what & when, he is the persoin will shedule the tasks
+
+QA Builds == 10    [will sheduled execute every monday & thrusday]  
+
+Performance Builds == 5 [wensday]
+
+UAT Builds == 2  [will sheduled & execute  every 1.5 month and 1.5 month] tuesday
+
+
+what are the ways to install the jenkins?
+==========================================
+jenkins can be install by using:-
+1)package mangers like apt, yum , brew(mac).
+2)Docker (docker images for jenkins is avilable for different platforms  like unix/mac/windows in the docker registry)
+3)kubernets (availble as a helm chart and can be installed on our kubernets cluster)
+
+
+Differences between scripted pipeline & Declarative pipeline?
+=============================================================
+Declarative pipelines have stages, stages have multiple steps.
+Scripted pipelines use Groovy code and references to the Jenkins pipeline in the stage elements 
+without the need for steps.
+
+
+
+explain the pipeline?
+=====================
+A pipeline is a set of automated processes and tools that allows both developers
+and operations teams to work together, to build and deploy code to a production environment. 
+to build, continuous integration, automation testing, validation, and reporting. 
+It may also include one or more manual gates that require human intervention before code is allowed to proceed.
+
+This includes continuous integration, continuous delivery/deployment (CI/CD), continuous feedback, 
+and continuous operations. Instead of one-off tests or scheduled deployments, each function occurs on an ongoing basis.
+
+how do u migrate the jenkins? without downtime?
+==============================================
+Jenkins jobs can be migrated in many ways. You can establish SSH connection b/w source machine and target machine and use scp
+command to copy from one instance to another instance. You can also use Job import plug-in to migrate jobs.
+
+
+what are the chalenges you fased in devops?
+===========================================
+running pipeline in jenkins, depending on the worklode, secodary node is came to the pitcher,
+if lot of teams are deploying changes or checking the code at the same time. So it is vary slow to scale.
+Because primary node has the fixed size,and upgrade it to bigger size required manuvally
+or it takes some time even if want to do automated way 
+
+hard to troubleshoot because there are so many jenkins plugins, if the team just adopted the new plugin
+they have to get use to how the plugin does error report & all
+
+i sloved it, by using code pipeline for newer projects, codepipeline scales automatically,it doesnt use any ec2
+or any server, it is serverless so it is payas u go.  by using lamda we can check metriks in cloud watch.
+
+ what is lamda?
+================
+lamda is for automation purpose for the daily metrics, for supose we have one usecase is there like ENI triggers 
+only so where ever the ec2 instance created, here some triggering will be happend after that instances are
+created.
+so most of the time application team can't take care that one, so for that, we did a small automation so if we
+update one metric in the cloud watch & cloud trail. if any log is genarated, create an instance then automatically
+cloud watch metic will be copied.
+
+inside that we have lamda function and it featched the instance details and based on that it will created a tag
+like application name,account_id etc based on featching.
+so based on that it will create the tag and it will attached to that line
+and lamda function will be written in python botto-3 for that manage.
+
+what are the tools u are used in the unit testing?
+====================================================
+junit is there and jecaco plugin we install to move the test casess and we integrate those  repororts to
+ the sonarQube,to see the covarage and everything in the SonarQube dashbord to understand more
+
+why u are using the sonarQube?
+==============================
+to identify the quality of the code, there we can find is there any vanrabulities, is there any bugs &
+all we identify
+
+how to change the default port number 9000 to custum port in sonarQube?
+========================================================================
+go to the conf directory and open the sonar.properties and search for
+
+sonar.web.port=9000 and replace
+
+how to execute the sonarQube Report for maven projects?
+=======================================================
+mvn clean install sonar:sonar
+
+how to maintain the password encripted in jenkins?
+==================================================
+in the jenkins dashbord,we can find manage jenkins in the left pannel click on that, under this we can find  
+credentials section there we have to create the username and password, and token for bitbucket
+we have use token, performing the deployments and all, for this we have system accounts directly we use those credentials 
+where required, per-suppose connect the nexus repository, for that we have Binded the username and password
+just we use that token when we did that step.
+
+if u have to design a system infra for 200 user, so how do u design?
+===================================================================
+per supose the system have the 200 users means, that system shoud have the more capacity like 
+cpu & memory wise, even the file system should be manage like one,  profile created to every user
+so some default storage used at /home, it should have more memory & all, even credentials we have to
+ manage for that
+
+
+i have one DataBase and one UI, we have a application server and we have a database server,with out down the
+system how we can deploy the aplication into the server?
+=============================================================================================================
+here we have a two situvation like one approuch is like stoping the service & doing the updations and all
+but the another thing is like, to create the same configuration in another machine, there we have done all the 
+sanity testing & delivery. Once it's fine just we switching the traffic to new one
+
+
+========================================================================================================
+
+
+
+what is Docker?
+--------------
+
+Docker implements a high-level API to provide lightweight containers that run processes in isolation.
+A Docker container enables rapid deployment with minimum run-time requirements. It also ensures better
+management and simplified portability.
+
+
+
+How we can move/copy images from one server to another server without repo?
+---------------------------------------------------------------------------
+
+	In source server(where we have image)
+	Save image(All the layers) as a tar file by using the command
+                                               docker save -o <filename>.tar <ImageName/ID> 
+	Then scp the tar-file from Source to Destination server
+	And in destination server we can run
+                                      docker lode -i <FileName>.tar 
+
+
+
+Suppose your server has 10GB ram, so while creating the container set the limit as 200mb, 
+what will happen if lot of lode on that particular application?
+------------------------------------------------------------------------------------------------
+Incase of memory the container will be stopped, but incase of CPU it will not stop, performance will be vary slow,
+because the speed of our process depends on number of CPU’s  
+
+sudo docker run -it --memory="<memory_limit>"  <docker_image>
+
+For example, if you set --memory to 1 GB, as in the example above, the amount of swap memory needs to be more than that.
+To run a container with an additional 1 GB of swap memory, set the swap memory to 2 GB.
+
+The syntax for running a container with limited memory and additional swap memory is:
+----------------------------------------------------------------------------------------
+sudo docker run -it --memory="<memory_limit>" --memory-swap="<memory_limit>" <docker_image>
+
+
+Set Soft Limit to Container Memory
+------------------------------------
+As an example, for an Ubuntu container to have the memory reservation of 750 MB and the maximum RAM capacity of 1 gb, use the command:
+
+sudo docker run -it --memory="1g" --memory-reservation="750m" ubuntu
+
+
+
+What is the difference between docker run & create?
+----------------------------------------------------
+docker create will only create a container but it will not start the container
+docker run will create a container & start the container  
+
+
+What is shell form & executable form in docker?
+-----------------------------------------------
+RUN/CMD/ENTRYPOINT instructions/commands can be defind in shell form (or) executable form.
+When we use shell form our command will be running a child process under bash/sh (shell)
+
+What is the difference between CMD & RUN?
+---------------------------------------
+Run instructions will be execute while creating a image.CMD instructions will be executed while 
+Creating a container. we can have more than one RUN keyword in a docker-file. All RUN keyword’s
+Will be processed while creating an image in the defind order (Top to Bottom).
+
+
+What is the difference between CMD & ENTRYPOINT?
+-------------------------------------------------
+CMD commands/instructions can be overridden while creating a container. 
+ENTRYPOINT commands/instructions cannot be overridden while creating a container.  
+
+
+How do you do the os patches  in the docker swarm/worker machines with out impact your applications/Containers?
+----------------------------------------------------------------------------------------------------------------
+We can drain the machine so that container will move to another machine and we can do performance like whatever
+ the activity You want to do, then again we make it active.
+ 
+to drain the node
+--------------------
+docker node update --availability drain <NODE-ID>
+
+to make active
+--------------
+docker node update --availability active <NODE-ID>
+
+
+cache busting 
+------------------ 
+Whenever an image is build from a dockerfile, docker reads its memory and checks which instructions were already 
+executed. These steps will not be Re-executed. 
+It will execute only the latest instructions. This is a time saving mechanism provided by docker. But, the disadvantage is, 
+we can end up installing software packages from a repository which is updated long time back. 
+
+TO avoid this disadvanatge we use cache busting 
+------------------------------------------------------------------- 
+Note: cache busting is implemented using && symbol. 
+each statement in the docker file has && will be re-executed. 
+
+
+
+Container orchestration 
+------------------------ 
+Running docker containers in a distributed environment, on multiple docker host machines. 
+All these containers can have a single service running on them and they share the resources between eachother,
+even running on different host machines. 
+ 
+Docker swarm is the tool used for performing container orchestration 
+ 
+Advantages 
+-------------- 
+1) Load balancing 
+2) scaling of containers 
+3) performing rolling updates 
+4) handling failover scenarios
+
+how can we reuse the yml files in ansible?
+==============================================
+there are 3 ways to do this: includes, imports & roles
+
+includes and imports allow users to breakup large playbooks into smaller files, which can be 
+used accross multiple parent playbooks (or) even multiple times with in the same playbook
+
+roles allow more then just tasks to be packaged together and can include the variables, handlers, or even modules and plugins
+unlike includes and imports roles can also be updated and shared via ansible galaxy
+
+
+what is the difference between NACL & security group?
+=====================================================
+we can use NACL, subnet level to protect the subnets &
+security group can be protected for EC2 instances 
+
+
+what is the difference between web-server & Application server?
+===============================================================
+web server will serves the static content(html, css, javaScript, image files ) into the web servers.
+webservers can not able to handel backend related code & aslo we can used for lodeBalancing
+
+Example of Web Servers:
+-----------------------
+Apache Tomcat
+Ngnix
+IBM Http server
+
+Application servers used for deploying the backend code(java code), and Application servers can able to
+process your bussiness logic.
+
+Examples of Application Server:
+---------------------------------
+                    vendor
+                    ------
+Weblogic----------->Oracle
+JBoss/wildfly------>redhat-------> redhat now aquired by IBM
+Websphere---------->IBM
+
+
+
+JBoss/Wildfly is the enterprize application servers, we can deploy EAR & WAR files
+but in tomcat we can deploy only WAR files. that's  why we can call tomcat is a web-application server
+
+for example my tomcat server is not running how you debug?
+===========================================================
+go to the logs folder there we can find one file called--->catalina.out
+and check catalina.out
+
+
+you have devloped your application & you are going to deploy now. once u deploy the application where it will store?
+====================================================================================================================
+in webapps
+
+all the deployed application's are avilable in the webapps
+
+
+why we need to use repositories such as nexus or Docker hub, since we have already Git /Bitbucket/svn?
+=======================================================================================================
+Git/Bitbucket/svn is a source referential for version control (with features like merging, branching, tags)
+
+Nexus/Docker-Hub is an artifact referential for any delivery.
+simply a collection of shared directories with a naming convention ( group.artifact.version ).
+
+
+what is devops kpi?
+
+what is the life-cycle of DevOps? 
+
+
+
+
+
+
+/opt/apache/webapps
+
+
+we can remove the installed packages with configuration files 
+============================================================
+sudo apt-get --purge remove <package-name>
+
+
+
+
+suppose in a perticular server there are two applications are running the same port number? how can you find it?
+===================================================================================================================
+we can check 3 ways by maing use the commands
+
+1) netstat -ltnp | grep -w :<port number>
+
+l – tells netstat to only show listening sockets.
+t – tells it to display tcp connections.
+n – instructs it to show numerical addresses.
+p – enables showing of the process ID and the process name.
+grep -w – shows matching of exact string (:80).
+
+
+2)$ lsof -i :<port number>
+
+3)$ ps -p <process-id> -o comm= 
