@@ -1,0 +1,707 @@
+
+git add -->>To add files from working directory to staging area. 
+git commit -->> To commit changes from staging area to local repository. 
+git push -->> To move files from local repository to remote repository.
+git clone -->> To create a new local repository from the remote repository. 
+git pull -->> To get updated files from remote repository to local repository.
+
+what is a git snapshot?
+========================
+when you COMMIT, you save your current repository's current working directory as a new snapshot(commit= snapshot + metadata)
+your git repository consists of series of snapshot's
+
+Creating a new remote repo now
+===============================
+Open the page
+https://github.com/new
+There define a name for your repository
+Click on Create Repository button
+You will landed on to Repository Page, copy the HTTPS based link of that repository
+Go to your local repo on VM
+Let's check the remote references
+
+git remote -v
+
+Let's add the remote reference now
+
+git remote add origin paste_the_link_you_copied
+
+Now check the remote reference, you will see the reference now
+
+git remote -v
+
+
+Creating Personal Access Tokens
+===============================
+Open the page
+https://github.com/settings/profile
+Scroll down, in the left pane look for Developer Settings, click on that
+Click on Personal Access Tokens , in the left pane
+Click on Generate new token
+Provide a name, and click the checkbox along with repo over to provide repo push access
+Now click on Generate Token button at the bottom
+Copy the token generated and keep it safe  token------>  (  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  )
+Go to local repo on VM 
+
+let's push the code
+--------------------
+git push origin master
+
+It will prompt you for username and password, just provide them. Remember, for password,
+you need to provide Personal Access Token which you generated right now
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+**0) Difference between SVN  and GIT?
+
+Git and SVN are  version control systems where as Git is a distributed version control system, 
+and SVN is a centralized version control system.
+
+GIT:
+----
+The name itself indicates the respository is distributed and every developers workspace contains a local copy of the repository. 
+There is no question of central repository.
+
+If 4 developers are there then 4 repositories will be there.
+
+1) The checkout and commit operations will be performed locally. Hence performance is more.
+
+2) To perform checkout and commit operations, network is not required. Hence if there is any network outage, still version control is applicable. 
+
+3) If something goes wrong to any repository there is a chance to recover. There is no question of single point of failure. 
+
+4) To perform push and pull operations network must be required, but these operations are not most common operations and we are performing very rarely.
+
+Note:
+------
+ 1) commit and checkout operations will be performed between workspace and repository. 
+  work space – commit --> Repository 
+ Repository – checkout--->workspace
+
+2) push and pull operations will be performed between repositories. 
+  one repository ---push --->other repository 
+  one repository<--pull----other repository
+
+
+Here are some .git directory structures used in GIT:
+
+HEAD/: A pointer structure used in git.
+Config/: Contains all configuration preferences.
+description/: Description of your project.
+index/: It is used as a staging area between working directory.
+object/: All the data are stored here.
+logs/: Keeps record to change that are made.
+
+SVN: 
+===
+The name itself indicates that, this type contains only one central repository and every developer should be connected to that repository. 
+The total project code will be stored in the central repository. 
+If 4 developers are there, still we have only one repository
+
+This type of VCS 
+-----------------
+Eg: CVS, SVN, Perforce, TFS, Clearcase etc
+
+Problems with Centralized VCSs:
+---------------------------------
+1) Central Repository is the only place where everything is stored, which causes single point of failure.
+   If something goes wrong to the central repository then recovery is very difficult.
+
+
+2) All commit and checkout operations should be performed by connecting to the central repositoty via network.
+   If network outage, then no version control to the developer. i.e in this type, 
+   developer work space and remote repository server should be connected always.
+
+
+3) All commit and checkout operations should be performed by connecting to the central repositoty via network 
+   and hence these operations will become slow, which causes performance issues. No local operations and every version control operation 
+   should be remote operation.
+
+
+4) Oranization of central repository is very complex, if number of developers and files increases.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+1)what  is git ?
+
+✽ Git is Distributed Version Control System Tool. 
+✽ GIT is developed by Linus Torvalds(Finnish software engineer), who also developed Linux Kenel. 
+
+=================================================================================================
+2)Difference between the Git and GitHub?
+
+Git is a mechanisam and GitHub is a implementation software 
+ 
+Git is a version control system. So you manage and keep track of your source code history. 
+
+GitHub is a cloud-based Git Server where Remote repositorys will be maintained in Cloud environment 
+
+=================================================================================================
+3)Full form of VCS
+
+version controlling system
+=================================================================================================
+4) Full form of SCM
+
+source code management 
+
+=================================================================================================
+5)write the 5 SCM names?
+
+>>Bitbucket
+>>GIT
+>>GITLAB
+>>GITHUB
+>>Helix Core Version Control
+>>Subversion(SVN)
+>>Team Foundation Server (TFS)
+ 
+=================================================================================================
+**6)what is Branch?
+
+A Branch is nothing but an independent flow of development and by using branching concept, we can create multiple work flows.
+
+master branch is the default branch/ main branch in git. Generally main source code will be placed in master branch.
+Based on our requirement, we can create any number of branches.
+
+Need of creating a New Branch:
+---------------------------------------------
+Assume we required to work on new requirements independently, then instead of working in the master branch, 
+we can create a seperate branch and we can work in that branch, related to that new requirement without affecting main branch.
+
+How to Create a New Branch: 
+---------------------------------------
+We can create a new branch by using ------->    git branch command. 
+Syntax:
+--------- 
+              git branch brach_name
+
+How to Switch from one Branch to another Branch?
+-------------------------------------------------------------------
+git checkout brach_name
+
+
+Short-cut Way to Create a New Branch and switch to that Branch:
+--------------------------------------------------------------------------------------
+ We have to use -b option with checkout command.
+--->git checkout -b new2branch
+Switched to a new branch 'new2branch'
+
+
+how do we push the new branch to the gitHub
+----------------------------------------------
+
+git push --set-upstream origin BranchName
+
+=================================================================================================
+7)what is Tag?
+
+**In general Tags can be used for release verions.
+
+In our repository there may be a chance of multiple commits. HEAD/Branch is always pointing to latest commit 
+and its value keep on changing when new commits happend. So here Tag is nothing but a Label to a particular commit in our repository.
+Tag is static and permanent reference to a particular commit where as HEAD/Branch is a dynamic reference.
+
+Create a tag
+------------
+git tag <tag-name>
+
+All tags information will be stored in .git/refs/tags/ folder.
+
+delete a tag
+------------
+We have to use git tag command with -d or --delete option.
+git tag -d <tagname>
+
+to see number of tags we have
+------------------------------
+git tag --list
+
+===============================================================================================
+how to tag a previous commit?
+
+Sometimes we may forgot to tag a particular commit. It is possible to tag for previous 
+commits.
+$ git tag -a <tagname> <commitid> -m <tagmessage>
+
+=================================================================================================
+what is annotated tags?
+
+Annotated Tag is exactly same as tag, except that it maintains information like 
+tagger name, date of creation, description etc.
+
+Annotated tags will be stored in .git/refs/tags folder and .git/objects folder.
+
+We can create annotated tag by using git tag command with -a option.
+$ git tag -a <tagname>
+ Here -a indicates that it is annotated tag.
+ 
+$ git tag -a <tagname> -m <tag_message>
+
+=================================================================================================
+8)what is the difference between the TAG and BRANCH?
+
+Branch always points to the top of a development line and will change when a new commit is pushed.
+Where as a tag will not change. Thus tags are more useful to "tag" a specific version
+
+=================================================================================================
+9)When we create the tag?
+
+Git tags are used as reference points in your development worflow. 
+you might want to create new Git tags in order to have a reference to a given release of your software.
+
+=================================================================================================
+10)what is git add Command?
+
+To add files from working directory to staging area for tracking purpose, we have to use git add command.
+
+=================================================================================================
+11) What is the command to revert the code from staging area to working area?
+
+$ git checkout -- file1.txt 
+It will discard any unstaged changes made in file1.txt.
+ After executing this command, staged copy content and working directory content is same.
+
+Summary: 
+--------------- 
+git checkout -- file.txt   --->>To discard changes in working directory copy.
+git checkout    --->>>To discard changes in all tracked files of working directory.
+git checkout ---->>>If we are not passing any argument, then this command will show the list of eligible files  for checkout.
+=================================================================================================
+**12) What is the difference between featch and pull in GIT?
+
+featch-->> To get updated files from remote repository to local repository.from there we can update the files in to the working copy
+
+pull-->> insted of featch and update....if we do pull it will update changes done in remote repository  to local repository
+         and also update working copy/actual copy(here we no need of featch  saparately.....pull only internally performs  featch oparation) 
+         pull=featch+update
+=================================================================================================
+
+13) How to delete the branch?
+
+Once we completed our work we can delete the branch. 
+Deletion of the branch is optional. 
+The main objective of deleting branch is to keep our repository clean. 
+We can delete a branch by using git branch command with -d option.
+
+Syntax:
+------------
+ $ git branch -d <branch_name>
+
+=================================================================================================
+
+14) what is git squash command?
+
+If we want to combine all commits of feature branch into a single commit and merge that commit to the master branch, 
+then we should go for squash option.
+
+git merge --squash feature
+================================================================================================
+what is merging?
+
+for example created a branch to implement some new feature and we did some new changes in 
+that branch, once work completed we have to merge that branch back to parent branch.
+
+We can perform merge operation by using git merge command.
+We have to execute this command from parent branch.
+
+Assume new feature implemented properly, We want to merge feature branch with 
+master branch.
+
+$ git checkout master
+Switched to branch 'master'
+
+$ git merge feature
+
+=================================================================================================
+
+15) what does git rebase?
+Step-1:
+---------
+We have to rebase feature branch on top of master branch.
+git checkout feature 
+git rebase master
+Whatever new commits are there in the feature branch will be duplicated by git. 
+Here everything(like commit message,timestamp,author name and mail) is same, Except that commit ids will be changed.
+The base commit of the feature branch(duplicate copy) will be updated as latest commit of parent branch(master branch).
+
+Step-2:
+---------
+We have to merge feature branch into the master branch (fast-forwar merge will be happend)
+git checkout master
+git merge feature
+The master branch pointer will be changed to last commit(duplicate copy) of the feature branch. 
+In this case Fast-forward merge will be happend.
+
+
+=================================================================================================
+
+16)what is git stash command?
+
+The git stash command takes our uncommitted changes (both staged and unstaged), saves in some temporary location.
+After completing our urgent work, we can bring these stashed changes to our current working directory.
+
+Note: 
+--------
+1. Stashing concept is applicable only for tracked files but not for newly created files.
+2. To perform stashing, atleast one commit must be completed.
+
+
+How to perform unstash? 
+We have to bring files from temporary location to our working directory. For this we have to perform unstash operation. 
+We can perform unstashing in 2 ways:
+1. by using git stash pop 
+2. by using git stash apply
+
+1. by using git stash pop: 
+---------------------------------
+git stash pop stash@{0}
+It will bring stashed changes from temporary location to working directory. The corresponding entry will be deleted.
+
+2. by using git stash apply:
+-----------------------------------
+ git stash apply stash@{0}
+It will bring stashed changes from temporary location to working directory. But, the corresponding entry won't be deleted, 
+so that we can use this stash in other branches to continue their work.
+
+
+and we can see list of available stashes by uisng the command 
+$git stash list
+
+to delete the all stashs
+$git stash clear
+
+to delete the perticular stash
+$git stash drop stashID
+
+=================================================================================================
+
+17)what is git cherry-pick?
+
+Assume that we have two branches are there like master and feature. If we merge feature branch to the master branch, 
+then all commits and the corresponding changes will be added to master branch. Insted of all commits, 
+we can pick an arbitraty commit of the feature branch and we can append that commit to the master branch. It is possible by using cherry-pick command.
+
+Use cases of cherry-pick:
+---------------------------------
+ 1. Cherry-pick allows to share code between branches
+ 2. We can use for bug hot fixes. Assume that a developer has started working on a new feature. 
+    During that new feature development he identify a pre-existing bug. The developer creates an explicit commit patching this bug. 
+   This new patch commit can be cherry-picked directly to the master branch to fix the bug before it effects more users.
+
+Note:
+=====
+1. When ever we are using cherry-pick command, a brand new commit object will be created but with same changes of the picked commit of feature branch.
+2. Cherry-pick may cause duplicate commits and hence in most of the scenarios we can use merge operation instead of cherry-pick.
+3. We can use -n or --no-commit option with cherry-pick, in that case new commit won't be created. This is helpful whenever we are doing cherry-picking 
+   multiple commits. With all these changes we can create a single commit.
+
+$ git checkout master
+$ git cherry-pick -n commitid1
+$ git cherry-pick -n commitid2
+$ git cherry-pick -n commitid3
+$ git add .;git commit -m 'single commit for multiple cherry-pick options'
+
+
+=================================================================================================
+18)what is PAT?
+
+Personal access tokens (PATs) are an alternative to using passwords for authentication to GitHub when using the GitHub API or the command line. 
+If you want to use a PAT to access resources owned by an organization that uses SAML SSO, you must authorize the PAT.
+
+=================================================================================================
+
+
+
+Verify the installation by checking the version
+=================================================
+
+git --version
+
+To set the intial user config
+===============================
+git config --global user.name "YOUR_NAME"
+git config --global user.email "YOUR_EMAIL"
+
+
+To use a different name/email address for a perticular project,change it inside the project
+        ----> change the directory to respective  repository
+               
+             ----> git config user.name "ramakrishna"
+             ----> git config user.email "gantaramakrishna999@gmai.com"
+ 
+Note:- here we should not use --global ,if we use --global it will change in all repositorys 
+
+
+Now, let's verify this inital config
+--------------------------------------
+
+git config --global -l
+
+
+Create a empty directory
+------------------------
+
+mkdir repo1
+
+cd repo1
+
+Initialise repo
+------------------
+git init
+
+      -->ls -la
+           here we can find --> .git
+      --> cd .git
+            here we can find -->config file
+      --> cat config
+             in this config file we can find -----> [remote "origin"]
+             
+             [remote "origin"] ---> it will tell, to which centralized repocitory does it  communicate 
+       
+                               
+Check repo status
+-----------------
+git status
+
+Create some file in the directory
+----------------------------------
+vi somefile
+
+Check repo status, it will say something about Untracked files
+---------------------------------------------------------------
+git status
+
+Let's add the file to staging area
+----------------------------------
+git add somefile
+
+Check repo status, it will say "Changes to be commited"
+------------------------------------------------------
+git status
+
+Commit it
+----------
+git commit -m "First Commit"
+
+Check repo status, it will say "nothing to commit, working tree clean"
+-----------------------------------------------------------------------
+git status
+
+Check the commit history
+------------------------
+git log
+
+Let's make a small change to the file
+--------------------------------------
+vi somefile
+
+Check repo status, it will say "Changes not staged for commit"
+---------------------------------------------------------------
+git status
+
+Let's add the file to staging area
+------------------------------------
+git add somefile
+
+Check repo status, it will say "Changes to be commited"
+--------------------------------------------------------
+git status
+
+Commit it
+----------
+git commit -m "Second Commit"
+
+Check repo status, it will say "nothing to commit, working tree clean"
+----------------------------------------------------------------------
+git status
+
+Check the commit history
+-------------------------
+git log
+
+
+
+Creating a new remote repo now
+===============================
+Open the page
+https://github.com/new
+There define a name for your repository
+Click on Create Repository button
+You will landed on to Repository Page, copy the HTTPS based link of that repository
+Go to your local repo on VM
+Let's check the remote references
+
+git remote -v
+
+Let's add the remote reference now
+
+git remote add origin paste_the_link_you_copied
+
+Now check the remote reference, you will see the reference now
+
+git remote -v
+
+
+Creating Personal Access Tokens
+===============================
+Open the page
+https://github.com/settings/profile
+Scroll down, in the left pane look for Developer Settings, click on that
+Click on Personal Access Tokens , in the left pane
+Click on Generate new token
+Provide a name, and click the checkbox along with repo over to provide repo push access
+Now click on Generate Token button at the bottom
+Copy the token generated and keep it safe  token------>  (  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  )
+Go to local repo on VM 
+
+let's push the code
+--------------------
+git push origin master
+
+It will prompt you for username and password, just provide them. Remember, for password,
+you need to provide Personal Access Token which you generated right now
+
+
+Make sure you are in home directory
+
+cd ~
+
+Create a empty directory
+
+mkdir repo2
+cd repo2
+Initialise repo
+
+git init
+
+Check repo status
+git status
+
+Create some file in the directory
+vi somefile
+
+Check repo status, it will say something about Untracked files
+git status
+
+Let's add the file to staging area
+git add somefile
+
+Check repo status, it will say "Changes to be commited"
+git status
+
+Commit it
+git commit -m "First Commit"
+
+Check repo status, it will say "nothing to commit, working tree clean"
+git status
+
+Let's create remote repo first
+
+Creating a new remote repo now
+------------------------------
+Open the page
+https://github.com/new
+There define a name for your repository
+Click on Create Repository button
+You will landed on to Repository Page, copy the SSH based link of that repository
+Let's add other remote reference to repository
+
+Go to local repo
+
+git remote add ssh paste_your_copied_link
+
+To make pushes using SSH keys we need to key exchange, let's generate the keys in machine, and put it in Github Repo
+
+Generate KeyPair on the system
+
+ssh-keygen
+
+This will prompt you multiple times, just keep things default by pressing enter
+
+Once you will have your respective keys generated, in the output you will see the path for your Public key and private key.
+
+Now, let's get the content of public key copied, and get it added in the repository
+
+To get the content
+
+-----> $cat path_of_your_public_key
+
+You will get the content, copy it
+
+Let's add the copied key in Github repo
+
+Go to repo page
+
+Click on Settings -> Deploy Keys -> Add Deploy Key
+Define some name for reference of the key
+Paste the content over there
+Check the box stating "Allow Write Access"
+Click on Add Key
+Let's make push to remote repo now
+
+  ```git push ssh master```
+
+
+Creating a new remote repo now
+=================================
+
+Open the page https://github.com/new
+There define a name for your repository
+Choose access as private
+Click on Create Repository button
+You will landed on to Repository Page, copy the HTTPS based link of that repository
+Go to your VM
+
+Make sure you are in home directory
+
+cd ~
+
+Clone the new repo
+
+git clone paste_the_link_you_copied
+
+Now, you will see, while cloning it will prompt you credentials, just provide them and you will see repo getting cloned
+
+
+
+I have some code in Bit bucket how do you get it to GitHub?
+===========================================================
+
+https://www.devopsschool.com/blog/how-to-move-repository-from-bitbucket-to-github-with-all-branches-and-commits/
+
+
+
+Step 1 : Create a Blank repository on Github without Readme.md
+
+Step 2 : Moving all code and content from bitbucket
+       
+        1. Check out the existing repository from Bitbucket:
+           $ git clone git@bitbucket.org:Cotocuschandan/testrepo.git
+        2. Now adding new GitHub Repository as upstream remote of the repository which is clone from bitbucket.
+            $ cd testrepo
+            $ git remote add upstream git@github.com:devops-school-com/ds-test.git
+       3. push all branches and tags to GitHub Repository using below commands
+             $ git push upstream master
+            $ git push --tags upstream
+
+Step 3 : Add URL of New Github Repository as redirect URL
+           $ git remote set-url origin git@github.com:devops-school-com/ds-test.git
+
+Step 4: At last Clone all branches and tags to GitHub Repository
+          $ git push --mirror
+
+
+why we need to use repositories such as nexus or Docker hub, since we have already Git /Bitbucket/svn?
+=======================================================================================================
+Git/Bitbucket/svn is a source referential for version control (with features like merging, branching, tags)
+
+Nexus/Docker-Hub is an artifact referential for any delivery.
+simply a collection of shared directories with a naming convention ( group.artifact.version ).
+
+
+
+
+how do we create the permissions to the devlopers over the branches in github
+==============================================================================
+go and watch this vedio--->  https://www.youtube.com/watch?v=6JjlT69X8yA
+
