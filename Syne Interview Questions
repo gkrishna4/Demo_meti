@@ -1,0 +1,114 @@
+Sharad Saraf
+Question
+==============
+What do you know about DevOps?
+How is DevOps different from agile methodology?
+Mention some of the core benefits of DevOps.
+What is the role of configuration management in DevOps?
+Name three important DevOps KPIs.
+==============================================================================
+===============================================================================
+What is the difference between CI and CD?What is Git stash?
+Explain the difference between git fetch and git pull?
+Difference between Git Rebase and Git MergeMention what are the advantages of Jenkins?
+==========================================================================================
+==========================================================================================
+Mention some of the useful plugins in Jenkin?
+Explain how you can deploy a custom build of a core plugin?
+What is a ‘pipeline’? How to create Pipelines in Jenkins.
+What are some of the most popular environment variables?
+What are the different types of pipelines available and Explain?
+How to create a backup and copy files in Jenkins?
+Explain the terms Agent, post-section, Jenkinsfile
+What is a DSL Jenkins?
+=======================================================================================
+=======================================================================================
+How to create Piepleines with Team City?
+What are the different Pipelines that we can create from TeamCity.
+What is Artifact depedency and snapshot dependency in TeamCity?
+How to integrate teamcity with Sonarcube?
+Describe some deployment patterns
+What challenges exist when creating DevOps pipelines?
+How to run a docker container with its default command in a TeamCity build
+How do I get through REST API (or any other way!) the list of most often failing tests, so do I know how to set priorities on investigations.Describe the different cloud service models?
+===============================================================================================================
+================================================================================================================
+What is the difference between the Hybrid Cloud and Hybrid IT?
+What is The Packaging of Hybrid Cloud? What are the two main types of packaged hybrid cloud?
+What is a Distributed Cloud?
+What is a multi-cloud strategy?
+What is a Virtual Private Cloud or VNet?
+How do you setup a Virtual Private Cloud (VPC)?
+How do you build a hybrid cloud?
+===============================================================================================================
+================================================================================================================
+What are the different types of Storage areas in Windows Azure?
+What is table storage in Windows Azure?
+What is Windows Azure Traffic Manager?
+What is a storage key?
+Why is Azure Active Directory used?
+What is Azure Redis Cache?
+What is Azure App Service and How many type of Apps are available in Azure?
+What is profiling in Azure?
+How can you create an HDInsight Cluster in Azure?
+What is Windows Azure Scheduler?
+What is Azure Service Level Agreement (SLA)?
+Can we create Azure Pipelines using ymal file? If Yes, How?
+Explain Application Insights Process of Implementation.
+What are the advantages and limitations of Azure Application Insights
+Explain installation Process of Azure Application Insights?
+Is the telemetry collected by Application Insights?
+How to send exceptions to App Insights
+What all details can we view in Application insight
+What Monitoring & Alerts features does Application Insight provide and explain the limitations
+How to configure App-Insights in web application?
+============================================================================================
+=============================================================================================
+How does Terraform work? What are the notable features of Terraform?
+What is the purpose of main.tf and variable.tf files?
+Define Terraform folder structure?
+What are the components of Terraform?
+What are the primary responsibilities of Terraform Core?
+How to rollback to previous state when we encounter an error?
+Why Terraform is preferred for DevOps?
+What is the process for making the object of one module available for another module at a higher level?
+Explain the architecture of terraform?
+How to create dependency between modules in terraform?
+What is the different between Platform.sh and Terraform?
+=================================================================================================
+
+=================================================================================================
+What is Docker and advanatages of Dockers?
+What is the difference between the `COPY` and `ADD` commands in a Dockerfile?
+How to run a dockers in background?
+What is Docker hub?
+What are the most common instructions in Dockerfile?
+What is the difference between Docker Image and Layer?
+What type of applications - Stateless or Stateful are more suitable for Docker Container?
+What is docker compose and swarm?
+How containers works at low level?
+Why Docker compose does not wait for a container to be ready before moving on to start next service in dependency order?
+How to reduce the image size as a best practice in Dockers?
+Describe IaC and configuration management.
+What is the difference between orchestration and classic automation?
+What are some common orchestration solutions?
+What is orchestration when it comes to software and DevOps?
+What are the main differences between the Docker Swarm and Kubernetes?
+=============================================================================================================
+
+================================================================================================================
+What process runs on Kubernetes Master Node?
+What is Kubectl?
+What is a pod in Kubernetes?
+What is ‘Heapster’ in Kubernetes?
+How do Containers communicate in Kubernetes?
+What is CNI, how does it work, and how is it used in Kubernetes?
+How does Kubernetes orchestrate Containers?
+How do you restrict the communication between Kubernetes Pods?
+How do you design a self-healing distributed service?
+Describe a centralized logging solution.
+How can you get a static IP for a Kubernetes load balancer?
+==============================================================================================================
+============================================================================================================
+
+
