@@ -1,0 +1,6 @@
+https://raw.githubusercontent.com/vsaini44/KubernetesRepo/master/Docker-kuber1.21
+===================================================================================
+# by using the above link we can get the script place it in a file then after execute that file
+# for example the file name is ---->a 
+# so here we can execute that file by using the command------> bash a
+# after successful execution we can get the {-- 1 token --} in the master machine we can copy
