@@ -67,3 +67,11 @@ to get libraries
 kubectl completion bash >> /tmp/abc
 source  /temp/abc
 kubectl <press tab two-times>
+
+the bellow commands will say which paramiter we have to use in perticular yml file
+====================================================================================
+kubectl explain pod
+kubectl explain service
+kubectl explain repicaset
+kubectl explain replicationcontroller
+kubectl  explain deployment
