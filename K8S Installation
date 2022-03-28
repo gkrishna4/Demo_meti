@@ -61,3 +61,9 @@ sysctl net.bridge.bridge-nf-call-iptables=1
 
 =================================================================================
 or else we can execute the commands one by one
+
+to get libraries
+=================
+kubectl completion bash >> /tmp/abc
+source  /temp/abc
+kubectl <press tab two-times>
