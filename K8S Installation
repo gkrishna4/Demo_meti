@@ -1,6 +1,63 @@
+How we can change the hostname
+==============================
+goto root user-----> sudo -i
+then after we can execute the command-----> hostname <name-of-the-host> && bash
+
+
+
 https://raw.githubusercontent.com/vsaini44/KubernetesRepo/master/Docker-kuber1.21
 ===================================================================================
 # by using the above link we can get the script place it in a file then after execute that file
 # for example the file name is ---->a 
 # so here we can execute that file by using the command------> bash a
-# after successful execution we can get the {-- 1 token --} in the master machine we can copy
+# after successful execution we can get the {-- 1 token --} in the master machine we can copy that token and execute over the Node machines
+
+# script we have to execute
+============================
+#!/bin/bash 
+sudo apt update
+
+sudo apt install apt-transport-https ca-certificates curl software-properties-common  -y
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+sudo apt update
+apt-cache policy docker-ce -y
+sudo apt install docker-ce -y
+wget -q -O - https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+echo deb http://apt.kubernetes.io/ kubernetes-xenial main | sudo tee /etc/apt/sources.list.d/kubernetes.list
+apt update
+apt install kubelet=1.21.1-00 kubeadm=1.21.1-00 kubectl=1.21.1-00 -y
+sysctl net.bridge.bridge-nf-call-iptables=1
+
+#on master
+#kubeadm init --pod-network-cidr=10.244.0.0/16 >> cluster_initialized.txt
+kubeadm init --pod-network-cidr=192.168.0.0/16 >> cluster_initialized.txt
+mkdir /root/.kube
+cp /etc/kubernetes/admin.conf /root/.kube/config
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+#kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+systemctl restart kubelet.service
+kubeadm token create --print-join-command
+
+
+
+# Script we have to execute in the Node machines
+=================================================
+
+#!/bin/bash 
+sudo apt update
+
+sudo apt install apt-transport-https ca-certificates curl software-properties-common  -y
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+sudo apt update
+apt-cache policy docker-ce -y
+sudo apt install docker-ce -y
+wget -q -O - https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+echo deb http://apt.kubernetes.io/ kubernetes-xenial main | sudo tee /etc/apt/sources.list.d/kubernetes.list
+apt update
+apt install kubelet=1.21.1-00 kubeadm=1.21.1-00 kubectl=1.21.1-00 -y
+sysctl net.bridge.bridge-nf-call-iptables=1
+
+=================================================================================
+or else we can execute the commands one by one
