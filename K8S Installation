@@ -189,8 +189,26 @@ note: here Service can identify the pods by using labels and selector
    =======================================
    nodeport range is 30000 to 32767
    
-   
-
+   Example for service YAML file name is javawebappservice.yaml
+   ============================================================
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: javawebappservice
+     namespace: flipkartapp
+   spec:
+     type: NodePort
+     selector:
+       app: javawebapp
+     ports:
+     - port: 80
+       targetPort: 8080
+       nodeport: 30033
+       
+ Note: if we won't give nodeport also K8S will randamly genarate the nodeport
+ 
+ --> kubectl apply -f javawebappservice.yml 
+ 
 
 
 
