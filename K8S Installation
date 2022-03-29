@@ -120,5 +120,62 @@ kubectl describe pod pod1 | less
 kubectl get ns
 kubectl create ns test-project1
 kubectl get ns | grep test-project
+
+How do create the NameSpace 
+============================
+if you execute the command---> kubectl get ns
+it will redirected to the default namespace
+if we want to see in which namespace pointing by default by using the command
+--> kubectl config view
+           (or)
+--> kubectl config view --minify           
+
+so that by default the pods are created inside default namespace. here if we don't want to create the pods inside the default
+namespace we can create our own namespace by using the bellow command
+--> kubectl create ns/namespace <namespace-Name>
+ex:-->  kubectl create ns flipkartapp
+after that we if can see is any pods are created in the flipkartapp namespace by using the command
+-->kubectl get all -n filpkartapp
+so if want execute the flipkartapp is the default namespace you can execute bellow command
+Syntax:--> kubectl config set-context --current --namespace=<give name of namespace>
+Ex:--> kubectl config set-context --current --namespace=flipkartapp
+
+So now if we want to see in which namespace pointing by default by using the command
+--> kubectl config view
+-->kubectl get all
+
+so again if you want to set namespace as default, execute the bellow command
+Ex:--> kubectl config set-context --current --namespace=default
+   --> kubectl get all
+   
+Example:- Pod manifast YAML file and the file name is javawebapppod.yaml
+=========================================================================
+apiVersion: v1
+kind: Pod
+metadata:
+  name: javawebapppod
+  labels:
+    app: javawebapp
+  namespace: flipkartapp
+spec:
+  containers:
+  - name: javawebappcontainer
+    image: dockerhandson/java-web-app
+    ports:
+    - containerPort: 8080
+   
+now if we check if any pods are running in the flipcartapp namespace or not by using the bellow command
+--> kubectl get pod -n flipkartapp
+then after we can execute the bellow command
+--> kubectl apply -f javawebapppod.yaml
+now the pods are created at flipkartapp namespace 
+
+so that if we want to see in which namespace which pods are running at a time by using the command
+--> kubectl get all --all-namespaces
+
+
+
+
+
  
 
