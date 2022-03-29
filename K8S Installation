@@ -173,6 +173,24 @@ now the pods are created at flipkartapp namespace
 so that if we want to see in which namespace which pods are running at a time by using the command
 --> kubectl get all --all-namespaces
 
+what is the diff between Docker service and K8S service?
+========================================================
+here using docker service in docker-swarm we can deploye the containers/multiple (or) single replicas,and docker will manage those containers.
+and comming to the K8S service, K8S service is responsible for making our pods accessable in side the network(cluster) or Exposing them to the internet
+:-) we can use the K8S service to access the application's which are running inside the pod with in the cluster (or)outside the cluster
+
+note: here Service can identify the pods by using labels and selector
+
+=> here service can be classified into three types
+   --> ClusterIp:- if we create the service using ClusterIp we can access the pod with in the cluster
+   --> NodePort
+   --> LoadBalancer
+   what is the nodeport range in the K8S?
+   =======================================
+   nodeport range is 30000 to 32767
+   
+   
+
 
 
 
