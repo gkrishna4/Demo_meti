@@ -75,3 +75,17 @@ kubectl explain service
 kubectl explain repicaset
 kubectl explain replicationcontroller
 kubectl  explain deployment
+
+Command to show the labels
+==========================
+kubectl get pods --show-labels
+
+ Commandto set a label to the perticular pod
+========================================
+kubectl label pod <pod-name> env=<label-name>
+EX:- kubectl label pod pod1 env=dev1
+
+if you want to override the env by using the bellow command
+==============================================================
+kubectl label pod pod1 env=prod --override
+
