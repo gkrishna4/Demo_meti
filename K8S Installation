@@ -148,6 +148,7 @@ so again if you want to set namespace as default, execute the bellow command
 Ex:--> kubectl config set-context --current --namespace=default
    --> kubectl get all
    
+
 Example:- Pod manifast YAML file and the file name is javawebapppod.yaml
 =========================================================================
 apiVersion: v1
@@ -210,7 +211,51 @@ note: here Service can identify the pods by using labels and selector
  --> kubectl apply -f javawebappservice.yml 
  
 
-
+#ReplicationController Manifest Syntax
+=======================================
+apiVersion: v1
+kind: ReplicationController
+matadata:
+   name: <RC-name>
+   namespace: <namespace-name>
+spec:
+  replicas: <no-of-pod-replicas>
+  selector:
+    <key>: <value>   # POD label key & value should be defind here
+  template:          # Pod template(define Pod information)
+    metadata:
+      name: <POD name>
+      labels:
+        <key>: <value>   # Labels of pod
+    spec:
+      containers:
+      - name: <name-of-the-container>
+        image: <image-name>
+        ports:
+        - containerPort: <containerPort>
+        
+Example for RC and name of the RC is javawebapp_rc.yaml
+========================================================
+apiVersion: v1
+kind: ReplicationController
+matadata:
+   name: javawebapprc
+   namespace: flipkartapp
+spec:
+  replicas: 2
+  selector:
+    app: javawebapp   # POD label key & value should be defind here
+  template:          # Pod template(define Pod information)
+    metadata:
+      name: javawebapppod
+      labels:
+        app: javawebapp   # Labels of pod
+    spec:
+      containers:
+      - name: javawebappcontainer
+        image: dockerhandson/java-web-app
+        ports:
+        - containerPort: 8080
 
 
  
