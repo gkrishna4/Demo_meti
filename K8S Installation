@@ -258,5 +258,30 @@ spec:
         - containerPort: 8080
 
 
- 
-
+ what is the diff b/w ReplicaSet and ReplicationController?
+ ============================================================
+  ReplicationController it will manage the pod lifecycle, we can scaleUp & scaleDown the pods and ReplicaSet also does same thing
+  the only difference in selector support ReplicationController supports only Equality based selector and Replicaset supports Equality based
+  as well as set based selectors. 
+  Example Syntaxes:
+  =================
+  # RC Equality based selector
+  spec:
+    selector:
+      <key>: <value>
+      
+   #RS
+   spec:
+     selector:                  # Equlity Based selector
+       matchLabels:
+         <key>: <value>
+         
+  #RS
+  spec:
+    selector:
+      matchExpression:
+      - key: <labelkey>
+        operator: in
+        values:
+        - <valueOne>
+           <valueTwo>
