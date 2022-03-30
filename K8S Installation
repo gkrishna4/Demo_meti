@@ -279,7 +279,7 @@ spec:
   #RS
   spec:
     selector:
-      matchExpression:
+      matchExpression:           # Set Based selector
       - key: <labelkey>
         operator: in
         values:
