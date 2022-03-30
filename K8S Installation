@@ -309,4 +309,222 @@ spec:
           ports:
           - containerPort: 8080
           
+
+
+# Daemonset
+===========
+By using Demonset we can't scaleup & scaledown the DemonSet.
+A DaemonSet make sure that each machine have a copy of the pod,but here we can't scaleup & scaledown
+here the manifest is exectly same as replicaset but here we have to change the kind as DaemonSet and here
+replicas are not allowed
+
+Example for DS and name of the DS is mavenwebapp_ds.yaml
+========================================================
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mavenwebappDc
+spec:
+  selector:
+    matchLabels:
+      app: mavenwebapp
+  template:
+    metadata:
+      name: mavenwebapppod
+      labels:
+        app: mavenwebapp
+    spec:
+      containers:
+      - name: mavenwebappcontainer
+        image: dockerhandson/maven-web-application
+        ports:
+        - containerPort: 8080
+        
+
+run ---> kubectl apply -f mavenwebapp_ds.yaml
+
+Note: if we delete the pod also it will create another pod here because A DaemonSet make sure that each machine
+have a copy of the pod
+
+what kind of images/apllications we can deploye as DaemonSet?
+==============================================================
+internal applications like loging, Monitoring applications
+--> Loging applications like splunk,
+--> Monitoring applications which will monitoring that servers
+ 
+# Deployement
+==============
+here Deployement is create the ReplicaSet And ReplicaSet will create the pod, in K8S Deployement 
+is the recommended way to deploye the Pod (or) ReplicaSet. because of the advanced features it comes with
+Below are some of the key benefits.
+• Deploy a RS.
+• Updates pods (PodTemplateSpec). 
+• Rollback to older Deployment versions.
+• Scale Deployment up or down.
+• Pause and resume the Deployment.
+• Use the status of the Deployment to determine state of replicas.
+• Clean up older RS that you don’t need anymore.
+
+kubectl scale deployment [DEPLOYMENT_NAME] --replicas [NUMBER_OF_REPLICAS]
+kubectl rollout status deployment nginx-deployment
+kubectl get deployment
+kubectl set image deployment nginx-deployment nginx-container=nginx:latest --record 
+kubectl get replicaset
+kubectl rollout history deployment nginx-deployment
+kubectl rollout history deployment nginx-deployment --revision=1
+kubectl rollout undo deployment nginx-deployment --to-revision=1
+
+Note:-
+=======
+Deployment have two types of strategies they are 
+--> recreate  
+--> rollingUpdate
+
+# Deployement Manifest Syntax
+==============================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <deployment-Name>
+  namespace: <namespace-Name>
+spec:
+  replicas: <noofReplicas>
+  selector:
+    matchLabels:
+      <labelKey>: <value>
+  strategy:                             # here the strategy's are come into the pitcher,When new updations happens 
+    type: <deplymentStrategy>
+  template:
+    metadata:
+      name: <PodName>
+      labels:
+        <key>: <values>
+    spec:
+      containers:
+      - name: <NameOfTheContainer>
+        image: <imageName>
+        ports:
+        - containerPort: <containerPort>
+        
+# Eample Deployment maniFest for the strategy Recreate file name is deployement_recreate.yaml
+=============================================================================================
+apiVersion: apps/v1
+kind: Deployement
+metadata:
+  name: javawebappdeployement
+spec:
+  replicas: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: javawebapppod
+  template:
+    metadata:
+      name: javawebapppod
+      labels:
+        app: javawebapp
+    spec:
+      containers:
+      - name: javawebappcontainer
+        image: dockerhandson/java-web-app:1
+        ports:
+        - containerPort: 8080
+        
+run-->kubectl apply -f deployement_recreate.yml --record   {NOTE:- here if we won't use --record, we did't get the change cause, like for what resion the deployment updated}
+      kubectl get deployement
+      kubectl get rs
+      kubectl get pods
+      
+      to know the status of deployement
+      ==================================
+      kubectl rollout status deployment javawebappdeployment
+      
+      to know the history of deployement
+      ===================================
+      kubectl rollout history deployment javawebappdeployment
+      
+      to know the more details about history
+      ======================================
+      kubectl rollout history deployment javawebappdeployment --revision=1
+      
+Note:
+     for example if we want to upgrade the our application from version1 to version2 by using strategy Recreate first it will remove the containers at a time 
+     and then it will recreate the containers so that here we can face downtime
+     
+    here we can upgrade the application in two ways
+    ---> by using the command 
+            kubectl set image deployment javawebappdeployment javawebappcontainer=dockerhandson/java-web-app:2 --record   
+    ---> update the manifest file deployement_recreate.yaml
+                here you can update the version of the image and run the command 
+                ==> kubectl apply -f deployement_recreate.yaml --record
+     
+      to know the status of deployement
+      ==================================
+      kubectl rollout status deployment javawebappdeployment
+      
+      to know the history of deployement
+      ===================================
+      kubectl rollout history deployment javawebappdeployment
+      
+      to know the more details about history
+      ======================================
+      kubectl rollout history deployment javawebappdeployment --revision=2
+   
+   
+   So if we want to rollback to the previous revision
+         ==> kubectl rollout history deployment javawebappdeployment --revision=1
+         after executing the above command again the conatainers will created with version1
+          image: dockerhandson/java-web-app:1
+          
+ for example if the latest version is not working as excepted we can rollback to the previous revision by using the command
+Syntax:-  kubectl rollout undo deployement <deploymentname> --to-revision:1
+Example:- kubectl rollout undo deployement javawebappdeployment --to-revision:1
+Note:
+     if we don't use --to-revision also it will rollback one revision, if we menction the opction --to-revision:<VersionNumber> 
+     we can rollback any other versions also, here also we can face downtime because here we are using recreate strategy.
+     
+#Rolling Deployement
+====================
+The rolling deployment is the standard default deployment to Kubernetes. It works by slowly, one by one, 
+replacing pods of the previous version of your application with pods of the new version without any 
+cluster downtime.
+A rolling update waits for new pods to become ready before it starts scaling down the old ones. If there is 
+a problem, the rolling update or deployment can be aborted without bringing the whole cluster down. In 
+the YAML definition file for this type of deployment, a new image replaces the old image.
+
+# Eample Deployment maniFest for the strategy Recreate file name is deployement_rollingupdate.yaml
+==================================================================================================
+apiVersion: apps/v1
+kind: Deployement
+metadata:
+  name: javawebappdeployement
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 30
+  selector:
+    matchLabels:
+      app: javawebapppod
+  template:
+    metadata:
+      name: javawebapppod
+      labels:
+        app: javawebapp
+    spec:
+      containers:
+      - name: javawebappcontainer
+        image: dockerhandson/java-web-app:1
+        ports:
+        - containerPort: 8080
+        
+Run ---> kubectl apply -f deployement_rollingupdate.yaml
+
+
+ 
+          
   
