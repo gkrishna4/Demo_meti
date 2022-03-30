@@ -525,6 +525,16 @@ spec:
 Run ---> kubectl apply -f deployement_rollingupdate.yaml
 
 
+what is Blue/Green deployement (or) Red/Block Deployement?
+===========================================================
+In a blue/green deployment strategy (sometimes referred to as red/black) the old version of the application (green) and 
+the new version (blue) get deployed at the same time. When both of these are deployed, users only have access to the 
+green; whereas, the blue is available to your QA team for test automation on a separate service or via direct portforwarding.
+After the new version has been tested and is signed off for release, the service is switched to the blue version with the 
+old green version being scaled down:
+
+
+
  
           
   
