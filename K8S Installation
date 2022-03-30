@@ -285,3 +285,28 @@ spec:
         values:
         - <valueOne>
            <valueTwo>
+           
+ Example for RS and name of the RS is javawebapp_rs.yaml
+========================================================
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: javawebapprs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: javawebapp
+    template:
+      metadata:
+        name: javawebapppod
+        labels:
+          app: javawebapp
+      spec:
+        containers:
+        - name: javawebappcontainer
+          image: dockerhandson/java-web-app
+          ports:
+          - containerPort: 8080
+          
+  
