@@ -1,5 +1,10 @@
 Central Logging
 =================
+>>script to trace /var/log/messages file
+>>Run the script in the background
+>>user/admin notification
+>>Schedule the script through cronjob
+
 this is a time about central logging.
 
 This is one off the script that a lot of places have it in place and a lot of companies would like to have some kind of automation tool around the logging.
@@ -44,6 +49,7 @@ if you are at Lennix capacity right now.
 And you will see definitely that this has this will make your life so much easier when you actually
 
 have these error messages coming in through the email without you having to log into every machine.
+========================================================================================================================================
 
 Trace the log file:
 
