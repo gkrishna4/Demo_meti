@@ -97,6 +97,22 @@ jenkins can be install by using:-
 2)Docker (docker images for jenkins is avilable for different platforms  like unix/mac/windows in the docker registry)
 3)kubernets (availble as a helm chart and can be installed on our kubernets cluster)
 
+How to create a backup and copy files in Jenkins?
+=================================================
+Backup data is crucial to any business, If you have right backup’s it gives you peace of mind in case of any recovery needed to tackle with any unexpected situations like , datacenter outage , Jenkins system failures or accidental deletion of data. 
+
+There are multiple method to backup the Jenkins configuration such as
+
+    using ThinBackup or Backup plugin
+    using the git repo
+    manually backing up the Jenkins configuration or schedule a shell script using the cron. 
+
+The easiest approach which I found is to use the Jenkins plugin for the backup.
+click on manage jenkins----->manage plugins----> Available-->here search for thinbackup plugin & install without restart
+thenafter in manage jenkins there we can find the ThinBackUp click on that and configure the settigs 
+there we can give the folder where we can store the jenkins backup, cronJobs for when u take the backup, and how many backups we can store...etc
+then after we can Backup and restore the data. 
+
 
 Differences between scripted pipeline & Declarative pipeline?
 =============================================================
