@@ -12,7 +12,7 @@ SonarQube server has 3 feilds
 																 
 Scanner is a kind of agent, Running in the place where we have the source-code.
 ==>for example we have the source code & property file in devloper machine, and we have Scanner also in the same machine. so when we run Scanner on our source code,
-it will read the property file, and it will detect what kind of source code we have like java,C#,PhP.....etc. After reading those things scanner will connect to the 
+it will read the property file, and it will detect what kind of source code we have in the machine like java,C#,PhP.....etc. After reading those things scanner will connect to the 
 SonarQube server and it will downlode all the required Rules, and apply on the source code.
 
 >> Here Rules are the kind of checklist, where it reads each and every line of the code, and tell us what is wrong, what is not-Wrong
