@@ -19,11 +19,26 @@ approvals are required before moving to the UAT Pre-prod
 
 what is the default path of the jenkins?
 ========================================
-the default  path of the jenkins is:  /var/lib/jenkins/jobs/project-Name/workspace/target/webapps/java-web-app.war
+the default  path of the jenkins is for ubuntu: /home/ubuntu/.jenkins//jobs/project-Name/workspace/target/webapps/java-web-app.war
+
+the default  path of the jenkins is for RHEL/CentOS: /home/ec2-user/.jenkins//jobs/project-Name/workspace/target/webapps/java-web-app.war
+
+/var/lib/jenkins/jobs/project-Name/workspace/target/webapps/java-web-app.war
 
 the path where we can store the war/ear files in the tomcat server?
 ===================================================================
 /usr/local/tomcat/webapps/java-web-app.war
+
+what are the Advantage of Jenkins?
+==================================
+Bugs tracking are easy at early stage in development environment.
+Provides a large numbers of plugin support.
+Iterative improvement to the code.
+Build failures are cached at integration stage.
+For each code commit changes an automatic build report notification generates.
+To notify developers about build report success or failure, it is integrated with LDAP mail server.
+Achieves continuous integration agile development and test driven development.
+With simple steps, maven release project is automated.
 
 what are all the daily responsibilitys when you login to the system  test.txt 
 ===================================================================
