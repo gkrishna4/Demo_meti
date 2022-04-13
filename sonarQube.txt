@@ -25,7 +25,7 @@ SonarQube server and it will downlode all the required Rules, and apply on the s
 ======================================================================================================================================================================
 
 SonarQube is an open source software Quaity management tool & it will continuously analyse
-and measures quality of the source code,and genarate the report if any issues in html format/pdf formate.
+and measures quality of the source code,and genarate the report in the form of html format/pdf formate. when we have any issues.
 
 it will identify diff diff issues like
 > Duplicated code
