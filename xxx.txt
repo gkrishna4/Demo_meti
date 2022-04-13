@@ -40,6 +40,47 @@ To notify developers about build report success or failure, it is integrated wit
 Achieves continuous integration agile development and test driven development.
 With simple steps, maven release project is automated.
 
+
+Explain the terms Agent, post-section in Jenkinsfile?
+======================================================
+Agent:-
+---------
+      An agent is typically a machine, or container, which connects to a Jenkins controller and executes tasks when directed by the controller.
+post-section:-
+---------------
+      the post section of a Pipeline is run at the end of a Pipeline’s execution, we can add some notification or other steps to perform finalization, 
+      notification, or other end-of-Pipeline tasks.
+  Ex:-
+  ------
+     pipeline {
+    agent any
+    stages {
+        stage('No-op') {
+            steps {
+                sh 'ls'
+            }
+        }
+    }
+    post {
+        always {
+            echo 'One way or another, I have finished'
+            deleteDir() /* clean up our workspace */
+        }
+        success {
+            echo 'I succeeded!'
+        }
+        unstable {
+            echo 'I am unstable :/'
+        }
+        failure {
+            echo 'I failed :('
+        }
+        changed {
+            echo 'Things were different before...'
+        }
+    }
+}
+      
 what are all the daily responsibilitys when you login to the system  test.txt 
 ===================================================================
 Daily when i am login to the system, firstly i can check the mails, wether any ticket is genrated regarding the daily tasks.
