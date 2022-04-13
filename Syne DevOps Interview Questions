@@ -10,9 +10,10 @@ Name three important DevOps KPIs.
 ===============================================================================
 What is the difference between CI and CD?What is Git stash?
 Explain the difference between git fetch and git pull?
-Difference between Git Rebase and Git MergeMention what are the advantages of Jenkins?
+Difference between Git Rebase and Git Merge?
 ==========================================================================================
 ==========================================================================================
+Mention what are the advantages of Jenkins?
 Mention some of the useful plugins in Jenkin?
 Explain how you can deploy a custom build of a core plugin?
 What is a ‘pipeline’? How to create Pipelines in Jenkins.
