@@ -1,3 +1,29 @@
+SonarQube Architecture
+======================
+SonarQube server has 3 feilds
+1)RULES
+2)WEB
+3)DATA-BASE
+   Note:- in DataBase where all the reports and timeline is stored in the history of reports. And this dataBase can be any RDBMS like
+                                                                                                                                 =>MySql
+																 =>H2
+																 =>Oracle
+																 =>postgreSql
+																 
+Scanner is a kind of agent, Running in the place where we have the source-code.
+==>for example we have the source code & property file in devloper machine, and we have Scanner also in the same machine. so when we run Scanner on our source code,
+it will read the property file, and it will detect what kind of source code we have like java,C#,PhP.....etc. After reading those things scanner will connect to the 
+SonarQube server and it will downlode all the required Rules, and apply on the source code.
+
+>> Here Rules are the kind of checklist, where it reads each and every line of the code, and tell us what is wrong, what is not-Wrong
+
+>> After that Scanner will genarate the reports, and move to the database. After moving the Report to the DataBase, this Report we can see in the database.
+
+>>From there we can see what is the problem in the source-code, & why this problem is came into the pitcher.
+
+
+======================================================================================================================================================================
+
 SonarQube is an open source software Quaity management tool & it will continuously analyse
 and measures quality of the source code,and genarate the report if any issues in html format/pdf formate.
 
