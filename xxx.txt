@@ -229,6 +229,18 @@ how to execute the sonarQube Report for maven projects?
 =======================================================
 mvn clean install sonar:sonar
 
+
+if we don't mention the sonarqube server details in the pom.xml,we can use the bellow commands
+mvn clean sonar:sonar package -Dsonar.host.url=http://localhost:9000
+
+          (or)
+mvn clean package sonar:sonar -Dsonar.host.url=http://localhost:9000
+Dsonar.login=admin -Dsonar.password=admin
+
+           (or)
+mvn clean package sonar:sonar -Dsonar.host.url=http://localhost:9000
+Dsonar.login=token
+
 how to maintain the password encripted in jenkins?
 ==================================================
 in the jenkins dashbord,we can find manage jenkins in the left pannel click on that, under this we can find  
