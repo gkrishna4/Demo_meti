@@ -179,6 +179,8 @@ how do u migrate the jenkins? without downtime?
 Jenkins jobs can be migrated in many ways. You can establish SSH connection b/w source machine and target machine and use scp
 command to copy from one instance to another instance. You can also use Job import plug-in to migrate jobs.
 
+https://www.coachdevops.com/2020/06/migrate-jenkins-jobs-from-one-server-to.html
+
 
 what are the chalenges you fased in devops?
 ===========================================
