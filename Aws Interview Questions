@@ -1,1 +1,127 @@
+What is the NAT, Difference between Internet gateway & Nat?
+============================================================
+Nat is used for providing internet access to the private subnets and it allows only the outbound rules, if the instances present in the private subnet 
+wants to downlode the something from the internet. 
+Ex:- If i want to downlode some patchs from the internet, we configure the Nat Gateway for Private subnets it allows only OutBound internet connection
+and also it does't ask public-IP's. So EC2 instances in private subnet with private-Ip using NAT and they can downlode somthing from internet.
+
+InterNet GateWay
+----------------
+it is also a gate way for internet access. internet gateway provides both inbound and outbound  internet connection, so here Internet Gateway provides 
+inbound internet connection so here internet gateway commonly used in public subnets. so that the instances in public subnet with public ip they can access the internet
+
+
+How to encrypt existing EBS(Elastic block Storage) volumes?
+===========================================================
+Here there is no direct opction to encrypt the EBS volumes!!!, So what we have to do here like, we can take any existing EBS volume to enable the encrypction.
+
+>> First we take a snapshort from the existing Volume. After creating the snapshort, from that snapshort  we should create the volume, so while creating the 
+volume we have an opction called Encryption-Check_Box, we can enable that check box and also we should use the master key for encryption
+>> so once we create the volume we can go and attach that volume to ec2 instance
+
+
+If EC2 instance reaches 100% CPU utilization, How to restart the EC2 instance Automatically?
+==================================================================================================
+By using cloud watch we can implement this...... so first we can go through the CLOUD-WATCH. From cloud-watch i can create the alaram on ec2 Instance.
+So while creating the alaram ----> select the Metric
+                                      ------> select EC2
+                                                -------> Per-instance metrics
+So Here  we can choose the instnce like CPU-Utilization, then after we can select the metric
+                                                                            ------> Under static we can choose---> Maximum
+                                                                            ------> period -------> 1 minute
+Under condition --> i will give the CPU Utiliation is greterthen 90%
+then afer under notification section we have an opction called EC2 Action
+under this we have multiple opctions like
+           >> Stop Instance
+           >> Terminate Instance
+           >> Reboot Instance
+So here we can enable the opction called Reboot Instance
+By using this we can automatically restart the EC2 Instance.
+
+
+
+Difference between AMI and Snapshort?
+=====================================
+AMI is the complete EC2 backup, means it will backup all the vertual matchine alsong with it's EBS volumes
+Snapshort is just volume backup
+
+
+
+What is High Avilability, How do you achive it in EC2?
+======================================================
+High avilability means making our application reachable, evean in case of failures
+to achive this we can create our inatance accross the avilability zones. So that if any availability zone is fail the traffic is processed
+to 2nd/3rd avilability zones
+
+
+
+There are 3 VPC's "A", "B", "C". So here A is peered with B and B is peered with C, can "A" and "c" talk to eatch other?
+========================================================================================================================
+NO
+Here vpc Peering does'nt support transitive peering.
+So here A and C want's to communicate we should create a connection between A and  C
+
+
+
+what is the difference between launch template and launch Configuration?
+========================================================================
+So we can find it in AutoScaling!!!!
+>>  in the Launch configuration we can find NAME, AMI, Instance Type,  Opctions to purchase spot Instances, IAM Role, Storage, Securiry Group's & KeyPAir.
+ So it is used for launching the EC2 Instance in autoscaling.
+
+>> while creating the auto-scaling group, there we have an opction called create a Launch templet.
+Here in the launch templet it will take more inputs. It can maintain the multiple versions, and here we have to choose an opction for On-Demand Instances
+and SpotInstances. which is not available in the launch configuration.
+
+>> and it support to choose multiple instance types in the same auto scaling group.
+
+>> comming to the storage it has support for all the types of storages like io1, io2, gp1, gp2, sc1, st1 and magnetic.
+
+>> But in the launch configuration it does'nt support all the storage types
+
+
+Can we encrypt the EC2 Root Volume?
+====================================
+YES!!!
+When ever we launching the instances, under add-Storage section we can find an opction called encryption, there we can find the opction to encrypt the volumes.
+
+
+What is the difference between spot instance & Reserved Instance?
+=================================================================
+Reserved Instances:- Instances where we can give the long term commitment for 1 (or) 3 Years, and we can use these instances all the time 
+                     in the day, week, month.
+Spot Instances:- Spot instances are the instances allocated by aws from unlist capcity
+
+Ex:- In a spcefic autoscaling group Amazon has lot of capacity deployed & all the capcity is not used, so here it has unused capacity, now amazon provides a way to use 
+that unused capacity for cheaper cost. So here the Spot-Instance are very cheap we can get up to 90%OFF cost saving, when it commapared with ondemand instances,
+but it is in downside.
+
+
+For Spot instance we get an interruption occures, we want to stop instad of termination?
+========================================================================================
+when there is a spot intrapuction amazon issues a 2 minutes noties & after that i can eaither stop the instance (or) terminate the instance.
+so here while launching the EC2 instance, under configure instance section we have an opction called  persistance request check box, we can can enable that one
+then after it will show to option's like terminate instance then after it will show to option's like  terminate instance & stop instance here we can select the stop 
+instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
