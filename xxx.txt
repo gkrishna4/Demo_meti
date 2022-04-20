@@ -21,7 +21,7 @@ what is the default path of the jenkins?
 ========================================
 the default  path of the jenkins is for ubuntu: /home/ubuntu/.jenkins/jobs/project-Name/workspace/target/webapps/java-web-app.war
 
-the default  path of the jenkins is for RHEL/CentOS: /home/ec2-user/.jenkins//jobs/project-Name/workspace/target/webapps/java-web-app.war
+the default  path of the jenkins is for RHEL/CentOS: /home/ec2-user/.jenkins/jobs/project-Name/workspace/target/webapps/java-web-app.war
 
 /var/lib/jenkins/jobs/project-Name/workspace/target/webapps/java-web-app.war
 
