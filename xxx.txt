@@ -399,8 +399,8 @@ security group can be protected for EC2 instances
 
 
 what is the difference between web-server & Application server?
-===============================================================
-web server will serves the static content(html, css, javaScript, image files ) into the web servers.
+===============================================================  refer====> https://www.youtube.com/watch?v=BcmUOmvl1N8
+web server can provide the support for only for web related technologies like html, css, javaScript,servlets...etc.
 webservers can not able to handel backend related code & aslo we can used for lodeBalancing
 
 Example of Web Servers:
@@ -410,7 +410,8 @@ Ngnix
 IBM Http server
 
 Application servers used for deploying the backend code(java code), and Application servers can able to
-process your bussiness logic.
+process your bussiness logic. Here inside every application server, inbuilt webserver will be present to 
+provide support for web-related technologies 
 
 Examples of Application Server:
 ---------------------------------
@@ -425,12 +426,12 @@ JBoss/Wildfly is the enterprize application servers, we can deploy EAR & WAR fil
 but in tomcat we can deploy only WAR files. that's  why we can call tomcat is a web-application server
 
 What is the diff between JAR, WAR and EAR?
-==========================================
->> JAR file allows Java Runtime Environment (JRE) to deploy an entire application including the classes and related resources in a single request.
->> WAR file allows testing and deploying web applications easily.
->> EAR file allows deploying different modules onto an application server simultaneously.
+========================================== Refer====>https://www.youtube.com/watch?v=ecxIBCu2-b4
+>> JAR(java Archive):it contains a group of .class files 
+>> WAR file contains a web application
+>> EAR file containes the enterprize application
 
-Refer====> https://www.linkedin.com/pulse/what-differences-between-ear-jar-war-files-amaid-haider
+
 
 for example my tomcat server is not running how you debug?
 ===========================================================
