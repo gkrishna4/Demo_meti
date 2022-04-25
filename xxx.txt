@@ -431,6 +431,15 @@ What is the diff between JAR, WAR and EAR?
 >> WAR file contains a web application
 >> EAR file containes the enterprize application
 
+JAR file have Java class files, associated metadata and resources aggregated into a single file to execute a Java application.
+  executable jar file:
+                        JDK provides the facility to create the executable jar file. 
+			An executable jar file calls the main method of the class if you double click it.
+                        To create the executable jar file, you need to create .mf file.              (mf means manifest file.)
+WAR file that contain Servlet, JSP, HTML, JavaScript and other files necessary for developing web applications.
+        allows testing and deploying web applications easily 
+EAR file allows deploying different modules onto an application server simultaneously
+
 
 
 for example my tomcat server is not running how you debug?
