@@ -1,4 +1,4 @@
-What is the NAT, Difference between Internet gateway & Nat?
+What is NAT, Difference between Internet gateway & Nat?
 ============================================================
 Nat is used for providing internet access to the private subnets and it allows only the outbound rules, if the instances present in the private subnet 
 wants to downlode the something from the internet. 
