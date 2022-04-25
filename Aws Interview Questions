@@ -7,7 +7,7 @@ and also it does't ask public-IP's. So EC2 instances in private subnet with priv
 
 InterNet GateWay
 ----------------
-it is also a gate way for internet access. internet gateway provides both inbound and outbound  internet connection, so here Internet Gateway provides 
+ Internet gateway is also used for internet access. internet gateway provides both inbound and outbound  internet connection, so here Internet Gateway provides 
 inbound internet connection so here internet gateway commonly used in public subnets. so that the instances in public subnet with public ip they can access the internet
 
 
