@@ -421,9 +421,16 @@ JBoss/wildfly------>redhat-------> redhat now aquired by IBM
 Websphere---------->IBM
 
 
-
 JBoss/Wildfly is the enterprize application servers, we can deploy EAR & WAR files
 but in tomcat we can deploy only WAR files. that's  why we can call tomcat is a web-application server
+
+What is the diff between JAR, WAR and EAR?
+==========================================
+>> JAR file allows Java Runtime Environment (JRE) to deploy an entire application including the classes and related resources in a single request.
+>> WAR file allows testing and deploying web applications easily.
+>> EAR file allows deploying different modules onto an application server simultaneously.
+
+Refer====> https://www.linkedin.com/pulse/what-differences-between-ear-jar-war-files-amaid-haider
 
 for example my tomcat server is not running how you debug?
 ===========================================================
