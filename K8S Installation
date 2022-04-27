@@ -544,7 +544,41 @@ In a blue/green deployment strategy (sometimes referred to as red/black) the old
 the new version (blue) get deployed at the same time. When both of these are deployed, users only have access to the 
 green; whereas, the blue is available to your QA team for test automation on a separate service or via direct portforwarding.
 After the new version has been tested and is signed off for release, the service is switched to the blue version with the 
-old green version being scaled down:
+old green version being scaled down
+
+
+Volumes
+=======
+Note:-- if you configure the storage class, you will create the PVC(persistent volume claim) directly, claim will create the volume with the help of storage class
+
+Note:-- while creating the volume we can menction the access mode. And it will not support all the access modes
+        hostPath---> supports  ReadWriteOnce
+        EBS-------->  supports  ReadWriteOnce
+        if we want multiple nodes to mount a single volume -------->supports ReadWriteMany
+
+AccessModes
+===========
+ReadWriteOnce--> volume can be mounted as read-write by single node
+ReadWriteMany--> volume can be mounted as read-write by many node-----> supports nfs
+ReadOnlyMany--> volume can be mounted as read-only by many node
+
+Note:- here PVC is directly associated with pv. So while creating the pvc we can give a clime polocies
+
+Cliam polocies
+===============
+Retain---> when pvc is deleted. pv will not be deleted 
+Delete----> when we delete  pvc. it will delete pv and also associated external storage such as
+            AWS EBS,GPED, AzureDisk.
+Recycle--->when we delete pvc it will not delete pv. but it will remove data from the storage.
+
+
+Here i have 2 persistent volumes when you are creating the PVC, what opctions/factors it will use to associate with PV? 
+======================================================================================================================
+it will match with  storageClassName
+                    accessmodes
+                    requests
+For example i am tryning to create a pvc with AccessMode ReadWriteOnce, suppose if i have a two volumes with ReadWriteOnce, here one is already claimed by some one else
+and one is avilable, here it will consider the volume which is not climed by any one 
 
 
 
