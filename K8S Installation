@@ -454,6 +454,7 @@ Note:
      
     here we can upgrade the application in two ways
     ---> by using the command 
+     Syntax:-  kubectl set image deployment/<Deployment-Name> <Container-Name>=<Container-Image> --record=true
             kubectl set image deployment javawebappdeployment javawebappcontainer=dockerhandson/java-web-app:2 --record   
     ---> update the manifest file deployement_recreate.yaml
                 here you can update the version of the image and run the command 
