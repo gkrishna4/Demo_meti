@@ -357,13 +357,9 @@ internal applications like loging, Monitoring applications
 here Deployement is create the ReplicaSet And ReplicaSet will create the pod, in K8S Deployement 
 is the recommended way to deploye the Pod (or) ReplicaSet. because of the advanced features it comes with
 Below are some of the key benefits.
-• Deploy a RS.
-• Updates pods (PodTemplateSpec). 
-• Rollback to older Deployment versions.
-• Scale Deployment up or down.
-• Pause and resume the Deployment.
-• Use the status of the Deployment to determine state of replicas.
-• Clean up older RS that you don’t need anymore.
+>>RollBack
+>>RollOut
+>>we can maintain the Zero DownTime Deployment 
 
 kubectl scale deployment [DEPLOYMENT_NAME] --replicas [NUMBER_OF_REPLICAS]
 kubectl rollout status deployment nginx-deployment
