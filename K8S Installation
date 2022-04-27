@@ -487,6 +487,16 @@ Note:
      if we don't use --to-revision also it will rollback one revision, if we menction the opction --to-revision:<VersionNumber> 
      we can rollback any other versions also, here also we can face downtime because here we are using recreate strategy.
      
+     
+# Rolling Restarts
+===================
+>> Rolling restarts will kill the existing pods and recreate new pods in a rolling fashion.
+kubectl rollout restart deployment/<Deployment-Name>
+kubectl rollout restart deployment/my-first-deployment
+
+# Get list of Pods
+kubectl get po
+     
 #Rolling Deployement
 ====================
 The rolling deployment is the standard default deployment to Kubernetes. It works by slowly, one by one, 
