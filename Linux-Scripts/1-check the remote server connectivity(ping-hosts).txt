@@ -1,0 +1,105 @@
+A Script to check the status of Remote Host
+=============================================
+#!/bin/bash
+ping -c1 192.168.1.1
+        if [ $? -eq 0 ]
+        then
+        echo OK
+        else
+        echo NOT OK
+        fi
+
+Change the IP to 192.168.1.235
+
+
+Don't show the output
+=====================
+#!/bin/bash
+ping -c1 192.168.1.1 &> /dev/null
+        if [ $? -eq 0 ]
+        then
+        echo OK
+        else
+        echo NOT OK
+        fi
+
+
+Define variable
+#!/bin/bash
+
+hosts="192.168.1.1"
+ping -c1 $hosts &> /dev/null
+        if [ $? -eq 0 ]
+        then
+        echo $hosts OK
+        else
+        echo $hosts NOT OK
+        fi
+
+Change the IP to 192.168.1.235
+
+
+
+
+Multiple IPs
+#!/bin/bash
+
+IPLIST="path_to_the_Ip_list_file"
+
+
+for ip in $(cat $IPLIST)
+
+do
+   ping -c1 $ip &> /dev/null
+   if [ $? -eq 0 ]
+   then
+   echo $ip ping passed
+   else
+   echo $ip ping failed
+   fi
+done
+============================================
+
+schedules Script through cron job
+=================================
+Script schedules and notifications.
+for example we have a few scripts that we already run.
+
+
+Now we need to schedule them and how do we need to schedule them? You schedule them through The cron-job and this process is called 
+automated service.And all Linux flavors that you could specify scripts to run at a certain time.And then we could notify the users 
+or administrators or engineers through the email that this script ran and they heard the output of the script. So this is something 
+that you probably been doing or you might have to do when you are in a corporate environment.
+
+When you create shell scripts, then you need to make it more automated. And if you wanted to schedule it. so it will run itself 
+and it notify you. And we have to specify that in the crontab So first, make sure you have the complete path
+where the script will be present 
+
+Ex: the script will be placed in the location-------> /home/ubuntu/Scripts/<Script-file-name>
+    then after we can shedule the crontab & place the out-put in some other file ==>/home/ubuntu/<OutPut-fileName>
+
+So here we have to shedule the Cronjob by using the command====> crontab -e    
+                                                                 -----------
+it will open one file and we can shedule the crontab there like
+
+Syntax:-  min hour dom mon dow  /home/ubuntu/Scripts/Script-file-name  >  /home/ubuntu/<OutPut-fileName>
+                                                                          -------------------------------
+                                                                          the path where we have to redirect the out-put
+
+Note:- we can list the crontab by making use of the command====> crontab -l
+
+
+Example:- 34  20  *  *  *   /home/ubuntu/Scripts/Script-file-name   >   /home/ubuntu/<OutPut-fileName>
+
+
+Notification through email/sendmail
+===================================
+Example:- 34  20  *  *  *   /home/ubuntu/Scripts/Script-file-name | mail -s "we can give subject" ramakrishna@gmail.com
+
+
+Note:-  So if I schedule this, it will run, but it is not going to email me. Why becouse?
+
+Because by defautl e-mail server is not configured in our server. So if you already have email configured in your Linux machine
+ and it is able to send out emails outside of your environment, then it will work.
+
+

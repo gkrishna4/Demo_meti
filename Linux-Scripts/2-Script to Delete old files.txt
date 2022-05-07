@@ -1,0 +1,34 @@
+Examples:
+---------
+
+Create files with older timestamp
+================================
+
+touch -d "Thu, 1 March 2018 12:30:00" a
+
+
+
+Find and list The files older than 90 days
+==========================================
+
+find /path-to-dir -mtime +90 -exec ls -l {} \;
+
+Find and Delete The files older than 90 days
+============================================
+
+find /path-to-dir -mtime +90 -exec rm {} \;
+
+
+
+
+Find and rename old files with .old extension
+==============================================
+
+find /path-to-dir -mtime +90 -exec mv {} {}.old \;
+
+
+
+
+
+
+
