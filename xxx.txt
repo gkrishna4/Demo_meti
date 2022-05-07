@@ -213,6 +213,21 @@ what are the tools u are used in the unit testing?
 ====================================================
 junit is there and jecaco plugin we install to move the test casess and we integrate those  repororts to
  the sonarQube,to see the covarage and everything in the SonarQube dashbord to understand more
+ 
+ What is sonarQube Quality Profile
+====================================
+sonarQube is going to  analize source code of a diff languages and by default it has a plugin to
+analize the language(c#, java, javaScript) these are three different languages when u install the soanrQube
+by deafult it come up with 3 profile to analize
+
+here we are going to specify the set of rules which are going to use during the analysis of your source code,
+based of your language, we need to set the rules so that when ever sonarqube is analysing your project, using those roles
+it is going to give the feedback to the devlopers & also it will identify any buges/issues with the code
+
+here by default, for for each language it is going to create a default profile called as sonar-way.
+when we click on the sonar-way we can see that, what are the different rules which are defaind for those perticular profile.
+
+
 
 why u are using the sonarQube?
 ==============================
