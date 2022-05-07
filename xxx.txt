@@ -481,6 +481,11 @@ WAR file that contain Servlet, JSP, HTML, JavaScript and other files necessary f
         allows testing and deploying web applications easily 
 EAR file allows deploying different modules onto an application server simultaneously
 
+What is a POM XML file why it is used?
+========================================
+The pom. xml file contains information of project and configuration information for the maven to build the project such as
+dependencies, build directory, source directory, test source directory, plugin, goals etc. Maven reads the pom. xml file, then executes the goal.
+
 
 
 for example my tomcat server is not running how you debug?
@@ -534,7 +539,7 @@ sudo apt-get --purge remove <package-name>
 
 suppose in a perticular server there are two applications are running the same port number? how can you find it?
 ===================================================================================================================
-we can check 3 ways by maing use the commands
+we can check 3 ways by making use the commands
 
 1) netstat -ltnp | grep -w :<port number>
 
