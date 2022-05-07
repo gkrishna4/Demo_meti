@@ -540,6 +540,9 @@ in tomcat server where we can update/add the users
 go to the ===> cd /etc/tomcat8/
 here we can find the file==> tomcat-users.xml
 under this we can we can add the users
+EX:-
+     <user username="learning" password="sunilsunil" roles="manager-script,manager-status,manager-gui"/>
+
 
 How we can change the port number of a tomcat server
 =====================================================
