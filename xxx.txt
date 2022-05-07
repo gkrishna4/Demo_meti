@@ -535,6 +535,20 @@ we can remove the installed packages with configuration files
 sudo apt-get --purge remove <package-name>
 
 
+in tomcat server where we can update/add the users
+===================================================
+go to the ===> cd /etc/tomcat8/
+here we can find the file==> tomcat-users.xml
+under this we can we can add the users
+
+How we can change the port number of a tomcat server
+=====================================================
+Go to the conf directory and open the server.xml there we can modify
+<Container port="8080" 
+     protocal="HTTP/1.1"
+     connectionTimeout="2000"
+     redirectPort="8443"/>
+here we can replace the 8080 with any port number
 
 
 suppose in a perticular server there are two applications are running the same port number? how can you find it?
