@@ -479,6 +479,15 @@ simply a collection of shared directories with a naming convention ( group.artif
 
 
 what is devops kpi?
+====================
+1)Deployment Frequency
+2)Deployment Time/Speed
+3)Deployment Failure Rate
+4)MTTR (Mean Time to Recover)
+
+Refer====>  https://www.clickittech.com/devops/devops-metrics-and-kpis/
+
+DevOps Best Pratices  Refer===>  https://www.clickittech.com/devops/devops-best-practices/#container-orchestration
 
 what is the life-cycle of DevOps? 
 
