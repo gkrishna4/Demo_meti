@@ -113,7 +113,27 @@ Here in the AWS we have 3 types of lodebalancers
   >>support for routing based on fields in the request(HTTP Headers,HTTP Methods, Quary parameters and source ip address)
   >> support Redirecting one URL to Another 
   >>By seeing these features it not only a lode balancer, it is also a routing solution on the HTTP level
+  >> support for containerized applications
+  >> Support for Monitering the Helth of each service indipendently as health checks defind at the target group level
   
+ Aws Application Lodebalancer can be provizened for K8S, using K8S ingress manifest.
+ the ALB Ingress conroller supports two traffic modes
+ 1) Instance
+ 2) IP
+ when we are using worker Nodes that means manged nodes in the EKS cluster by default we can use instance mode 
+ when we are using farget only profile which means in your cluster really don't have any other node groups
+  managed node groups like EC2 instances, we are just using the farget profile at that point of time, if we 
+  want to use ALB then use only IP mode. 
+ Instance Mode:
+-----------------
+>>Register nodes within your cluster as targets for ALB
+>>here what ever the nodeport services we are going to create  infrent of our application Deployments, first ALB 
+Routed to nodeport for your service and then nodeport service will routed to pods.
+
+IP mode
+-------
+>> Register podes as targets for ALB
+>> Traffic reaching the ALB is directly routed to pods for our service
 2)Classic lode balancer
 3)Network LodeBalancer, will supports TCP, SSL/TSL, HTTP & HTTPS
 
