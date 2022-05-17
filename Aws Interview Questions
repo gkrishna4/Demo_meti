@@ -109,6 +109,11 @@ what are the lodeBalancers in the aws?
 =======================================
 Here in the AWS we have 3 types of lodebalancers
 1)Application lode balancer,will supports HTTP & HTTPS Protocals
+  >>it will support context path based routing(/app1, /app2, /usermgmt), HostBased routing
+  >>support for routing based on fields in the request(HTTP Headers,HTTP Methods, Quary parameters and source ip address)
+  >> support Redirecting one URL to Another 
+  >>By seeing these features it not only a lode balancer, it is also a routing solution on the HTTP level
+  
 2)Classic lode balancer
 3)Network LodeBalancer, will supports TCP, SSL/TSL, HTTP & HTTPS
 
