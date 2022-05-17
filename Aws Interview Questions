@@ -108,9 +108,10 @@ instance.
 what are the lodeBalancers in the aws?
 =======================================
 Here in the AWS we have 3 types of lodebalancers
-Application lode balancer,
-classic lode balancer And
-Network LodeBalancer
+-----------------------------
+|1|Application lode balancer|
+|2|classic lode balancer |
+|3|Network LodeBalancer|
 
 
 
