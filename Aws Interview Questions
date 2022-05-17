@@ -108,7 +108,14 @@ instance.
 what are the lodeBalancers in the aws?
 =======================================
 Here in the AWS we have 3 types of lodebalancers
-1)Application lode balancer,will supports HTTP & HTTPS Protocals
+1) Application Lode Balancer
+2)Classic Lode Balancer
+3)NEtwork Lode Balancer
+
+
+Have you Ever worked on LodeBalancers? and How?
+=============================================== 
+1)Application lode balancer-------->will supports HTTP & HTTPS Protocals
   >>it will support context path based routing(/app1, /app2, /usermgmt), HostBased routing
   >>support for routing based on fields in the request(HTTP Headers,HTTP Methods, Quary parameters and source ip address)
   >> support Redirecting one URL to Another 
@@ -137,9 +144,7 @@ IP mode
 2)Classic lode balancer
 3)Network LodeBalancer, will supports TCP, SSL/TSL, HTTP & HTTPS
 
-Have you Ever worked on LodeBalancers? and How?
-=============================================== 
-classic lode balancer:--- Will supports Protocals like TCP,UDP & TSL and its is legacy lodebalancer which is going to get depricated(remove) any time in the 
+classic lode balancer:---> Will supports Protocals like TCP,UDP & TSL and its is legacy lodebalancer which is going to get depricated(remove) any time in the 
    newer feature came,in addition to that platforms like, as it is legacy also it will support EC2-clasic Environment & latest VPC Environment. so here in the 
    K8S, so when ever we create a service Object in K8S here the default LodeBalaner is create on the AWS is classic LodeBalancer.
    So here while create in the classic LodeBalancer in K8S for High Availability, for Example In a VPC we create a cluster control plane and also create the equalent
