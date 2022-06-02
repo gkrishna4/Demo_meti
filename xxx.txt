@@ -40,6 +40,10 @@ To notify developers about build report success or failure, it is integrated wit
 Achieves continuous integration agile development and test driven development.
 With simple steps, maven release project is automated.
 
+What is Jenkinsfile?
+=====================
+The text file where all the definitions of pipelines are defined is called Jenkinsfile. It is being checked in the source control repository
+
 
 Explain the terms Agent, post-section in Jenkinsfile?
 ======================================================
