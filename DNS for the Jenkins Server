@@ -1,0 +1,11 @@
+How do we create the local DNS for the Jenkins Server!!!
+========================================================
+step:1  Open NotePad----> Run as a administrator
+step:2  clickOn==> fileOpenC-driver Windowsopen  system32 driversetc
+all fileshosts
+
+under hosts file we can paste the particular server IP-Address and any name and save that file
+EX:  <IP-Address> jenkins.local
+So here when we what to access the that particular application  we no need to give that particular IP-address
+Here we can give the name what we given in the hosts file and that application Port-Number 
+EX Jenkins.local:8080
