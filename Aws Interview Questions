@@ -42,7 +42,7 @@ By using this we can automatically restart the EC2 Instance.
 
 Difference between AMI and Snapshort?
 =====================================
-AMI is the complete EC2 backup, means it will backup all the vertual matchine alsong with it's EBS volumes
+AMI is the complete EC2 backup, means it will backup all the vertual matchine a long with it's EBS volumes
 Snapshort is just volume backup
 
 
