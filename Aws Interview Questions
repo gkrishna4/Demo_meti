@@ -1,3 +1,23 @@
+How we can connet the Ec2 instance with out using the pemfile?
+=================================================================
+1) Login into your instance with the .pem file
+2) Update
+3) sudo su
+4) cd / (just incase)
+5) Edit, vim /etc/ssh/sshd_config and edit or do the equivilent of uncommenting these lines:
+Port 22
+PasswordAuthentication yes
+PermitRootLogin yes
+6) Restart sshd service, service sshd restart or systemctl restart sshd or equivilent
+7) Set password, passwd
+8) Log out and log back in without .pem file ssh root@<Ip-Address>
+
+                                    (or)
+in the Aws Ec2 console, select the instance and there we can have an opction called connect
+click on connect---> it will navigate to the another page there we have an opction called Ec2-instance connect
+when we click on that it will popup an notification there we can give the username and we click on the connect button
+then automatically it will coonect to the ec2 instance.
+
 What is NAT, Difference between Internet gateway & Nat?
 ============================================================
 Nat is used for providing internet access to the private subnets and it allows only the outbound rules, if the instances present in the private subnet 
