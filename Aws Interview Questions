@@ -18,6 +18,20 @@ click on connect---> it will navigate to the another page there we have an opcti
 when we click on that it will popup an notification there we can give the username and we click on the connect button
 then automatically it will coonect to the ec2 instance.
 
+what is Lamda?
+===============
+lamda is for automation purpose for the daily metrics, for supose we have one usecase is there like ENI triggers 
+only so where ever the ec2 instance created, here some triggering will be happend after that instances are
+created.
+so most of the time application team can't take care that one, so for that, we did a small automation so if we
+update one metric in the cloud watch & cloud trail. if any log is genarated, create an instance then automatically
+cloud watch metric will be copied.
+
+inside that we have lamda function and it featched the instance details and based on that it will created a tag
+like application name,account_id etc based on featching.
+so based on that it will create the tag and it will attached to that line
+and lamda function will be written in python botto-3 for that manage.
+
 What is NAT, Difference between Internet gateway & Nat?
 ============================================================
 Nat is used for providing internet access to the private subnets and it allows only the outbound rules, if the instances present in the private subnet 
