@@ -576,5 +576,10 @@ grep -w – shows matching of exact string (:80).
 
 
 2)$ lsof -i :<port number>
+           (or)
+sudo lsof -i -P -n | grep LISTEN
 
 3)$ ps -p <process-id> -o comm= 
+
+
+
