@@ -18,6 +18,16 @@ click on connect---> it will navigate to the another page there we have an opcti
 when we click on that it will popup an notification there we can give the username and we click on the connect button
 then automatically it will coonect to the ec2 instance.
 
+What is the difference between AWS config and AWS CloudTrail?
+===============================================================
+Config is focused on the configuration of your AWS resources and reports with detailed snapshots on how your resources have changed. 
+CloudTrail focuses on the events, or API calls, that drive those changes. It focuses on the user, application, and activity performed on the system.
+
+what is The difference between AWS CloudWatch and CloudTrail?
+===============================================================
+AWS CloudWatch monitors your AWS resources and applications, whereas CloudTrail monitors the activity in your AWS environment. 
+For instance, with CloudWatch, you can scale your applications,whereas, with CloudTrail, you can see who did what to your applications.
+
 what is Lamda?
 ===============
 lamda is for automation purpose for the daily metrics, for supose we have one usecase is there like ENI triggers 
