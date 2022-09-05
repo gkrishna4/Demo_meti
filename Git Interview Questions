@@ -60,17 +60,16 @@ and SVN is a centralized version control system.
 GIT:
 ----
 The name itself indicates the respository is distributed and every developers workspace contains a local copy of the repository. 
-There is no question of central repository.
+# There is no question of central repository.
 
-If 4 developers are there then 4 repositories will be there.
+for example If we have 4 developers are there then 4 repositories will be there.
 
-1) The checkout and commit operations will be performed locally. Hence performance is more.
+1) So Here when we are performing the  checkout and commit operations locally,performance is more.
+and also network is not required. if there is any network outage, still version control is applicable. 
 
-2) To perform checkout and commit operations, network is not required. Hence if there is any network outage, still version control is applicable. 
+3) for example if something goes wrong to any repository there is a chance to recover. There is no question of single point of failure. 
 
-3) If something goes wrong to any repository there is a chance to recover. There is no question of single point of failure. 
-
-4) To perform push and pull operations network must be required, but these operations are not most common operations and we are performing very rarely.
+4) And To perform push and pull operations network must be required, but these operations are not most common operations and we are performing very rarely.
 
 Note:
 ------
