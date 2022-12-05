@@ -1,0 +1,13 @@
+ #!/bin/bash
+ lsb_release=$(lsb_release -is)
+ UNAME=$(uname | tr "[:upper:]" "[:lower:]")
+ # If Linux, try to determine disk space according to the distribution
+ if [ "$UNAME" = "linux" ]; then
+                  if [ "$lsb_release" = "Ubuntu" ]
+                   then
+                          df -h -BG
+                          exit 0
+                  else
+                          df --direct -BG
+                  fi
+ fi
