@@ -268,7 +268,18 @@ git checkout ---->>>If we are not passing any argument, then this command will s
 =================================================================================================
 **12) What is the difference between featch and pull in GIT?
 
-featch-->> To get updated files from remote repository to local repository.from there we can update the files in to the working copy
+featch-->> To get updated files from remote repository to local repository.from there we can update the files in to the working copy.
+
+        After fetching updates from the remote repository, you can inspect the changes using commands like git log or git diff to see 
+        the differences between your local and remote branches. If you're satisfied with the changes and want to incorporate them into
+         your current working branch, you can use git merge or git rebase to apply those changes.
+
+         For example, to merge the changes fetched from the remote origin/main branch into your current local branch:
+                      git merge origin/main
+          Or, if you prefer to rebase your changes on top of the remote updates:
+                      git rebase origin/main
+         After merging or rebasing, you can then continue working with the updated files in your local working directory.
+         Remember to commit your changes when you're done with your modifications.
 
 pull-->> insted of featch and update....if we do pull it will update changes done in remote repository  to local repository
          and also update working copy/actual copy(here we no need of featch  saparately.....pull only internally performs  featch oparation) 
