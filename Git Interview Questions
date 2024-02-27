@@ -410,8 +410,44 @@ $ git cherry-pick -n commitid1
 $ git cherry-pick -n commitid2
 $ git cherry-pick -n commitid3
 $ git add .;git commit -m 'single commit for multiple cherry-pick options'
+-----------------------------------------------------
+Let's say we have a scenario where we're working on a web application with multiple branches: master, development, and feature/authentication.
+Scenario:
+==========
+We're developing a new feature on the feature/authentication branch, implementing a user authentication system.
+Meanwhile, a critical security vulnerability is discovered in production that requires immediate attention.
+We need to fix the vulnerability on the master branch without merging the entire feature/authentication branch.
 
+Explanation:
+============
+Identify the commit containing the fix:
+We identify the specific commit on the feature/authentication branch that fixes the security vulnerability.
 
+Cherry-pick the fix onto master:
+-----------------------------------
+We use git cherry-pick to apply only the fix commit onto the master branch.
+git checkout master
+git cherry-pick <commit-hash-of-security-fix>
+
+Resolve conflicts if any:
+-----------------------
+If there are conflicts between the fix commit and changes on the master branch, we resolve them by manually addressing the conflicts.
+
+Verify and deploy:
+------------------
+Once the cherry-pick is successful and conflicts are resolved, we verify that the fix works as expected on the master branch.
+Finally, we deploy the fix to production, ensuring the security of our application.
+
+Why git cherry-pick?
+-------------------
+git cherry-pick allows us to selectively apply specific commits from one branch to another.
+In this scenario, it enables us to address a critical security issue without merging the entire feature branch, keeping the master branch
+stable and ensuring that only the necessary changes are deployed to production.
+
+Summary:
+git cherry-pick is a valuable tool in scenarios where we need to apply specific commits to a different branch without merging the entire
+branch. It helps maintain code integrity and allows us to respond swiftly to urgent situations while keeping development efforts focused
+and organized.
 =================================================================================================
 18)what is PAT?
 
