@@ -43,7 +43,22 @@ With simple steps, maven release project is automated.
 What is Jenkinsfile?
 =====================
 The text file where all the definitions of pipelines are defined is called Jenkinsfile. It is being checked in the source control repository
+ (or)
 
+A Jenkinsfile is like a recipe for Jenkins, the popular automation server. Just like a recipe tells you how to cook a meal step by step, a Jenkinsfile tells Jenkins how to build, test, and deploy your software step by step.
+
+Instead of clicking buttons in the Jenkins web interface to set up your build process, you write code in a Jenkinsfile. This code describes what Jenkins should do when it's building your software. It includes things like:
+
+1)Getting the source code from a repository (like GitHub).
+2)Building the code.
+3)Running tests to make sure everything works.
+4)Packaging the software.
+5)Deploying it to servers or other places.
+
+By putting this process into code, you can version-control it along with your actual software code. This means changes to your build process can be tracked, reviewed, and reverted just like changes to your software.
+
+Note:-  A Jenkinsfile is a way to define your software build process as code, making it easier to automate and manage with Jenkins
+------
 
 Explain the terms Agent, post-section in Jenkinsfile?
 ======================================================
