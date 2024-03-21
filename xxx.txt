@@ -104,7 +104,7 @@ post-section:-
     }
 }
       
-what are all the daily responsibilitys when you login to the system  test.txt 
+what are all the daily responsibilitys when you login to the system ?
 ===================================================================
 Daily when i am login to the system, firstly i can check the mails, wether any ticket is genrated regarding the daily tasks.
 for example the ticket is regarding Git, & i will execute the git related commands and all. to creating the user account's, 
