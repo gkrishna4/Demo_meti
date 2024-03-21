@@ -462,10 +462,18 @@ to drain the node
 --------------------
 docker node update --availability drain <NODE-ID>
 
+# Apply OS patches and updates
+apt update && apt upgrade
+
+# Reboot if required
+reboot
+
 to make active
 --------------
 docker node update --availability active <NODE-ID>
 
+Repeat the above steps for each node in the Docker Swarm, updating them 
+one by one to minimize the impact on your applications.
 
 cache busting 
 ------------------ 
