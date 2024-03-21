@@ -388,8 +388,8 @@ What is shell form & executable form in docker?
 -----------------------------------------------
 RUN/CMD/ENTRYPOINT instructions/commands can be defind in shell form (or) executable form.
 
-In Docker, "shell form" and "executable form" refer to two different ways of specifying the command that should be executed when a container is started.
-
+In Docker, "shell form" and "executable form" refer to two different ways of specifying the command 
+that should be executed when a container is started.
 Shell Form:
 ==========
 In shell form, the command is specified as a single string with the command and its arguments separated by spaces.
