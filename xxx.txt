@@ -387,7 +387,30 @@ docker run will create a container & start the container
 What is shell form & executable form in docker?
 -----------------------------------------------
 RUN/CMD/ENTRYPOINT instructions/commands can be defind in shell form (or) executable form.
-When we use shell form our command will be running a child process under bash/sh (shell)
+
+In Docker, "shell form" and "executable form" refer to two different ways of specifying the command that should be executed when a container is started.
+
+Shell Form:
+==========
+In shell form, the command is specified as a single string with the command and its arguments separated by spaces.
+For example:
+--------------
+CMD echo "Hello, world!"
+In this case, the command echo "Hello, world!" is executed using the default shell (/bin/sh) of the container.
+
+Executable Form:
+===================
+In executable form, the command is specified as an array of strings,
+where the first element is the executable and subsequent elements are its arguments.
+For example:
+---------------
+CMD ["echo", "Hello, world!"]
+In this case, the command echo "Hello, world!" is executed directly without invoking a shell.
+This form is preferred when the command does not require shell-specific features like variable expansion or redirection.
+
+Both forms can be used with the CMD instruction in a Dockerfile to specify the default command to run when a container starts. 
+The choice between shell form and executable form depends on the requirements of the command being executed and whether
+shell-specific features are needed.
 
 What is the difference between CMD & RUN?
 ---------------------------------------
