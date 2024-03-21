@@ -422,7 +422,35 @@ Will be processed while creating an image in the defind order (Top to Bottom).
 What is the difference between CMD & ENTRYPOINT?
 -------------------------------------------------
 CMD commands/instructions can be overridden while creating a container. 
-ENTRYPOINT commands/instructions cannot be overridden while creating a container.  
+ENTRYPOINT commands/instructions cannot be overridden while creating a container. 
+
+
+Suppose we have the following Dockerfile:
+
+Dockerfile
+------------
+FROM ubuntu
+CMD echo "Hello, world!"
+
+In this Dockerfile, the CMD instruction specifies that the default command to run when the container starts is echo "Hello, world!".
+
+Now, let's build and run the container:
+docker build -t my_container .
+docker run my_container
+When we run the container without providing any additional arguments, it will execute the default command
+specified in the Dockerfile, which is echo "Hello, world!". So, the output will be:
+Hello, world!
+
+Now, let's say we want to override the default command and execute a different command when running the container.
+We can do this by providing the desired command as an argument to docker run. For example:
+
+docker run my_container echo "Goodbye, world!"
+
+In this case, we are overriding the default command specified in the Dockerfile (echo "Hello, world!")
+with a new command (echo "Goodbye, world!"). So, the output will be:
+
+Goodbye, world!
+This demonstrates how CMD can be overridden by providing arguments to docker run.
 
 
 How do you do the os patches  in the docker swarm/worker machines with out impact your applications/Containers?
