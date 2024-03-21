@@ -46,8 +46,8 @@ The text file where all the definitions of pipelines are defined is called Jenki
 
  (or)
 
-A Jenkinsfile is like a recipe for Jenkins, the popular automation server. Just like a recipe tells you 
-how to cook a meal step by step, a Jenkinsfile tells Jenkins how to build, test, and deploy your software step by step.
+A Jenkinsfile is like a recipe for Jenkins,  Just like a recipe tells you how to cook a meal step by step,
+Like that Jenkinsfile tells to Jenkins, how to build, test, and deploy your software step by step.
 
 Instead of clicking buttons in the Jenkins web interface to set up your build process, you write code in a Jenkinsfile. 
 This code describes what Jenkins should do when it's building your software. It includes things like:
