@@ -58,7 +58,8 @@ This code describes what Jenkins should do when it's building your software. It 
 4)Packaging the software.
 5)Deploying it to servers or other places.
 
-By putting this process into code, you can version-control it along with your actual software code. This means changes to your build process can be tracked, reviewed, and reverted just like changes to your software.
+By putting this process into code, you can version-control it along with your actual software code. This means changes to your
+build process can be tracked, reviewed, and reverted just like changes to your software.
 
 Note:-  A Jenkinsfile is a way to define your software build process as code, making it easier to automate and manage with Jenkins
 ------
