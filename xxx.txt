@@ -646,7 +646,7 @@ Continuous integration and delivery pipelines facilitate rapid releases for quic
 In summary, the DevOps lifecycle emphasizes collaboration, automation, and continuous improvement to efficiently deliver 
 high-quality software and adapt to changing market needs.
 
-we can remove the installed packages with configuration files 
+how can we remove the installed packages with configuration files?
 ============================================================
 sudo apt-get --purge remove <package-name>
 
