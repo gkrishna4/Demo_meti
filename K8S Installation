@@ -1,3 +1,107 @@
+K8S architecture 
+=================
+Kubernetes (k8s) is an open-source container orchestration platform that automates the deployment, scaling, and management of 
+containerized applications. Its architecture consists of several components distributed across master and worker nodes.
+Let's break down the components and their functionalities:
+
+User Interface (UI):-
+Kubernetes provides a web-based user interface for interacting with the cluster, commonly known as the Kubernetes Dashboard. It offers a graphical representation of the cluster's resources and allows users to manage applications, troubleshoot issues, and monitor cluster health.
+
+Command-Line Interface (CLI):-
+Kubernetes CLI, commonly referred to as kubectl, is a command-line tool used to interact with Kubernetes clusters. It allows users to 
+perform various operations such as deploying applications, managing resources, inspecting cluster status, and executing
+administrative tasks.
+
+Master Node Components:
+--------------------------
+API Server:
+Acts as the front-end for the Kubernetes control plane.
+Exposes the Kubernetes API, which serves as the primary interface for users, administrators, and components to interact with the cluster.
+Validates and processes REST requests, ensuring authentication, authorization, and admission control policies are enforced.
+Stores the cluster's state data in etcd.
+
+Scheduler:
+Responsible for distributing workloads (pods) across the worker nodes in the cluster.
+Monitors the availability of resources on each node and selects the most suitable node for placing pods based on resource requirements,
+affinity/anti-affinity rules, and other constraints.
+Enables efficient resource utilization and workload balancing across the cluster.
+
+Controller Manager:
+Manages various controllers that regulate the state of the cluster, ensuring that the desired state is maintained.
+Watches for changes in the cluster state and takes corrective actions to reconcile any differences between the current state
+and the desired state.
+Examples of controllers include ReplicaSet, StatefulSet, Deployment, Service, PersistentVolume, Namespace, and Node controllers.
+
+etcd:
+Distributed key-value store used as the primary datastore for Kubernetes.
+Stores all cluster configuration data, state information, and metadata.
+Provides a reliable and consistent storage solution for maintaining the cluster's state, even in the event of node failures
+or network partitions.
+
+Ensures data consistency and high availability through leader election and replication mechanisms.
+These master node components work together to provide the core control and management functions of the Kubernetes cluster.
+They facilitate the deployment, scaling, and operation of containerized applications while ensuring high availability, 
+fault tolerance, and consistency of the cluster's state. Additionally, these components can be horizontally scaled for performance 
+and redundancy purposes to meet the demands of large-scale production environments.
+
+Kubelet:
+Manages the containers running on a node, ensuring they are healthy and running as desired.
+Communicates with the API server to receive instructions and report the status of containers.
+
+Kube-proxy:
+Manages network connectivity to services running in the cluster.
+Implements network rules to enable communication between pods and external clients, ensuring efficient routing and load balancing.
+
+================================================================
+
+ Controller Manager:- in Kubernetes is responsible for maintaining the desired state of the cluster by managing various controllers. 
+These controllers continuously monitor the state of the cluster and reconcile any differences between the current state 
+and the desired state declared by users or applications. Here's a more detailed overview of the Controller Manager's role
+and the controllers it manages:
+
+Replication Controller:
+Ensures that the specified number of pod replicas are running at all times.
+Monitors pod health and automatically creates or deletes replicas to match the desired count.
+
+Namespace Controller:
+Manages namespaces within the cluster, ensuring their creation, deletion, and updates are handled correctly.
+Enforces resource quotas and policies specific to each namespace.
+
+Node Controller:
+Monitors the state of nodes in the cluster.
+Detects when nodes become unreachable or are removed from the cluster and takes appropriate action, such as rescheduling pods.
+
+Service Account & Token Controller:
+Manages service accounts and tokens used for authentication within the cluster.
+Ensures that necessary service accounts and tokens are created and available to pods.
+
+Endpoints Controller:
+Populates the Endpoints resource to reflect the current set of endpoints (i.e., IP addresses and ports) for services.
+Updates endpoints based on changes to the service's selector or its backing pods.
+
+Service Controller:
+Monitors the creation, deletion, and updates of service objects.
+Ensures that services are properly configured and accessible within the cluster.
+
+Persistent Volume Controller:
+Manages the lifecycle of PersistentVolume objects.
+Ensures that PersistentVolumes are provisioned, bound to PersistentVolumeClaims, and dynamically provisioned or deleted as needed.
+
+StatefulSet Controller:
+Manages the deployment and scaling of stateful applications, ensuring ordered pod creation, deletion, and updates.
+Maintains stable network identities and persistent storage for stateful pods.
+
+DaemonSet Controller:
+Ensures that a specified pod runs on all or a subset of nodes in the cluster.
+Automatically creates or deletes pods to match node labels and selectors.
+
+Job & CronJob Controllers:
+Manages batch workloads, such as one-off jobs or recurring tasks.
+Creates and manages pods to execute Jobs and CronJobs according to specified schedules.
+These controllers work together under the supervision of the Controller Manager to ensure that the cluster remains in the desired state,
+providing resilience, scalability, and efficient resource utilization for containerized workloads.
+
+
 How we can change the hostname
 ==============================
 goto root user-----> sudo -i
