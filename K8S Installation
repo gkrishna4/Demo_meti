@@ -5,7 +5,9 @@ containerized applications. Its architecture consists of several components dist
 Let's break down the components and their functionalities:
 
 User Interface (UI):-
-Kubernetes provides a web-based user interface for interacting with the cluster, commonly known as the Kubernetes Dashboard. It offers a graphical representation of the cluster's resources and allows users to manage applications, troubleshoot issues, and monitor cluster health.
+Kubernetes provides a web-based user interface for interacting with the cluster, commonly known as the Kubernetes Dashboard.
+It offers a graphical representation of the cluster's resources and allows users to manage applications, troubleshoot issues,
+and monitor cluster health.
 
 Command-Line Interface (CLI):-
 Kubernetes CLI, commonly referred to as kubectl, is a command-line tool used to interact with Kubernetes clusters. It allows users to 
@@ -114,7 +116,8 @@ https://raw.githubusercontent.com/vsaini44/KubernetesRepo/master/Docker-kuber1.2
 # by using the above link we can get the script place it in a file then after execute that file
 # for example the file name is ---->a 
 # so here we can execute that file by using the command------> bash a  (or) ./a.sh
-# after successful execution we can get the {-- 1 token --} in the master machine we can copy that token and execute over the Node machines
+# after successful execution we can get the {-- 1 token --} in the master machine we can copy that token and execute over
+the Node machines
 
 # script we have to execute
 ============================
