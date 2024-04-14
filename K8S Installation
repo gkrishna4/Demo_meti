@@ -5,9 +5,8 @@ containerized applications. Its architecture consists of several components dist
 Let's break down the components and their functionalities:
 
 User Interface (UI):-
-Kubernetes provides a web-based user interface for interacting with the cluster, commonly known as the Kubernetes Dashboard.
-It offers a graphical representation of the cluster's resources and allows users to manage applications, troubleshoot issues,
-and monitor cluster health.
+Kubernetes provides a web-based user interface for interacting with the cluster and allows users to manage applications, 
+troubleshoot issues,and monitor cluster health.
 
 Command-Line Interface (CLI):-
 Kubernetes CLI, commonly referred to as kubectl, is a command-line tool used to interact with Kubernetes clusters. It allows users to 
