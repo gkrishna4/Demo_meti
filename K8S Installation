@@ -34,16 +34,8 @@ and the desired state.
 Examples of controllers include ReplicaSet, StatefulSet, Deployment, Service, PersistentVolume, Namespace, and Node controllers.
 
 etcd:
-Distributed key-value store used as the primary datastore for Kubernetes.
-Stores all cluster configuration data, state information, and metadata.
-Provides a reliable and consistent storage solution for maintaining the cluster's state, even in the event of node failures
-or network partitions.
-
-Ensures data consistency and high availability through leader election and replication mechanisms.
-These master node components work together to provide the core control and management functions of the Kubernetes cluster.
-They facilitate the deployment, scaling, and operation of containerized applications while ensuring high availability, 
-fault tolerance, and consistency of the cluster's state. Additionally, these components can be horizontally scaled for performance 
-and redundancy purposes to meet the demands of large-scale production environments.
+consistent(keeping everything in sync) and highly available key value store and used as K8S banking store for all cluster data
+it stores all the master and workernode information.
 
 Kubelet:
 Manages the containers running on a node, ensuring they are healthy and running as desired.
