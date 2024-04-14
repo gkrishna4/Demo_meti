@@ -524,7 +524,8 @@ spec:
         ports:
         - containerPort: 8080
         
-run-->kubectl apply -f deployement_recreate.yml --record   {NOTE:- here if we won't use --record, we did't get the change cause, like for what resion the deployment updated}
+run-->kubectl apply -f deployement_recreate.yml --record  
+            {NOTE:- here if we won't use --record, we did't get the change cause, like for what resion the deployment updated}
       kubectl get deployement
       kubectl get rs
       kubectl get pods
@@ -542,8 +543,8 @@ run-->kubectl apply -f deployement_recreate.yml --record   {NOTE:- here if we wo
       kubectl rollout history deployment javawebappdeployment --revision=1
       
 Note:
-     for example if we want to upgrade the our application from version1 to version2 by using strategy Recreate first it will remove the containers at a time 
-     and then it will recreate the containers so that here we can face downtime
+     for example if we want to upgrade the our application from version1 to version2 by using strategy Recreate first 
+     it will remove the containers at a time and then it will recreate the containers so that here we can face downtime
      
     here we can upgrade the application in two ways
     ---> by using the command 
