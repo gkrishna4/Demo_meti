@@ -17,10 +17,9 @@ administrative tasks.
 Master Node Components:
 --------------------------
 API Server:
-Acts as the front-end for the Kubernetes control plane.
-Exposes the Kubernetes API, which serves as the primary interface for users, administrators, and components to interact with the cluster.
-Validates and processes REST requests, ensuring authentication, authorization, and admission control policies are enforced.
-Stores the cluster's state data in etcd.
+Acts as the front-end for the Kubernetes control plane, Exposes the Kubernetes API
+CLI TOOLS like kubectl, users & even master components like sheduler, contoller manager, etcd and worker node components like kubelet
+everything is talks with API-SERVER
 
 Scheduler:
 Responsible for distributing workloads (pods) across the worker nodes in the cluster.
