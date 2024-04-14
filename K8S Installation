@@ -643,7 +643,8 @@ old green version being scaled down
 
 Volumes
 =======
-Note:-- if you configure the storage class, you will create the PVC(persistent volume claim) directly, claim will create the volume with the help of storage class
+Note:-- if you configure the storage class, you will create the PVC(persistent volume claim) directly, claim will create the volume
+        with the help of storage class
 
 Note:-- while creating the volume we can menction the access mode. And it will not support all the access modes
         hostPath---> supports  ReadWriteOnce
@@ -671,8 +672,8 @@ Here i have 2 persistent volumes when you are creating the PVC, what opctions/fa
 it will match with  storageClassName
                     accessmodes
                     requests
-For example i am tryning to create a pvc with AccessMode ReadWriteOnce, suppose if i have a two volumes with ReadWriteOnce, here one is already claimed by some one else
-and one is avilable, here it will consider the volume which is not climed by any one 
+For example i am tryning to create a pvc with AccessMode ReadWriteOnce, suppose if i have a two volumes with ReadWriteOnce,
+here one is already claimed by some one else and one is avilable, here it will consider the volume which is not climed by any one 
 
 
 
@@ -800,7 +801,8 @@ Deploy all above three kubernetes objects.
 
 # ==== Execute below commands to increase load====
 
-Now, we will see how the auto scaler reacts to increased load. We will start a container, and send an infinite loop of queries to the php-apache service .
+Now, we will see how the auto scaler reacts to increased load. We will start a container, and send an infinite loop of 
+queries to the php-apache service .
 # Create A Temp Pod in interactive mod to access app using service name
 
   $ kubectl run -i --tty load-generator --rm  --image=busybox /bin/sh
