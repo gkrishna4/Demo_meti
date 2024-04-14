@@ -21,7 +21,7 @@ CLI TOOLS like kubectl, users & even master components like sheduler, contoller 
 everything is talks with API-SERVER
 
 Scheduler:
-Responsible for distributing workloads (pods) across the worker nodes in the cluster.
+Responsible for distributing containers(pods) across the worker nodes in the cluster.
 Monitors the availability of resources on each node and selects the most suitable node for placing pods based on resource requirements,
 affinity/anti-affinity rules, and other constraints.
 Enables efficient resource utilization and workload balancing across the cluster.
