@@ -671,6 +671,8 @@ here we can replace the 8080 with any port number
 
 
 suppose in a perticular server there are two applications are running the same port number? how can you find it?
+or
+how do we check the open port in linux?
 ===================================================================================================================
 we can check 3 ways by making use the commands
 
@@ -688,6 +690,16 @@ grep -w – shows matching of exact string (:80).
 sudo lsof -i -P -n | grep LISTEN
 
 3)$ ps -p <process-id> -o comm= 
+
+
+How to write a script to delete messages in a log file older than 30 days automatically?
+
+find <Path_To_Old_Files> -type f -mtime +30 -delete (Example)
+find /opt/backup -type f -mtime +30 -delete (For under /opt/backup 
+directory)
+find /var/log -name "*.log" -type f -mtime +30 -delete (For files 
+matching the criteria)
+
 
 
 
