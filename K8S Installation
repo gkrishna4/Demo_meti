@@ -843,6 +843,7 @@ CPU is measure in millicpus, which is 1/1000th of a CPU core and expressed with 
 
 Note: If you put in a memory request that is larger than the amount of memory on your nodes, the pod will never be scheduled.
 
-
+How do we trableshoot crash loopbackup in K8s?
+Difference between the replicaset and deployment?
           
   
