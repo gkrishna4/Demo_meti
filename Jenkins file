@@ -1,0 +1,125 @@
+pipeline {
+    agent {
+        node {
+            // Any Streaming 11.x and node compatible linux.
+            label "((o.almalinux8 || o.rh8)) && c.docker-compatible-linux-3.10 && c.aws-cli-2 && c.docker-multi-stage-build && c.docker-20-compatible && q.str"
+        }
+    }
+    
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '7', numToKeepStr: '3'))
+        timeout(time: 3, unit: 'HOURS')
+        skipDefaultCheckout()
+    }
+
+    triggers {
+        pollSCM('H 7,14,20 * * 1-5')
+    }
+    
+    parameters {
+        choice(
+            name: 'deployArtifacts',
+            choices: ['default', 'never', 'always'],
+            description: 'By default, only main and release-work branches are deployed. Some deployments can be skipped if there are no changes in the default case.'
+        )
+
+        string(
+            name: 'mavenExtras',
+            defaultValue: '',
+            description: 'Extra JVM options for Maven, usually -DskipTests and the like.'
+        )
+
+        booleanParam(
+            name: 'cleanWorkspace',
+            defaultValue: true,
+            description: 'Clean workspace before build.'
+        )
+
+        string(
+            name: 'notificationEmail',
+            defaultValue: 'when:team:tcds-dev@tibco.com change-authors',
+            description: 'Email addresses for notifications on failure.'
+        )
+
+        string(
+            name: 'successEmail',
+            defaultValue: 'when:release:tcds-dev@tibco.com when:release:sbase-release@tibco.com change-authors',
+            description: 'Email addresses for notifications on success.'
+        )
+
+        choice(
+            name: 'buildVerbose',
+            choices: ['default', 'pipeline', 'tools'],
+            description: 'Make build more verbose with pipeline and tool diagnostics.'
+        )
+
+        string(
+            name: 'buildLabel',
+            defaultValue: '',
+            description: 'Jenkins build label override.'
+        )
+    }
+    
+    environment {
+        // Define environment variables if needed
+        SONARQUBE_URL = 'http://sonarqube-server:9000'
+        MAVEN_HOME = tool 'Maven'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                script {
+                    def mavenHome = tool 'Maven'
+                    def mavenCMD = "${mavenHome}/bin/mvn"
+                    sh "${mavenCMD} clean install ${params.mavenExtras}"
+                }
+            }
+        }
+        
+        stage('Code Quality Analysis') {
+            steps {
+                script {
+                    withSonarQubeEnv('SonarQube Server') {
+                        sh "mvn sonar:sonar -Dsonar.host.url=${env.SONARQUBE_URL}"
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            junit '**/target/surefire-reports/TEST-*.xml'
+            archiveArtifacts 'target/*.jar'
+        }
+        
+        success {
+            script {
+                emailext (
+                    subject: "Build Success: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                    body: "Build successful! No issues found.",
+                    to: "${params.successEmail}",
+                    mimeType: 'text/html'
+                )
+            }
+        }
+        
+        failure {
+            script {
+                emailext (
+                    subject: "Build Failure: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                    body: "Build failed! Please check the build logs for details.",
+                    to: "${params.notificationEmail}",
+                    mimeType: 'text/html'
+                )
+            }
+        }
+    }
+}
