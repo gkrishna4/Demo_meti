@@ -123,3 +123,22 @@ pipeline {
         }
     }
 }
+
+
+
+Dockerfile
+
+FROM ubuntu:20.04
+
+RUN apt-get -y update
+RUN useradd -d /home/jenkins -u 1001 -m -s /bin/bash jenkins
+RUN apt-get -y update && apt-get install -y unzip wget curl net-tools git vim xz-utils docker.io
+RUN apt-get -y update && DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-11-jdk
+#ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
+#RUN mkdir -p /var/lib
+RUN wget https://services.gradle.org/distributions/gradle-6.9-bin.zip -O /opt/gradle.zip
+RUN (cd /opt && unzip gradle.zip)
+USER jenkins
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
+ENV PATH /usr/local/bin:/usr/bin:/bin:/opt/gradle-6.9/bin
+WORKDIR /home/jenkins
