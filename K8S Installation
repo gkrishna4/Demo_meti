@@ -628,6 +628,22 @@ spec:
         image: dockerhandson/java-web-app:1
         ports:
         - containerPort: 8080
+
+maxSurge: 1
+-----------
+This defines the maximum number of pods that can be created above the desired number of replicas during an update. 
+Setting it to 1 means that the deployment will add one new pod at a time while updating.
+
+maxUnavailable: 1
+-----------------
+This indicates the maximum number of pods that can be unavailable during an update. Setting it to 1 allows one pod 
+to be down during an update, ensuring that at least one pod remains running.
+
+minReadySeconds: 30
+----------------------
+This sets the minimum time a pod must be ready (i.e., operational) before it's considered available. 
+This parameter helps ensure that the new pod is fully up and running, handling traffic, and ready for service
+before the old pod is terminated.
         
 Run ---> kubectl apply -f deployement_rollingupdate.yaml
 
