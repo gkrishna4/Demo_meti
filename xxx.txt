@@ -287,10 +287,12 @@ when we click on the sonar-way we can see that, what are the different rules whi
 
 
 
-why u are using the sonarQube?
+why u are using the sonarQube/How does SonarQube detect code smells, bugs, and vulnerabilities?
 ==============================
-to identify the quality of the code, there we can find is there any vanrabulities, is there any bugs &
-all we identify
+SonarQube detects code smells, bugs, and vulnerabilities through static code analysis. 
+SonarQube checks for common code smells like duplicated code, overly complex methods, or poor naming conventions.
+scans the programming mistakes that can lead to errors or unexpected behavior. identifies security weaknesses in the code,
+It checks for issues like SQL injection, cross-site scripting (XSS), or improper authentication.
 
 how to change the default port number 9000 to custum port in sonarQube?
 ========================================================================
