@@ -455,7 +455,36 @@ Personal access tokens (PATs) are an alternative to using passwords for authenti
 If you want to use a PAT to access resources owned by an organization that uses SAML SSO, you must authorize the PAT.
 
 =================================================================================================
+19) To grant access to a specific repository on GitHub for a new user, you typically need to follow these steps:
 
+Navigate to the Repository's Settings:
+Go to the repository on GitHub that you want to grant access to.
+
+Access the Collaborators or Access Management Section:
+In the repository's settings, you should find a section called "Collaborators" or "Access" or something similar. Click on it.
+
+Add the New User:
+In the Collaborators or Access Management section, you should see a field to add collaborators or grant access. 
+Enter the GitHub username, email, or the name of the new user you want to add.
+
+Select Access Level (if applicable):
+Depending on your repository's settings, you may have the option to choose the level of access the new user will have.
+GitHub typically offers options like Read access, Write access, or Admin access. Choose the appropriate level for the new user.
+
+Send the Invitation:
+After entering the username or email of the new user and selecting the access level, there should be a button
+to send the invitation or add the user. Click on it.
+
+Confirmation by the New User:
+The new user will receive an email notification or GitHub notification informing them that they've been added as a collaborator 
+to the repository. They will need to accept the invitation.
+
+Confirmation by the Repository Owner/Admin:
+Once the invitation is accepted, the repository owner/admin (you) will receive a notification confirming that the new user
+has been added as a collaborator.
+
+Access Granted:
+Now, the new user should have access to the repository according to the access level you granted.
 
 
 Verify the installation by checking the version
