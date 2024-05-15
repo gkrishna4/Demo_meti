@@ -502,7 +502,7 @@ git init
       --> cat config
              in this config file we can find -----> [remote "origin"]
              
-             [remote "origin"] ---> it will tell, to which centralized repocitory does it  communicate 
+             [remote "origin"] ---> it will tell, to which Distributed repository does it  communicate 
        
                                
 Check repo status
