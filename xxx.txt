@@ -262,7 +262,16 @@ what are the tools u are used in the unit testing?
 ====================================================
 junit is there and jecaco plugin we install to move the test casess and we integrate those  repororts to
  the sonarQube,to see the covarage and everything in the SonarQube dashbord to understand more
- 
+
+what is SonarQube Qubality gate?
+=================================
+Here by default sonarQube has one qulaity-gate, which is going to apply for all our projects/jobs for a perticular job we want to use
+use custome quality gate, and that to if our requirement is code covarage <=80, need to mark it as a failed, for that perpose
+we can use the Quality gate
+for that in the sonarQube server clickon--->Qualitygates---->create--->gave the name.
+then after we have an opction in the right-side called ----> Add-condition
+and it will promt one popup, there we can select an opction called covarage there we can give the covarge.
+    
  What is sonarQube Quality Profile
 ====================================
 sonarQube is going to  analize source code of a diff languages and by default it has a plugin to
