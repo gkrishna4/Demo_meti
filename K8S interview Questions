@@ -134,6 +134,109 @@ kubectl get storageclass
 Check Provisioner: Make sure the provisioner specified in the storage class is installed and functional.
 Describe PVC: Use kubectl describe pvc <pvc-name> to see if there are issues related to the storage class.
 
+19) The Ingress resource is not routing traffic as expected.
+==============================================================
+Check Ingress Resource Configuration: Ensure the Ingress resource is correctly defined, including the correct hostname, paths, and backend services.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: example-service
+                port:
+                  number: 80
+Check Ingress Controller Logs: Use kubectl logs <ingress-controller-pod> to check for errors or warnings.
+kubectl logs <ingress-controller-pod>
+
+Describe Ingress: Use kubectl describe ingress <ingress-name> to get detailed information and see if there are any events or errors.
+kubectl describe ingress <ingress-name>
+
+
+20) The Ingress resource returns a 404 error, indicating that the requested resource could not be found.
+==========================================================================================================
+Check Path and Host Configuration: Ensure the path and host in the Ingress resource match the request.
+Check Service Configuration: Verify that the backend service is correctly defined and exposed.
+Check DNS Configuration: Ensure the DNS records point to the correct IP address of the Load Balancer.
+
+
+21) Problems with SSL/TLS certificates, such as not being served or invalid certificates.
+===========================================================================================
+Check TLS Configuration: Ensure the TLS section in the Ingress resource is correctly configured.
+spec:
+  tls:
+    - hosts:
+        - example.com
+      secretName: example-tls
+
+Check Secret: Verify that the secret containing the TLS certificate exists and is correctly configured.
+
+kubectl get secret example-tls
+
+Check Certificate Validity: Ensure the TLS certificate is valid and not expired.
+
+22) The Ingress Controller is unable to reach the backend service.
+===================================================================
+Check Service and Endpoints: Ensure the service and its endpoints are correctly configured and running.
+kubectl get svc
+kubectl get endpoints
+
+Check Network Policies: Ensure there are no network policies blocking traffic to the backend service.
+Check Pod Readiness: Ensure the pods behind the service are ready and able to handle traffic.
+
+
+23)The Ingress Controller itself is not functioning properly.
+============================================================
+Check Ingress Controller Deployment: Ensure the Ingress Controller pods are running and healthy.
+kubectl get pods -n ingress-nginx
+
+Check Logs: Review the Ingress Controller logs for any errors or warnings.
+kubectl logs <ingress-controller-pod> -n ingress-nginx
+
+Check RBAC Permissions: Ensure the Ingress Controller has the necessary permissions to read Ingress resources and manage service
+
+
+24) DNS does not resolve to the correct IP address.
+=====================================================
+Check DNS Records: Ensure the DNS records are correctly configured to point to the Load Balancer's IP address.
+Check External-DNS Configuration: If using External-DNS, ensure it is properly configured and running.
+
+
+25)  The Load Balancer is not provisioned or is stuck in the "Pending" state.
+==============================================================================
+Check Service Type: Ensure the service type is LoadBalancer
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+  selector:
+    app: example
+
+Check Cloud Provider Integration: Ensure your Kubernetes cluster is correctly integrated with your cloud provider to provision Load Balancers.
+Check Node Permissions: Ensure the nodes have the necessary permissions to create Load Balancers in the cloud provider
+
+
+26) The Load Balancer health checks are failing, causing traffic to not be routed.
+====================================================================================
+Check Health Check Configuration: Ensure the health checks are correctly configured for the backend service.
+Check Pod Health: Ensure the pods behind the service are healthy and passing their readiness and liveness probes.
+===================================================================================
+
+
+
 
 General Troubleshooting Commands:
 =================================
@@ -151,3 +254,11 @@ Describe PV: kubectl describe pv <pv-name>
 Get Storage Classes: kubectl get storageclass
 Describe Pod: kubectl describe pod <pod-name>
 View Logs: kubectl logs <pod-name>
+
+View Ingress Resources: kubectl get ingress
+Describe Ingress: kubectl describe ingress <ingress-name>
+Check Logs: kubectl logs <ingress-controller-pod>
+Check Services: kubectl get svc
+Check Endpoints: kubectl get endpoints
+Check Nodes: kubectl get nodes
+Check Pods: kubectl get pods --all-namespaces
