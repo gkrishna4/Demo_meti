@@ -74,6 +74,66 @@ Check for Conflicts: Ensure no other service on the node is using the same port.
 Change Port: Update the service or pod to use a different port.
 
 
+11) PersistentVolume (PV) Not Bound: PersistentVolumeClaims (PVCs) are stuck in the "Pending" state because they are not bound to a PersistentVolume (PV).
+==========================================================================================================================================================
+Check PVC and PV Definitions: Ensure that the PVC request matches an available PV in terms of storage class, size, and access modes.
+kubectl get pvc
+kubectl get pv
+Describe PVC: Use kubectl describe pvc <pvc-name> to get more details about why the binding is failing
+kubectl describe pvc <pvc-name>
+Adjust PV/PVC Specs: Modify the PV and PVC specifications to ensure they are compatible.
+
+12)  PVC Not Created:PVC is not created or is stuck in the "Pending" state.
+============================================================================
+Check Storage Class: Ensure the specified storage class exists and is correctly configured.
+kubectl get storageclass
+Describe PVC: Use kubectl describe pvc <pvc-name> to get details on why it might not be getting created.
+Check Cluster Provisioner: Ensure that the storage provisioner (such as AWS EBS, GCE PD, etc.) is properly set up and functional.
+
+13) A pod reports a "Read-only file system" error when trying to write to a volume.
+=========================================================================================
+Check Access Modes: Ensure the PVC is created with the correct access mode (ReadWriteOnce, ReadOnlyMany, ReadWriteMany).
+accessModes:
+  - ReadWriteOnce
+
+Check Node Status: Ensure the node hosting the pod has proper access to the underlying storage.
+Check Volume Permissions: Verify that the volume's file system permissions allow write access to the container's user.
+
+
+14) The pod is stuck in the "ContainerCreating" state due to volume mount timeout.
+====================================================================================
+Check Node and Volume Connectivity: Ensure the node can access the volume's backend storage system.
+Describe Pod: Use kubectl describe pod <pod-name> to get details on the mount failure.
+Check Storage Provider Logs: Look at the logs of the storage provider to diagnose connectivity or permission issues.
+
+
+15) Data stored in a volume is lost or corrupted.
+==================================================
+Use Backup and Restore: Regularly back up your data and have a restore strategy in place.
+Check Storage System Health: Ensure the underlying storage system is healthy and not experiencing issues.
+Check Application Logs: Sometimes data corruption can be due to application-level issues, so check the application logs for errors.
+
+
+16) A volume is not detaching from a node after a pod is terminated.
+=====================================================================
+Check Node Logs: Look at the node's kubelet logs for errors related to volume detachment.
+Manual Detach: Depending on your storage provider, you might need to manually detach the volume using cloud provider tools (e.g., AWS CLI for EBS volumes).
+Ensure Proper Pod Termination: Make sure the pod is properly terminated and not stuck in a terminating state.
+
+17) A volume is not attaching to the node where the pod is scheduled.
+======================================================================
+Check Node and Volume Availability: Ensure the node is available and the volume is not already attached elsewhere.
+Describe Pod: Use kubectl describe pod <pod-name> to see events related to volume attachment failures.
+Check Cloud Provider Limits: Some cloud providers have limits on the number of volumes that can be attached to a single node. Ensure you are within these limits.
+
+
+18) Issues related to the storage class configuration.
+======================================================
+Check Storage Class Definition: Ensure the storage class is correctly defined and available
+kubectl get storageclass
+Check Provisioner: Make sure the provisioner specified in the storage class is installed and functional.
+Describe PVC: Use kubectl describe pvc <pvc-name> to see if there are issues related to the storage class.
+
 
 General Troubleshooting Commands:
 =================================
@@ -83,3 +143,11 @@ General Troubleshooting Commands:
           Check Node Status: kubectl get nodes
           List Pods: kubectl get pods --all-namespaces
           List Services: kubectl get svc
+
+Get PVCs: kubectl get pvc
+Get PVs: kubectl get pv
+Describe PVC: kubectl describe pvc <pvc-name>
+Describe PV: kubectl describe pv <pv-name>
+Get Storage Classes: kubectl get storageclass
+Describe Pod: kubectl describe pod <pod-name>
+View Logs: kubectl logs <pod-name>
