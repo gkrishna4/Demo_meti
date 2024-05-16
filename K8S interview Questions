@@ -1,0 +1,85 @@
+1)  CrashLoopBackOff
+=================
+ The container in the pod is repeatedly crashing and restarting. Kubernetes attempts to start the container, it crashes, and Kubernetes tries to start it again in a loop.
+
+Resolution:
+==========
+Check Logs: Use kubectl logs <pod-name> -c <container-name> to see the output of the container before it crashes.
+Describe Pod: Use kubectl describe pod <pod-name> to get detailed information about the pod’s state and any events associated with it.
+Fix Application Errors: Identify and fix the application code or configuration issues causing the crash.
+Check Resource Limits: Ensure the pod has enough CPU and memory resources allocated. Adjust resource requests and limits in the pod specification if necessary.
+
+2)ImagePullBackOff / ErrImagePull:  Kubernetes is unable to pull the container image from the registry.
+==================================
+Check Image Name: Verify that the image name and tag are correct.
+Check Registry Credentials: If using a private registry, ensure your Kubernetes cluster has the correct credentials. This can be configured using secrets.
+
+kubectl create secret docker-registry <secret-name> --docker-server=<registry-server> --docker-username=<username> --docker-password=<password> --docker-email=<email>
+
+Check Network Connectivity: Ensure that the nodes have network access to the image registry.
+
+3) Pending: The pod is not being scheduled onto a node.
+=========================================================
+Check Node Resources: Use kubectl describe pod <pod-name> to see if there are resource constraints preventing scheduling.
+Review Resource Requests and Limits: Ensure the pod’s resource requests and limits are reasonable.
+Node Availability: Ensure there are sufficient nodes in the cluster and they are not tainted in a way that prevents scheduling.
+Use kubectl get nodes to check the status of nodes
+
+4) ContainerCreating:The container is stuck in the creating state.
+===================================================================
+Check Node Status: Ensure the node where the pod is scheduled is healthy.
+kubectl get nodes
+Check Container Runtime Logs: Look at the container runtime logs (Docker or containerd) on the node for more information.
+Check Volume Attachments: If using persistent volumes, ensure they are correctly attached and available.
+
+5)CreateContainerConfigError:There’s an issue with the container configuration.
+================================================================================
+Check Configuration: Ensure all environment variables, secrets, and config maps referenced in the pod spec are correctly specified and available.
+Describe Pod: Use kubectl describe pod <pod-name> to get more details about the error.
+
+6) OOMKilled: The container was killed because it ran out of memory.
+========================================================================
+Increase Memory Limits: Adjust the memory limits in the pod specification
+resources:
+  requests:
+    memory: "512Mi"
+  limits:
+    memory: "1Gi"
+Optimize Application Memory Usage: Investigate and optimize the application code to reduce memory usage.
+
+7) NodeNotReady:The node is not in a ready state to schedule pods.
+======================================================================
+Check Node Health: Use kubectl describe node <node-name> to check for issues.
+Check Node Resources: Ensure the node has sufficient CPU and memory and is not under heavy load.
+Restart Node Services: Restart kubelet and other node services if needed.
+
+8)  Unauthorized: You don’t have permission to perform an action.
+=================================================================
+Check RBAC Policies: Ensure your user or service account has the necessary permissions.
+kubectl get roles --all-namespaces
+kubectl get rolebindings --all-namespaces
+Update Role Bindings: Adjust role and role bindings to grant the required permissions.
+
+9)Service Unreachable:Unable to reach a service from within the cluster.
+========================================================================
+Check Service and Endpoints: Use kubectl get svc and kubectl get endpoints to ensure the service and endpoints are correctly configured.
+kubectl get svc
+kubectl get endpoints
+Check Network Policies: Ensure network policies are not blocking the traffic.
+DNS Issues: Verify that DNS is correctly resolving service names. Check the CoreDNS logs for issues.
+
+10)Port Already in Use:The specified port is already in use on the node.
+==========================================================================
+Check for Conflicts: Ensure no other service on the node is using the same port.
+Change Port: Update the service or pod to use a different port.
+
+
+
+General Troubleshooting Commands:
+=================================
+          View Logs: kubectl logs <pod-name> [-c <container-name>]
+          Describe Resource: kubectl describe pod <pod-name> or kubectl describe svc <service-name>
+          Check Events: kubectl get events
+          Check Node Status: kubectl get nodes
+          List Pods: kubectl get pods --all-namespaces
+          List Services: kubectl get svc
