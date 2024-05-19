@@ -855,7 +855,9 @@ Note: One thing to keep in mind about CPU requests is that if you put in a value
       Let’s say you have a pod that needs four cores, but your Kubernetes cluster is comprised of dual core VMs—your pod will never be scheduled.
 
 
-CPU is measure in millicpus, which is 1/1000th of a CPU core and expressed with integers. For example; cpu: "1" is 1 CPU, cpu: 2000m is 2 CPUs, cpu: "0.75" is 0.75 of a cpu and equivalent to cpu: 750m. CPU is a compressible resource and can be throttled by Kubernetes during contention. CPU contention does not cause pod eviction; instead, the app is slowed down.
+CPU is measure in millicpus, which is 1/1000th of a CPU core and expressed with integers. For example; cpu: "1" is 1 CPU, cpu: 2000m is 2 CPUs, cpu: "0.75" is 0.75 of a cpu 
+and equivalent to cpu: 750m. CPU is a compressible resource and can be throttled by Kubernetes during contention. CPU contention does not cause pod eviction; instead,
+the app is slowed down.
 
 Note: If you put in a memory request that is larger than the amount of memory on your nodes, the pod will never be scheduled.
 
