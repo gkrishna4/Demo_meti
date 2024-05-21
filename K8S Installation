@@ -864,4 +864,20 @@ Note: If you put in a memory request that is larger than the amount of memory on
 How do we trableshoot crash loopbackup in K8s?
 Difference between the replicaset and deployment?
           
-  
+Difference between statefulset & deployement?
+===============================================
+Deployment:
+============
+Best for: Apps that don't need to remember anything between restarts.
+Pod Identity: All pods are the same and can be replaced easily.
+Storage: Doesn't keep data after restarting.
+Network: Pods get new addresses each time they start.
+Use Cases: Web servers, basic microservices.
+
+StatefulSet:
+==============
+Best for: Apps that need to remember their state between restarts.
+Pod Identity: Each pod has a unique, stable identity.
+Storage: Keeps data even after restarting.
+Network: Pods keep the same address even if they restart.
+Use Cases: Databases, apps that need to save their state.
