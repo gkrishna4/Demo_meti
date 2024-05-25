@@ -856,6 +856,92 @@ RoleBinding: This binds the role to the service account, granting it the defined
 With these configurations, the NFS client provisioner should have the necessary permissions to operate correctly in your Kubernetes cluster.
 
 
+Config Map:
+===========
+You can create a ConfigMap in several ways: using kubectl commands, from a file, or directly from literal values.
+
+Method 1: Using kubectl create configmap command
+-------------------------------------------------
+kubectl create configmap my-config --from-literal=key1=value1 --from-literal=key2=value2
+
+Method 2: From a file
+----------------------
+Suppose you have a configuration file named "config.txt":
+
+key1=value1
+key2=value2
+
+You can create a ConfigMap from this file:    kubectl create configmap my-config --from-file=config.txt
+
+Method 3: From a YAML file
+-----------------------------
+Create a file named "configmap.yaml":
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-config
+data:
+  key1: value1
+  key2: value2
+
+Then apply it using kubectl:        kubectl apply -f configmap.yaml
+
+
+Step 2: Use the ConfigMap in a Pod
+---------------------------------------
+You can use a ConfigMap in a Pod in two primary ways: as environment variables or as configuration files mounted into the container.
+Method 1: As environment variables: -   Here is an example Pod definition that uses the ConfigMap as environment variables:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+  - name: my-container
+    image: nginx
+    env:
+    - name: KEY1
+      valueFrom:
+        configMapKeyRef:
+          name: my-config
+          key: key1
+    - name: KEY2
+      valueFrom:
+        configMapKeyRef:
+          name: my-config
+          key: key2
+
+
+Method 2: As configuration files:-  Here is an example Pod definition that mounts the ConfigMap as configuration files:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+  - name: my-container
+    image: nginx
+    volumeMounts:
+    - name: config-volume
+      mountPath: /etc/config
+  volumes:
+  - name: config-volume
+    configMap:
+      name: my-config
+
+In this example, the ConfigMap keys will be mounted as files in the /etc/config directory inside the container.
+For instance, /etc/config/key1 will contain the value value1.
+
+Step 3: Verify the ConfigMap usage
+       Check the created ConfigMap:    kubectl get configmap my-config -o yaml
+       Describe the Pod to verify environment variables or mounted files:      kubectl describe pod my-pod
+       Exec into the Pod to check the configuration:     kubectl exec -it my-pod -- /bin/sh
+             For environment variables, use echo $KEY1.
+             For mounted files, use cat /etc/config/key1.
+       
 =======================================================================================================
  AutoScaling of Pods Based on the application lode 
 ==================================================
