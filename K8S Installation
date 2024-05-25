@@ -692,9 +692,135 @@ For example i am tryning to create a pvc with AccessMode ReadWriteOnce, suppose 
 here one is already claimed by some one else and one is avilable, here it will consider the volume which is not climed by any one 
 
 
+To use the provided deployment configuration for an NFS client provisioner, you need to ensure the following:
+==============================================================================================================
+Replace placeholders with actual values: Replace <YOUR NFS SERVER HOSTNAME> with the hostname or IP address of your NFS server.
 
- AutoScaling of Pods Based on the application lode
- ==================================================
+Deploy the NFS client provisioner: Apply the YAML configuration to your Kubernetes cluster.
+
+Here is the adjusted deployment configuration with placeholder values replaced:
+----
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: nfs-client-provisioner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-client-provisioner
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nfs-client-provisioner
+    spec:
+      serviceAccountName: nfs-client-provisioner
+      containers:
+        - name: nfs-client-provisioner
+          image: registry.k8s.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2
+          volumeMounts:
+            - name: nfs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              value: k8s-sigs.io/nfs-subdir-external-provisioner
+            - name: NFS_SERVER
+              value: <YOUR NFS SERVER HOSTNAME>  # Replace with actual NFS server hostname or IP
+            - name: NFS_PATH
+              value: /var/nfs
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: <YOUR NFS SERVER HOSTNAME>  # Replace with actual NFS server hostname or IP
+            path: /var/nfs
+----
+Step-by-Step Guide
+===================
+1. Create a ServiceAccount
+---------------------------
+First, create a service account for the NFS client provisioner if you haven't done so already. Here’s an example:
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nfs-client-provisioner
+
+Apply the service account:       kubectl apply -f service-account.yaml
+
+Apply the adjusted deployment YAML file:      kubectl apply -f deployment.yaml
+
+Next, create a StorageClass that uses the NFS client provisioner. Here’s an example:
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-client
+provisioner: k8s-sigs.io/nfs-subdir-external-provisioner
+parameters:
+  archiveOnDelete: "false"
+
+Apply the StorageClass:    kubectl apply -f storage-class.yaml
+
+Finally, create a PVC that uses the StorageClass. Here’s an example:
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs-client
+
+Apply the PVC:   kubectl apply -f pvc.yaml
+
+Use the PVC in a Deployment:
+----------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-container
+          image: my-image
+          volumeMounts:
+            - mountPath: /data
+              name: my-volume
+      volumes:
+        - name: my-volume
+          persistentVolumeClaim:
+            claimName: nfs-pvc
+
+Apply the application deployment:   kubectl apply -f app-deployment.yaml
+
+Check the Deployment:
+       kubectl get deployments
+       kubectl get pods
+
+Check the PVC:
+       kubectl get pvc
+Check the PV:
+       kubectl get pv
+
+By following these steps, you ensure that your Kubernetes deployment can dynamically provision persistent volumes using an NFS server, 
+and your application pods can utilize this storage effectively.
+=======================================================================================================
+ AutoScaling of Pods Based on the application lode 
+==================================================
  HPA and METRIC SERVER
 
 HPA
