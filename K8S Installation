@@ -787,6 +787,75 @@ Check the PV:
 
 By following these steps, you ensure that your Kubernetes deployment can dynamically provision persistent volumes using an NFS server, 
 and your application pods can utilize this storage effectively.
+-------------------
+
+However, you might also need to define roles and role bindings to ensure the NFS client provisioner has the necessary permissions to
+operate within the Kubernetes cluster.
+
+Here’s an example that includes the ServiceAccount along with the necessary Role and RoleBinding:
+---------------------------------------------------------------------------------------------------
+Service Account:
+================
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nfs-client-provisioner
+  namespace: default  # Replace with the appropriate namespace if necessary
+
+Role
+======
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nfs-client-provisioner-role
+  namespace: default  # Replace with the appropriate namespace if necessary
+rules:
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "update", "patch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch"]
+
+RoleBinding:
+============
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nfs-client-provisioner-binding
+  namespace: default  # Replace with the appropriate namespace if necessary
+subjects:
+  - kind: ServiceAccount
+    name: nfs-client-provisioner
+    namespace: default  # Replace with the appropriate namespace if necessary
+roleRef:
+  kind: Role
+  name: nfs-client-provisioner-role
+  apiGroup: rbac.authorization.k8s.io
+
+Applying the Configuration:   
+----------------------------
+     Apply the ServiceAccount:   kubectl apply -f service-account.yaml
+     Apply the Role:   kubectl apply -f role.yaml
+     Apply the RoleBinding:   kubectl apply -f rolebinding.yaml
+
+Summary:
+========
+ServiceAccount: This creates a service account named nfs-client-provisioner.
+Role: This defines the permissions needed for the NFS client provisioner to manage persistent volumes and claims.
+RoleBinding: This binds the role to the service account, granting it the defined permissions.
+With these configurations, the NFS client provisioner should have the necessary permissions to operate correctly in your Kubernetes cluster.
+
+
 =======================================================================================================
  AutoScaling of Pods Based on the application lode 
 ==================================================
