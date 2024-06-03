@@ -279,6 +279,8 @@ Example Notifications:
 Email Notifications: Use the mail step in your pipeline to send emails on failure.
 Slack Notifications: Use the Slack plugin to send build notifications to Slack channels.
 
+https://keentolearn.medium.com/how-to-improve-your-jenkins-builds-with-shared-libraries-5e225b7435fb#:~:text=A%20shared%20library%20in%20Jenkins,efficient%20and%20easier%20to%20maintain
+
 
 
 
