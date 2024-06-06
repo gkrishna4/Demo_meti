@@ -1,4 +1,5 @@
  Docker demen process:- https://chatgpt.com/share/dec866e9-7d83-425d-bc75-595da0122823
+jenkins shared libraries :- https://chatgpt.com/share/6415334f-b4ca-4511-aeba-93307161c8b1
 what is continuous intigration
 ==============================
 Let's say we have multiple devlopers working on the same application, each of them have their own feature (or) bug-fix that they are 
