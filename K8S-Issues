@@ -1,0 +1,86 @@
+1. Pod in CrashLoopBackOff:
+ - Check the pod logs using kubectl logs.
+ - Ensure the required dependencies are available.
+
+2. ImagePullBackOff:
+ - Verify the image name and availability.
+ - Check image pull secrets and registry authentication.
+
+3. Invalid ClusterIP or Service Port:
+ - Ensure correct service and port configurations.
+ - Verify network policies and firewall rules.
+
+4. NodeNotReady: 
+ - Check the node's status with kubectl get nodes.
+ - Examine the kubelet logs on the node.
+
+5. Insufficient Resources:
+ - Confirm resource requests and limits in pod specifications.
+ - Use kubectl describe to analyze resource allocations.
+
+6. CrashLoopBackOff for Init Containers:
+ - Inspect init container logs and configurations.
+ - Ensure init container dependencies are satisfied.
+
+7. ConfigMap or Secret Mounting Issues:
+ - Verify ConfigMap/Secret existence and correctness.
+ - Check pod configuration for volume mounts.
+
+8. Pod stuck in Pending state:
+ - Investigate resource constraints on the nodes.
+ - Examine events with kubectl describe pod.
+
+9. API Server Unreachable:
+ - Verify API server status.
+ - Check kubeconfig file for correct API server address.
+
+10. Network Policy Restrictions:
+ - Inspect network policies.
+ - Ensure correct podSelector and policy rules.
+
+11. RBAC Permission Issues:
+ - Validate service account permissions.
+ - Check ClusterRoleBindings and RoleBindings.
+
+12. PersistentVolumeClaims (PVC) Pending:
+ - Check available storage classes.
+ - Ensure the requested storage is available.
+
+13. NodePort Service Not Accessible:
+ - Confirm the node's firewall allows the specified port.
+ - Check Service and NodePort configurations.
+14. Kube-proxy Issues:
+ - Inspect kube-proxy logs for errors.
+ - Verify kube-proxy configuration.
+
+15. DNS Resolution Problems:
+ - Verify CoreDNS status.
+ - Check DNS policy and cluster DNS settings.
+
+16. Pod Eviction Due to Resource Pressure:
+ - Check resource usage across nodes.
+ - Adjust resource limits or add more nodes.
+
+17. NodeOutOfMemory:
+ - Inspect node memory usage.
+ - Check for memory leaks in applications.
+
+18. Volume Mount Permissions:
+ - Ensure correct file permissions in mounted volumes.
+ - Verify SELinux or AppArmor settings.
+
+19. Ingress Controller Misconfiguration:
+ - Validate Ingress resource configurations.
+ - Check the Ingress controller logs.
+
+20. ETCD Cluster Issues:
+ - Check etcd pod logs.
+ - Verify etcd cluster health.
+
+21. CNI Plugin Issues:
+ - Verify CNI plugin status on nodes.
+ - Check plugin configurations and logs.
+
+22. Invalid Labels or Selectors:
+ - Ensure correct labels and selectors in resources.
+ - Use kubectl get with appropriate labels.
