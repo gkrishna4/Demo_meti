@@ -858,6 +858,11 @@ With these configurations, the NFS client provisioner should have the necessary 
 
 Config Map:
 ===========
+Kubernetes provides several ways to configure applications, including using ConfigMaps, environment variables, and Secrets.
+ConfigMaps are Kubernetes resources that can be used to store configuration data as key-value pairs. You can create a ConfigMap with 
+the desired configuration data, and then reference it in your Deployment or Pod specification using the 'configMapKeyRef' field 
+or mount it directly to the pod.
+
 You can create a ConfigMap in several ways: using kubectl commands, from a file, or directly from literal values.
 
 Method 1: Using kubectl create configmap command
