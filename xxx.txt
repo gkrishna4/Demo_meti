@@ -20,6 +20,29 @@ then the notification will get the devloper, if the changes are good and we can 
 dev environment, by creating the PR(pull request). but here we have a the break down its not continuous becouse some manual
 approvals are required before moving to the UAT Pre-prod
 
+How do I copy a job from one jenkins instance to another?
+==========================================================
+1)Export the Job from the Source Jenkins Instance:
+	Go to the Jenkins dashboard on your source instance.
+	Navigate to the job you want to copy.
+	Click on the job to open its configuration page.
+	On the left-hand menu, click on "Configure".
+	Scroll to the bottom and click on the "Pipeline Syntax" link (for pipeline jobs) or look for "Job Configuration" options.
+	Click on the "View as XML" link. This will display the job’s configuration in XML format.
+	Save this XML file to your local system.
+
+2)Import the Job to the Target Jenkins Instance:
+	Go to the Jenkins dashboard on your target instance.
+	Click on "New Item".
+	Enter a name for the new job.
+	Select "Freestyle project" (or other relevant job type) and click "OK".
+	Instead of configuring the job from scratch, click on the "Configure" link.
+	At the bottom of the configuration page, look for an "Advanced Project Options" section and find the "Use custom workspace" option.
+	Instead of filling out the fields manually, look for an option to upload the XML configuration file (you may need to use a plugin like "Job Import Plugin" for this step).
+	Upload the XML file you saved earlier.
+	Save the configuration.
+
+
 what is the default path of the jenkins?
 ========================================
 the default  path of the jenkins is for ubuntu: /home/ubuntu/.jenkins/jobs/project-Name/workspace/target/webapps/java-web-app.war
