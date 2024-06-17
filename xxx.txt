@@ -129,22 +129,6 @@ post-section:-
         }
     }
 }
-      
-what are all the daily responsibilitys when you login to the system ?
-===================================================================
-Daily when i am login to the system, firstly i can check the mails, wether any ticket is genrated regarding the daily tasks.
-for example the ticket is regarding Git, & i will execute the git related commands and all. to creating the user account's, 
-creating the new braches & etc..
-And i Monitor the CI jobs, that means in our organization some nightly jobs are sheduled. so here every next day morning
-we have to see the status of the nightly job, wether the nighly job is successful/not. if it is failed, it is my responsibility 
-to escalate that failure to the respective dev-team, they look into that.
-so here what happend, devlopers will fix the issue, so here my responsibility is to monitor the ci jobs make sure everything green.
-
-Note:
-====
-if the same build will fail 2nd day now we have to escalate it to manager
-if the same build will fail 3rd day also, we have to escalate it to director,so this kind of metricess are explain by the manager
-whom to escalate and all so here we have to fallow same instuctions 
 
 what are the Release types using in Your Organization?
 ======================================================
