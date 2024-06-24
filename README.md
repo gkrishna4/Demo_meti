@@ -414,6 +414,31 @@ You can also trigger the pipeline via a script or another Jenkins job with param
 curl -X POST 'http://jenkins-url/job/your-job/buildWithParameters' --data 'RUN_BUILD=true&RUN_TEST=true&RUN_SONARQUBE=false&RUN_DOCKER_BUILD=true&RUN_STAGING=true&RUN_UAT=false&RUN_PRODUCTION=true'
 ```
 
+## Explaining the Release Process to an Interviewer
+
+ `Feature Development`
+          Developers work on new features and bug fixes in separate feature branches. These are reviewed and merged into the main branch once they are ready.
+          
+ `Creating a Release Branch`
+         When we are ready to prepare a new release, we create a release branch from the main branch. This branch is used to stabilize the release 
+          and ensure that all changes are thoroughly tested.
+          
+` Staging Environment`
+             We deploy the release branch to our staging environment, which closely mimics our production setup. Here, we conduct extensive testing, 
+             including integration, performance, and security tests. This helps us catch any issues that might occur in a production-like environment.
+             
+` Pre-Production Environment`
+            After successful testing in staging, we deploy the release branch to our pre-production environment. This environment is used for
+             final user acceptance testing and serves as the last checkpoint before production. It ensures that everything works as expected and provides
+             an additional layer of validation.
+             
+ ` Final Release`
+            Once we are confident in the stability of the release, we tag the release branch with the release version, merge it back into the main branch, 
+            and deploy it to production. This structured process allows us to maintain high quality and minimize risks associated with releasing new software.
+             
+> By using staging and pre-production environments, we can isolate different phases of testing and validation, which greatly enhances the reliability of our releases
+> and reduces the risk of introducing issues into our production environment."
+            
 
 
 
