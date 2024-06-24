@@ -1,9 +1,11 @@
-Requirement is to build only single microservice from multiple micro-services
-=================================================================================
+# Requirement is to build only single microservice from multiple micro-services
+
 build only a single microservice from a monorepo containing multiple microservices, and using Maven as your build tool, you can structure your Jenkinsfile to selectively 
 build and deploy only the specified microservice.
-Monorepo Structure
-===================
+
+## Monorepo Structure
+
+```
 microservices-repo/
 ├── serviceA/
 │   ├── src/
@@ -21,8 +23,11 @@ microservices-repo/
 │   ├── pom.xml
 │   └── ...
 └── Jenkinsfile
+```
 
 Here’s a Jenkinsfile that builds, runs SonarQube analysis, and deploys a specified microservice based on a parameter passed to the pipeline:
+
+```
 pipeline {
     agent any
     parameters {
@@ -102,10 +107,10 @@ pipeline {
         }
     }
 }
--------------------------------------
+```
 
-Explanation
-============
+## Explanation
+```
 Parameters Section:---->  SERVICE: This parameter allows you to specify which microservice to build.
 Validate Parameters Stage:-------> Ensures the SERVICE parameter is provided.
 Checkout Stage:-------> Checks out the code from the repository.
@@ -114,23 +119,22 @@ SonarQube Analysis Stage:------> Runs SonarQube analysis on the specified micros
 Quality Gate Stage:-----> Waits for the SonarQube Quality Gate result.
 Build Docker Image Stage:------> Builds a Docker image for the specified microservice.
 Push Docker Image Stage:------> Pushes the Docker image to the Docker registry.
+```
 
+## Running the Pipeline:
 
-Running the Pipeline:
-======================
 When you run this pipeline, you need to specify the SERVICE parameter to indicate which microservice to build.This can be done through the Jenkins UI 
 or via a script that triggers the build.
 Example of Running the Pipeline:
 Via Jenkins UI:
 
-Go to the pipeline’s page in Jenkins.
-=====================================
+## Go to the pipeline’s page in Jenkins.
 Click on "Build with Parameters."
 Enter the name of the service (e.g., serviceA) in the SERVICE field.
 Click "Build."
 
-Via Script:
-===========
+## Via Script:
+
 Use the Jenkins CLI or a script to trigger the build with parameters:
 curl -X POST "http://your-jenkins-url/job/your-job-name/buildWithParameters?SERVICE=serviceA"
 
