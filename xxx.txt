@@ -3,6 +3,45 @@ jenkins shared libraries :- https://chatgpt.com/share/6415334f-b4ca-4511-aeba-93
 how we can execute the microservices for that how we need to write the jenkins file:-           https://chatgpt.com/share/29edcfc0-3cf5-4e2a-bb9d-a0d8c60a8a18
 we have multiple stages in the Jenkins pipeline, How we can build single stage and how we can skip remaining:-    https://chatgpt.com/share/39060863-61b6-4587-be5c-786510d86ca9
 
+Difference between Continuous Delivery & Continuous Deployment
+================================================================
+Continuous Delivery:-   A process where code changes are automatically built, tested, and prepared for release (The code is always ready to be deployed, but the actual deployment to production is done manually. so here the code is always in a deployable state and reduces the risk of issues.)
+
+Continuous Deployment- 	A process where code changes are automatically built, tested, and deployed to production.( Every change that passes the tests is automatically deployed to production without any manual steps.Speeds up the delivery of new features and fixes to users)
+
+what are the Release types using in Your Organization?
+======================================================
+MAJOR: 3 to 6 months                    [ here Major and Minor came into the Feature Devlopment]
+MINOR: 2 weeks to 3 months
+HOTFIX: 1 day to 2 weeks (BugFix)
+
+major.minor.hotfix.BuildNo
+----  ----  -----  -------
+  x  . x   .  x   .  x
+
+for example we can see the QA/Release Build
+------------------------------------------------
+when ever the release is sheduled, here the release manger is going to coardinate with all the teams to release the project
+
+here all the teams sence 
+
+--> Requirement analysis
+--> design
+--> Devlopment
+--> testing 
+--> Production
+
+he is the persion monitor wether the release is going smooth /not
+and he will maintain the Release-calander.
+
+Release manager will prepare XL sheet it will defind Who needs to do what & when, he is the persoin will shedule the tasks
+
+QA Builds == 10    [will sheduled execute every monday & thrusday]  
+
+Performance Builds == 5 [wensday]
+
+UAT Builds == 2  [will sheduled & execute  every 1.5 month and 1.5 month] tuesday
+
 what is continuous intigration
 ==============================
 Let's say we have multiple devlopers working on the same application, each of them have their own feature (or) bug-fix that they are 
@@ -90,40 +129,6 @@ build process can be tracked, reviewed, and reverted just like changes to your s
 
 Note:-  A Jenkinsfile is a way to define your software build process as code, making it easier to automate and manage with Jenkins
 ------
-
-what are the Release types using in Your Organization?
-======================================================
-MAJOR: 3 to 6 months                    [ here Major and Minor came into the Feature Devlopment]
-MINOR: 2 weeks to 3 months
-HOTFIX: 1 day to 2 weeks (BugFix)
-
-major.minor.hotfix.BuildNo
-----  ----  -----  -------
-  x  . x   .  x   .  x
-
-for example we can see the QA/Release Build
-------------------------------------------------
-when ever the release is sheduled, here the release manger is going to coardinate with all the teams to release the project
-
-here all the teams sence 
-
---> Requirement analysis
---> design
---> Devlopment
---> testing 
---> Production
-
-he is the persion monitor wether the release is going smooth /not
-and he will maintain the Release-calander.
-
-Release manager will prepare XL sheet it will defind Who needs to do what & when, he is the persoin will shedule the tasks
-
-QA Builds == 10    [will sheduled execute every monday & thrusday]  
-
-Performance Builds == 5 [wensday]
-
-UAT Builds == 2  [will sheduled & execute  every 1.5 month and 1.5 month] tuesday
-
 
 what are the ways to install the jenkins?
 ==========================================
