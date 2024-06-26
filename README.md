@@ -1,5 +1,18 @@
-# Requirement is to build only single microservice from multiple micro-services
+## Installing Plugins Manually:
+If you have a plugin in the `.hpi` or `.jpi` file format, you can install it manually:
+### Download the Plugin:
+Download the `.hpi` or `.jpi` file from the official Jenkins plugin repository or from any other trusted source.
+### Upload the Plugin:
+From the Jenkins dashboard, click on "Manage Jenkins".
+Click on "Manage Plugins".
+Go to the "Advanced" tab.
+In the "Upload Plugin" section, click "Choose File" and select the `.hpi` or `.jpi` file you downloaded.
+Click "Upload".
+### Restart Jenkins:
+After uploading, Jenkins might require a restart to enable the plugin. Follow the prompt to restart Jenkins.
 
+----------------------
+## Requirement is to build only single microservice from multiple micro-services:
 build only a single microservice from a monorepo containing multiple microservices, and using Maven as your build tool, you can structure your Jenkinsfile to selectively 
 build and deploy only the specified microservice.
 
