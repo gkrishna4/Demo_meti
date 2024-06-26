@@ -438,19 +438,141 @@ curl -X POST 'http://jenkins-url/job/your-job/buildWithParameters' --data 'RUN_B
              
 > By using staging and pre-production environments, we can isolate different phases of testing and validation, which greatly enhances the reliability of our releases
 > and reduces the risk of introducing issues into our production environment."
-            
 
+------------------------------------------
+### Building a Jenkins pipeline that continues executing subsequent stages even if one stage fails involves configuring the pipeline script with appropriate error-handling mechanisms. In Jenkins, this can be achieved using the catchError, catchError, try-catch, and post conditions. Here’s how you can set this up in a real-time Jenkins pipeline using a Jenkinsfile.
 
+## Basic Example: Declarative Pipeline
+```
+pipeline {
+    agent any
 
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building...'
+                // Simulate a build command
+                sh 'exit 1' // This command fails
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                echo 'Testing...'
+                // Simulate test commands
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                echo 'Deploying...'
+                // Simulate deployment commands
+            }
+        }
+    }
+    
+    post {
+        always {
+            echo 'This will always run, regardless of the pipeline status.'
+        }
+    }
+}
 
+```
 
+## Handling Failures: Using `catchError`
+You can use catchError to allow the pipeline to continue even if a stage fails.
+```
+pipeline {
+    agent any
 
+    stages {
+        stage('Build') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    echo 'Building...'
+                    // Simulate a build command
+                    sh 'exit 1' // This command fails
+                }
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    echo 'Testing...'
+                    // Simulate test commands
+                }
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    echo 'Deploying...'
+                    // Simulate deployment commands
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            echo 'This will always run, regardless of the pipeline status.'
+        }
+    }
+}
 
+```
 
+## Advanced Example: Using try-catch in Scripted Pipeline
+For more advanced error handling, you can use the scripted pipeline syntax with `try-catch` blocks.
 
+```
+node {
+    stage('Build') {
+        try {
+            echo 'Building...'
+            // Simulate a build command
+            sh 'exit 1' // This command fails
+        } catch (Exception e) {
+            echo 'Build stage failed: ' + e.toString()
+            currentBuild.result = 'UNSTABLE'
+        }
+    }
 
+    stage('Test') {
+        try {
+            echo 'Testing...'
+            // Simulate test commands
+        } catch (Exception e) {
+            echo 'Test stage failed: ' + e.toString()
+            currentBuild.result = 'UNSTABLE'
+        }
+    }
 
+    stage('Deploy') {
+        try {
+            echo 'Deploying...'
+            // Simulate deployment commands
+        } catch (Exception e) {
+            echo 'Deploy stage failed: ' + e.toString()
+            currentBuild.result = 'UNSTABLE'
+        }
+    }
 
+    // Post actions
+    echo 'This will always run, regardless of the pipeline status.'
+}
 
+```
+## Explanation:
+### Declarative Pipeline:
+`catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE')`: This command allows the pipeline to continue even if the enclosed steps fail. 
+It sets the stage result to FAILURE but the overall build result remains SUCCESS.
+
+### Scripted Pipeline:
+`try-catch`: Each stage is enclosed in a `try-catch` block to handle exceptions. If an exception occurs, it catches the error, logs it,
+and sets the build result to UNSTABLE, allowing the pipeline to proceed.
 
 
