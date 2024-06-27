@@ -589,3 +589,109 @@ It sets the stage result to FAILURE but the overall build result remains SUCCESS
 and sets the build result to UNSTABLE, allowing the pipeline to proceed.
 
 
+## Deploying an application to Kubernetes (K8s) using Jenkins involves several steps, including setting up Jenkins, configuring Jenkins to interact with Kubernetes, and creating a Jenkins pipeline to automate the deployment. Below is a high-level overview of the process:
+
+### Prerequisites:
+Kubernetes Cluster: Ensure you have a running Kubernetes cluster.
+Jenkins Server: Have Jenkins installed and running.
+Kubernetes CLI (kubectl): Install kubectl on the Jenkins server.
+Jenkins Plugins: Install necessary plugins such as Kubernetes plugin, Pipeline plugin, Docker Pipeline plugin, etc.
+
+## Step-by-Step Guide:
+### Install Required Plugins: Go to Manage Jenkins > Manage Plugins and install the following:
+
+Kubernetes plugin
+Pipeline plugin
+Docker Pipeline plugin
+Git plugin (if using Git)
+
+### Configure Kubernetes in Jenkins
+#### 1.Add Kubernetes Credentials
+  
+   Go to `Manage Jenkins` > `Manage Credentials` > `System` > `Global credentials` (unrestricted) > `Add Credentials`.
+   Select `Secret text` and add your Kubernetes API token.
+#### 2.Configure Kubernetes Cloud:
+
+Go to `Manage Jenkins` > `Manage Nodes and Clouds` > `Configure Clouds`.
+Click `Add a new cloud` > `Kubernetes`.
+Configure the Kubernetes plugin with your cluster details. Provide the Kubernetes API URL, credentials, and other necessary details.
+
+#### 3. Create Jenkins Pipeline
+```
+pipeline {
+    agent any
+    environment {
+        KUBECONFIG_CREDENTIAL_ID = 'kubeconfig-credentials' // Change this to your credentials ID
+        KUBECONFIG = credentials(KUBECONFIG_CREDENTIAL_ID)
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/your-repo/your-app.git' // Change to your repo
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("your-docker-repo/your-app:${env.BUILD_ID}")
+                }
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') { // Change to your Docker Hub credentials
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    kubernetesDeploy(
+                        configs: 'k8s/deployment.yaml',
+                        kubeconfigId: KUBECONFIG_CREDENTIAL_ID
+                    )
+                }
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
+
+```
+#### 4.Kubernetes Deployment YAML
+Ensure you have a Kubernetes deployment YAML file (k8s/deployment.yaml) in your repository. Below is a sample deployment.yaml:
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: your-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: your-app
+  template:
+    metadata:
+      labels:
+        app: your-app
+    spec:
+      containers:
+      - name: your-app
+        image: your-docker-repo/your-app:latest
+        ports:
+        - containerPort: 80
+```
+## Summary
+Set up Jenkins with the necessary plugins.
+Configure Jenkins to connect to your Kubernetes cluster.
+Create a Jenkins pipeline job.
+Define your pipeline script in a Jenkinsfile.
+Ensure you have a Kubernetes deployment YAML file in your repository.
+Trigger the pipeline to build, push the Docker image, and deploy it to Kubernetes.
