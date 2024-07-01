@@ -178,30 +178,6 @@ stages {
 }
 ```
 
-The Validate Parameters stage as it stands in the provided script is designed to validate a single service parameter (SERVICE). However, if you want to choose multiple services and build them, you'll need to modify the script to accept and handle multiple service parameters.
-
-Here's how you can modify the script to accept and validate multiple service parameters:
-```
-stages {
-    stage('Validate Parameters') {
-        steps {
-            script {
-                def services = params.SERVICES.split(',') // Assuming services are passed as a comma-separated string
-                if (!services) {
-                    error "No services provided. At least one service is required."
-                } else {
-                    for (service in services) {
-                        if (!fileExists("${service}/pom.xml")) {
-                            error "Specified service '${service}' does not exist or is not a Maven project."
-                        }
-                    }
-                }
-            }
-        }
-    }
-    // Add other stages for building, testing, and deploying the services here
-}
-```
 With this modification:
 
 You can pass multiple services as a comma-separated string in the SERVICES parameter.
