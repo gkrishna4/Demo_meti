@@ -12,9 +12,11 @@ we can trigger the Build in 3 ways
 
 Difference between Continuous Delivery & Continuous Deployment
 ================================================================
-Continuous Delivery:-   A process where code changes are automatically built, tested, and prepared for release (The code is always ready to be deployed, but the actual deployment to production is done manually. so here the code is always in a deployable state and reduces the risk of issues.)
+Continuous Delivery:-   A process where code changes are automatically built, tested, and prepared for release (The code is always ready to be deployed, but the actual
+deployment to production is done manually. so here the code is always in a deployable state and reduces the risk of issues.)
 
-Continuous Deployment- 	A process where code changes are automatically built, tested, and deployed to production.( Every change that passes the tests is automatically deployed to production without any manual steps.Speeds up the delivery of new features and fixes to users)
+Continuous Deployment- 	A process where code changes are automatically built, tested, and deployed to production.( Every change that passes the tests is automatically 
+deployed to production without any manual steps.Speeds up the delivery of new features and fixes to users)
 
 what are the Release types using in Your Organization?
 ======================================================
