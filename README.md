@@ -671,3 +671,51 @@ Create a Jenkins pipeline job.
 Define your pipeline script in a Jenkinsfile.
 Ensure you have a Kubernetes deployment YAML file in your repository.
 Trigger the pipeline to build, push the Docker image, and deploy it to Kubernetes.
+
+=======================================================================
+
+In Jenkins pipelines, there are several default environment variables available to use. These variables are predefined and can be utilized in pipeline scripts to
+help manage and control the execution flow. Below is a list of some of the most commonly used default environment variables in Jenkins pipelines:
+
+### General Environment Variables
+`BUILD_ID`: The current build ID, identical to BUILD_NUMBER.
+`BUILD_NUMBER`: The current build number, a string that represents the build number for the project.
+`BUILD_TAG`: String of jenkins-${JOB_NAME}-${BUILD_NUMBER}, which is unique for each build.
+`BUILD_URL`: The URL where the results of the build can be found.
+`EXECUTOR_NUMBER`: The number of the executor on which this build is running.
+`JENKINS_HOME`: The absolute path of the directory assigned on the master node for Jenkins to store data.
+`JENKINS_URL`: The URL of the Jenkins master that's running the build.
+`JOB_NAME`: The name of the project of this build.
+`JOB_BASE_NAME`: The base name of the job without the folder path.
+`JOB_UR`L: The URL to the job.
+`NODE_NAME`: Name of the node the build is running on.
+`NODE_LABELS`: Whitespace-separated list of labels assigned to the node.
+`WORKSPACE`: The absolute path of the directory assigned to the build as a workspace.
+### Source Control Management (SCM) Related Variables
+`GIT_BRANCH`: The name of the branch currently being used.
+`GIT_COMMIT`: The commit hash currently being built.
+`GIT_URL`: The URL of the repository.
+##  Parameters
+`PARAMETER_NAME`: If your pipeline uses parameters, each parameter can be accessed via its name.
+## Time and Date Variables
+`BUILD_DISPLAY_NAME`: The display name of the build.
+`BUILD_ID`: The same as BUILD_NUMBER.
+`BUILD_NUMBER`: The current build number, such as "153".
+`BUILD_TAG`: A unique identifier, such as "jenkins-my-job-153".
+`BUILD_URL`: The URL where the build can be found.
+`EXECUTOR_NUMBER`: The executor number on which this build is running.
+`HUDSON_HOME`: The same as JENKINS_HOME.
+`HUDSON_SERVER_COOKIE`: A unique identifier of the current Jenkins instance.
+`JENKINS_HOME`: The home directory of the Jenkins instance.
+`JENKINS_SERVER_COOKIE`: A unique identifier of the current Jenkins instance.
+`JOB_NAME`: The name of the job being executed.
+`JOB_URL`: The URL to the job being executed.
+`NODE_NAME`: The name of the node the build is running on.
+`NODE_LABELS`: The labels of the node the build is running on.
+`WORKSPACE`: The workspace directory where the build is running.
+## Pipeline-specific Environment Variables
+`STAGE_NAME`: The name of the current stage being executed.
+`BUILD_STATUS`: The status of the current build (e.g., "SUCCESS", "FAILURE", "UNSTABLE").
+
+These environment variables provide a wealth of information that can be used to control the behavior of Jenkins pipelines, integrate with other systems, 
+and provide meaningful feedback about the build process.
