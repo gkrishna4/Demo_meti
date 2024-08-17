@@ -560,11 +560,145 @@ node {
 `catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE')`: This command allows the pipeline to continue even if the enclosed steps fail. 
 It sets the stage result to FAILURE but the overall build result remains SUCCESS.
 
-### Scripted Pipeline:
-`try-catch`: Each stage is enclosed in a `try-catch` block to handle exceptions. If an exception occurs, it catches the error, logs it,
-and sets the build result to UNSTABLE, allowing the pipeline to proceed.
+## Scripted Pipeline:
+    `try-catch`: Each stage is enclosed in a `try-catch` block to handle exceptions. If an exception occurs,
+    it catches the error logs and sets the build result to UNSTABLE, allowing the pipeline to proceed.
+---------------------------------------------------------------------------
+### Dynamic Jenkins Pipeline Script
+```
+pipeline {
+    agent any
+    
+    parameters {
+        string(name: 'SERVICES', defaultValue: 'service1,service2,service3', description: 'Comma-separated list of services to build')
+        string(name: 'MVN_PROFILE', defaultValue: 'dev', description: 'Maven profile to use for the build')
+    }
+    
+    environment {
+        DOCKER_REGISTRY = "your-docker-registry" // Replace with your Docker registry
+        BUILD_CONTINUE_ON_FAILURE = 'true'
+        GIT_REPO = "https://your-repo-url.git" // Replace with your Git repository URL
+        SONARQUBE_SERVER = "sonarqube" // SonarQube server name
+    }
 
+    triggers {
+        pollSCM('* * * * *') // Adjust the polling frequency as per your need
+    }
 
+    stages {
+        stage('Checkout Code') {
+            steps {
+                script {
+                    echo "Checking out code from ${GIT_REPO}"
+                    checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: GIT_REPO]]])
+                }
+            }
+        }
+
+        stage('Validate Parameters') {
+            steps {
+                script {
+                    // Convert the SERVICES parameter to a list
+                    servicesList = params.SERVICES.tokenize(',')
+                    
+                    if (servicesList.size() == 0) {
+                        error "No service selected. Please provide at least one service in the SERVICES parameter."
+                    } else {
+                        echo "Selected services: ${servicesList.join(', ')}"
+                    }
+                }
+            }
+        }
+
+        stage('Build Services with Maven') {
+            steps {
+                script {
+                    for (service in servicesList) {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            stage("Maven Build for ${service}") {
+                                echo "Building ${service} with Maven profile ${params.MVN_PROFILE}..."
+                                dir(service) {
+                                    sh "mvn clean install -P${params.MVN_PROFILE}"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                script {
+                    for (service in servicesList) {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            stage("Quality Gate for ${service}") {
+                                echo "Running Quality Gate for ${service}..."
+                                dir(service) {
+                                    sh "mvn sonar:sonar -Dsonar.projectKey=${service} -Dsonar.host.url=${env.SONARQUBE_SERVER}"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Docker Build and Push') {
+            steps {
+                script {
+                    for (service in servicesList) {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            stage("Docker Build and Push for ${service}") {
+                                echo "Building Docker image for ${service}..."
+                                dir(service) {
+                                    sh "docker build -t ${env.DOCKER_REGISTRY}/${service}:latest ."
+                                    sh "docker push ${env.DOCKER_REGISTRY}/${service}:latest"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                echo "Pipeline completed."
+                // Notifications, cleanup, etc.
+            }
+        }
+        failure {
+            script {
+                echo "One or more stages have failed."
+            }
+        }
+    }
+}
+
+```
+### Explanation:
+    1.SCM Checkout (pollSCM):
+        The pollSCM('* * * * *') directive is configured to poll the SCM repository every minute for changes. 
+        Adjust this schedule as needed.The Checkout Code stage checks out the code from a specified Git repository.
+    2. Dynamic Service Validation:
+        The SERVICES parameter is a comma-separated list that determines which services are built. 
+        This is dynamically split into a list (servicesList).
+    3. Maven Build:
+        The Build Services with Maven stage dynamically creates a Maven build stage for each service. 
+        The profile used (dev, prod, etc.) is specified through the MVN_PROFILE parameter.
+    4. Quality Gate (SonarQube):
+        The Quality Gate stage runs SonarQube analysis for each service. The SonarQube server is specified via the SONARQUBE_SERVER environment variable.
+    5. Docker Build and Push:
+        The Docker Build and Push stage builds and pushes Docker images for each service to the specified Docker registry (DOCKER_REGISTRY).
+    6. Error Handling:
+        The catchError directive is used within each service stage to ensure that the pipeline continues even if a stage fails.
+    7. Post Conditions:
+        >> The always block is executed at the end of the pipeline, regardless of the build result, allowing for cleanup or notifications.
+        >> The failure block is executed if any stage fails, giving a final notification of the failure.
+-----------------------------------------------------------------------------
 ## Deploying an application to Kubernetes (K8s) using Jenkins involves several steps, including setting up Jenkins, configuring Jenkins to interact with Kubernetes, and creating a Jenkins pipeline to automate the deployment. Below is a high-level overview of the process:
 
 ### Prerequisites:
