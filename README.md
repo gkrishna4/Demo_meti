@@ -576,13 +576,12 @@ pipeline {
     
     environment {
         DOCKER_REGISTRY = "your-docker-registry" // Replace with your Docker registry
-        BUILD_CONTINUE_ON_FAILURE = 'true'
         GIT_REPO = "https://your-repo-url.git" // Replace with your Git repository URL
-        SONARQUBE_SERVER = "sonarqube" // SonarQube server name
+        SONARQUBE_SERVER = "http://your-sonarqube-server" // Replace with your SonarQube server URL
     }
 
     triggers {
-        pollSCM('* * * * *') // Adjust the polling frequency as per your need
+        pollSCM('* * * * *') // Adjust the polling frequency as needed
     }
 
     stages {
@@ -598,25 +597,30 @@ pipeline {
         stage('Validate Parameters') {
             steps {
                 script {
-                    // Convert the SERVICES parameter to a list
-                    servicesList = params.SERVICES.tokenize(',')
-                    
-                    if (servicesList.size() == 0) {
-                        error "No service selected. Please provide at least one service in the SERVICES parameter."
+                    def services = params.SERVICES.split(',') // Split services into a list
+                    if (!services) {
+                        error "No services provided. At least one service is required."
                     } else {
-                        echo "Selected services: ${servicesList.join(', ')}"
+                        for (service in services) {
+                            if (!fileExists("${service}/pom.xml")) {
+                                error "Specified service '${service}' does not exist or is not a Maven project."
+                            } else {
+                                echo "Service '${service}' is valid."
+                            }
+                        }
                     }
                 }
             }
         }
 
-        stage('Build Services with Maven') {
+        stage('Build and Test Services with Maven') {
             steps {
                 script {
-                    for (service in servicesList) {
+                    def services = params.SERVICES.split(',')
+                    for (service in services) {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            stage("Maven Build for ${service}") {
-                                echo "Building ${service} with Maven profile ${params.MVN_PROFILE}..."
+                            stage("Maven Build and Test for ${service}") {
+                                echo "Building and testing ${service} with Maven profile ${params.MVN_PROFILE}..."
                                 dir(service) {
                                     sh "mvn clean install -P${params.MVN_PROFILE}"
                                 }
@@ -627,13 +631,14 @@ pipeline {
             }
         }
 
-        stage('Quality Gate') {
+        stage('Quality Gate (SonarQube)') {
             steps {
                 script {
-                    for (service in servicesList) {
+                    def services = params.SERVICES.split(',')
+                    for (service in services) {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                            stage("Quality Gate for ${service}") {
-                                echo "Running Quality Gate for ${service}..."
+                            stage("SonarQube Analysis for ${service}") {
+                                echo "Running SonarQube analysis for ${service}..."
                                 dir(service) {
                                     sh "mvn sonar:sonar -Dsonar.projectKey=${service} -Dsonar.host.url=${env.SONARQUBE_SERVER}"
                                 }
@@ -647,7 +652,8 @@ pipeline {
         stage('Docker Build and Push') {
             steps {
                 script {
-                    for (service in servicesList) {
+                    def services = params.SERVICES.split(',')
+                    for (service in services) {
                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                             stage("Docker Build and Push for ${service}") {
                                 echo "Building Docker image for ${service}..."
@@ -683,14 +689,15 @@ pipeline {
     1.SCM Checkout (pollSCM):
         The pollSCM('* * * * *') directive is configured to poll the SCM repository every minute for changes. 
         Adjust this schedule as needed.The Checkout Code stage checks out the code from a specified Git repository.
-    2. Dynamic Service Validation:
-        The SERVICES parameter is a comma-separated list that determines which services are built. 
-        This is dynamically split into a list (servicesList).
+    2. Service Validation:
+        This stage checks if the provided services are valid by ensuring that each service directory contains a pom.xml file, 
+        which indicates it is a Maven project. If any service does not exist or is not a Maven project, the pipeline 
+        will fail early, saving time and resources.
     3. Maven Build:
-        The Build Services with Maven stage dynamically creates a Maven build stage for each service. 
-        The profile used (dev, prod, etc.) is specified through the MVN_PROFILE parameter.
+       Each service is built and tested using Maven with the specified profile (MVN_PROFILE). This stage is
+       dynamically generated for each service.
     4. Quality Gate (SonarQube):
-        The Quality Gate stage runs SonarQube analysis for each service. The SonarQube server is specified via the SONARQUBE_SERVER environment variable.
+       The Quality Gate stage performs static code analysis using SonarQube. The analysis results are pushed to the specified SonarQube server.
     5. Docker Build and Push:
         The Docker Build and Push stage builds and pushes Docker images for each service to the specified Docker registry (DOCKER_REGISTRY).
     6. Error Handling:
