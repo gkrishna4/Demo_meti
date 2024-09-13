@@ -169,6 +169,9 @@ stages {
                         if (!fileExists("${service}/pom.xml")) {
                             error "Specified service '${service}' does not exist or is not a Maven project."
                         }
+                        else {
+                                echo "Service '${service}' is valid."
+                            }
                     }
                 }
             }
