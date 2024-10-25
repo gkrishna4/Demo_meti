@@ -15,24 +15,56 @@ After uploading, Jenkins might require a restart to enable the plugin. Follow th
 ##  Execute multiple stages in parallel within a single parent stage:
 In a Jenkins declarative pipeline, you can execute multiple stages in parallel within a single parent stage by using the `parallel directive`. 
 Here’s an example that shows how you could structure a Jenkins pipeline to execute two stages in parallel within a single "wrapper" stage.
+### Example 1:
 ```
 pipeline {
     agent any
     
     stages {
-        stage('Parallel Stage') {
+        stage('Parallel Testing') {
             parallel {
-                stage('Stage 1') {
+                stage('Linux Tests') {
                     steps {
-                        echo 'Running Stage 1'
-                        // Your commands for Stage 1 go here
+                        echo 'Running tests on Linux'
+                        // Insert commands to run Linux tests here, e.g., `./run-linux-tests.sh`
                     }
                 }
-                
-                stage('Stage 2') {
+                stage('Windows Tests') {
                     steps {
-                        echo 'Running Stage 2'
-                        // Your commands for Stage 2 go here
+                        echo 'Running tests on Windows'
+                        // Insert commands to run Windows tests here, e.g., `run-windows-tests.bat`
+                    }
+                }
+            }
+        }
+    }
+}
+
+```
+### Example 2:
+```
+pipeline {
+    agent any
+    
+    stages {
+        stage('Build Application') {
+            steps {
+                echo 'Building the application...'
+                // Insert your build command here, e.g., `mvn clean install`
+            }
+        }
+        stage('Deploy to Environments') {
+            parallel {
+                stage('Deploy to Staging') {
+                    steps {
+                        echo 'Deploying to Staging Environment...'
+                        // Insert your staging deployment command here, e.g., `kubectl apply -f staging-deployment.yaml`
+                    }
+                }
+                stage('Deploy to Production') {
+                    steps {
+                        echo 'Deploying to Production Environment...'
+                        // Insert your production deployment command here, e.g., `kubectl apply -f production-deployment.yaml`
                     }
                 }
             }
