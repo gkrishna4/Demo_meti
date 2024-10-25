@@ -13,7 +13,7 @@ After uploading, Jenkins might require a restart to enable the plugin. Follow th
 
 ----------------------
 ##  Execute multiple stages in parallel within a single parent stage:
-In a Jenkins declarative pipeline, you can execute multiple stages in parallel within a single parent stage by using the parallel directive. 
+In a Jenkins declarative pipeline, you can execute multiple stages in parallel within a single parent stage by using the `parallel directive`. 
 Here’s an example that shows how you could structure a Jenkins pipeline to execute two stages in parallel within a single "wrapper" stage.
 ```
 pipeline {
@@ -41,7 +41,7 @@ pipeline {
 }
 
 ```
-This Jenkins pipeline runs two tasks, Stage 1 and Stage 2, at the same time using the parallel directive within a single stage called Parallel Execution. By running them in parallel, the pipeline completes both tasks faster, instead of waiting for one to finish before starting the other. The agent any setting allows Jenkins to use any available machine for this job, making the setup flexible and efficient.
+This Jenkins pipeline runs two tasks, `Stage 1` and `Stage 2`, at the same time using the parallel directive within a single stage called Parallel Execution. By running them in parallel, the pipeline completes both tasks faster, instead of waiting for one to finish before starting the other. The agent any setting allows Jenkins to use any available machine for this job, making the setup flexible and efficient.
 
 ## Requirement is to build only single microservice from multiple micro-services:
 build only a single microservice from a monorepo containing multiple microservices, and using Maven as your build tool, you can structure your Jenkinsfile to selectively 
