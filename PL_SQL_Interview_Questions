@@ -44,17 +44,10 @@ VIWES
 		|- Periodic (Scheduled) Refresh
 
 
-
-
-
-
 3) How does the refresh process work internally?
 	|- meterialied view also stores data same like a table but when we are refreshing  materialied view it synechronise the data based on base table
 	   if we want to refresh metirialized view  then we are using refresh procedure from dbms_mview package
 	   syntax:    exec dbms_mview.refresh('meterialized view name')
-
-
-
 
 
 4) What is force view?
@@ -67,16 +60,10 @@ VIWES
 
 
 
-
-
- 
 5) If Any Changes Happen in the Main Tables Used in the Views, Will the View Update Automatically?
 	|- Yes, a regular view will always show the latest data from the main tables because it is just a stored query. Whenever you query the view, it fetches the 	   most recent data from the base tables.
 
 	|- However, a materialized view does not update automatically. It stores a copy of the data and needs to be refreshed (manually, on a schedule, or on-commit) 	   	   to reflect changes in the base tables.
-
-
-
 
 
 
@@ -103,10 +90,7 @@ VIWES
 
       Update will NOT work:
 		|- UPDATE emp_dept_view SET dept_name = 'HR' WHERE emp_id = 101;
-	If the view isn’t updatable, you can use INSTEAD OF triggers to define custom behavior for insert, update, or delete operations.
-
-
-
+      If the view isn’t updatable, you can use INSTEAD OF triggers to define custom behavior for insert, update, or delete operations.
 
 
 	
@@ -115,10 +99,6 @@ VIWES
 		|- Manually by using dbms_mview package
 		|- Automatically.... with out using dbms_view package this method is called as "on commit" method
 
-
-
-
-
 	
 8) What is a materialized view?
 	|- materialized view stores the result of the quary i.e.. materialized view stores the replication of remote Database  into local node
@@ -126,17 +106,10 @@ VIWES
 
 
 
-
-
- 
 10) what is View?
 	|- view used for simplifying  query perpose... i.e.. Regularly used quary we are putting in a view and when ever 
 	   neccessary  select that view, when a view contain functions/expressions then we must create alias name for those functions/expressions
 	   otherwise oracle server returns an error.
-
-
-
-
 
 
 11) Difference b/w View and Materialized view?
@@ -174,9 +147,6 @@ Indexs
 
 
 
-
-	
-
 2) Types of Indexes?
      |- Oracle having 2 types of indexes 
 		|- Btree indexes
@@ -207,9 +177,6 @@ Indexs
 
 
 
-
-
-
 4) Explain bitmap indexes.
 	|- when ever we are creting betmap index then oracle server internally automatically creates a 
 	   bit map table based on the column values in a table
@@ -218,9 +185,6 @@ Indexs
 	   and  bitmap into RowId by using Internal bitmap function
 		
             syntax:  create bitmap index indexname on tablename(colunname);
-
-
-
 
 
 
@@ -236,16 +200,12 @@ Indexs
 								   stored function
 
 
-
-
 			
 6) Diff between clusterd and non clusterd index?
 	|- clustered index:- The data in the table is stored in the order of the index (only one per table). 
 			     example:- the table data is sorted by Employee_ID.
 	|- non-clustered index:- The data in the table stays in its original order, but the index helps quickly 
 				 find data based on a different column (like Salary).
-
-
 
 
 
@@ -257,8 +217,6 @@ Indexs
 	|- if we want to view plan table then we are using DISPLAY function dbms_xplan.package by using following syntax
 		syntax:-  select * from table(dbms_xplan.display())
 		
-
-
 
 
 Triggers
@@ -279,9 +237,6 @@ Triggers
 	   these Qualifiers :old, :new, are also called as record type variables.
 
 
-
-
-
 2) What is mutating error? How to avoid mutating error using compound trigger?
 
 	|- into a row level trigger based on a table trigger body connot read data from same table and also we can not perform DML Oparation on same table 
@@ -291,8 +246,6 @@ Triggers
 	   data comminted into the data base, where as in row level trigger when we are performing transaction data is not committed and also 
 	   again we are reading this data  from the same table then only mutating errors occured.
 	|- To Avoid mutating errors we are using autonomous transaction gives previous result.
-
-
 
 
    
@@ -313,8 +266,6 @@ Triggers
 
 
 
-
-
 6)Can you use commit and rollback commands in a trigger?
 	|- The use of COMMIT and ROLLBACK commands in a trigger is not allowed.
 	|- If you need to execute a COMMIT or ROLLBACK logic in a trigger-like scenario, you can use autonomous transactions.
@@ -331,9 +282,6 @@ Triggers
 	   instead of trigger are row-level trigger and also insted of trigger are created a views
 
 
-
-
-		
 
 8)What are triggering events or trigger predicate clauses in PL/SQL?
 	|- Triggering Events:
@@ -362,9 +310,6 @@ Functions/Procedures
 		|- charactor Functions (upper,lower,initcap,length,trim,L-trim, R-trim, substr,instr,l-pad,r-pad, replace,tanslate,concat)
 		|- Number Functions (abs, mod, round, ceil, floor, gratest, least)
 		|- Date Functions ( sysdate, add_months, next_day, months_between)
-
-
-
 
 	
 
@@ -397,16 +342,12 @@ Functions/Procedures
 	   perminently stored in database. thats why these procedures are also called as stored procedures.
 
 
-
-
 		
 	
 5) What is the use of the raise_application_error procedure in PL/SQL?
 	|- raise_application_error is predefind procedure avilable in dbms_standard package.
 	|- if we want to display userdefind exception messages as same as oracle error displayed formate  then we must use raise_application_error()
 	   procedure this procedure is used either in executable section or the exception section of pl/sql block
-
-
 
  
 
@@ -418,8 +359,6 @@ Functions/Procedures
 
 
 
-
-
 7) When should you use a procedure, and when should you use a function in PL/SQL?
 	|- In oracle when Application request to return multiple value then we must use procedures by using out parameters
 	|- whenever an application requires DML statements then also must use procedures.
@@ -428,16 +367,11 @@ Functions/Procedures
 
 
 
-
-
 8) What is the difference between a procedure and a package in PL/SQL?
 	|- "If I just need to do one specific task, I use a procedure. But if I have several related tasks,
 	    I group them into a package for better organization. For example, managing employee data might have 
 	    multiple tasks like updating salaries, calculating bonuses, and fetching details. Instead of having 
 	    separate procedures scattered around, I put them all into a package, making it easier to manage and maintain."
-
-
-
 
 
 	
@@ -458,7 +392,6 @@ Functions/Procedures
 
 
 
-
 10) What is pragma autonomous transaction / autonomous transaction?
 	|- Genarally orcale will not create separate transactions for procedure.. i.e.. when we are calling proceure in main transaction then procedure 
 	   transcations are always behaves like a part of main trancsaction. to overcome this problem oracle 8i intraduced  autonomus transactions in
@@ -475,7 +408,6 @@ Functions/Procedures
 	|- error logging:- in pl/sql storing error numbers, error numbers with exception messages in a table and also cancel invalid transactions is called 
 			   error loging . in this case we must use autonomus transactions.
 	
-
 
 
 11) What is the purpose of the pragma exception_init in PL/SQL?
@@ -545,9 +477,6 @@ Joins
 			                internally use using clause.
 			            |-  when ever we using natural join also then we are not allowed to use alias name to joining conditional column, because
 			                natural join internally uses using clause. 
-
-
-
 
 
 
@@ -729,8 +658,6 @@ Exceptions
 
 5) What is SAVE EXCEPTION? Implement it in your program.
  
-
-
 
 
 Collections/BULK COLLECT 
@@ -917,8 +844,6 @@ SUBQUERIES
 
 
 
-
-
 11) Write an SQL Query to display most recently joined employee in each department from emp table by using lead function?
 	|- select * from (
 	      select deptno, ename, hiredate, lead(hiredate) over(
@@ -926,12 +851,8 @@ SUBQUERIES
 
 
 
-
-
 12)Write an SQL Query to display 1st and last row from emp table?
 	|- select * from (select rounum r, ename, sal from emp) where r=1 or r=(select count(*) from emp);
-
-
 
 
 
@@ -948,9 +869,6 @@ SUBQUERIES
 	   minus
 	   select * from emp where rownum <= 3;
 	   
-
-
-
 
 
 
@@ -990,10 +908,6 @@ SUBQUERIES
 		   until the end of the string, which is the domain part of the email.
   
 3)Discuss the importance of query execution plans and how they impact performance?
-
-
-
-
 
 
 
