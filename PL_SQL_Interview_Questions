@@ -1,0 +1,1168 @@
+VIWES
+======
+1) Can we update a view if it is created using multiple table joins?
+
+	|- Yes, but only if the view directly maps to one table for the columns you want to update.
+	|- If the view involves complex joins or calculations, you can't update it directly.
+	|- For cases where direct updates are not possible, we can use INSTEAD OF triggers to handle updates.
+	If a view shows data from two tables, you can update it only if the column belongs to one table, not both or neither.
+
+		Imagine we have two tables:
+		|- employees
+			|- Columns: emp_id, name, dept_id
+		|- departments
+			|- Columns: dept_id, dept_name
+
+	We create a view joining these tables:
+		|- CREATE OR REPLACE VIEW emp_dept_view AS
+			SELECT e.emp_id, e.name, d.dept_name
+			FROM employees e
+			JOIN departments d ON e.dept_id = d.dept_id;
+    Now, can we update this view?
+	If you try to update name (from employees), it works because it belongs to one table.
+		Example:
+			|- UPDATE emp_dept_view
+			   SET name = 'John Doe'
+                           WHERE emp_id = 101;
+
+	This will update the employees table.
+	If you try to update dept_name (from departments), it won’t work because it’s not clear how to handle updates across multiple tables.
+	For more complex scenarios, we use INSTEAD OF triggers to define how updates should be applied.
+
+
+
+
+
+
+2) What are the different refresh methods for materialized views?
+	|- Materialized Views can be refreshed using several methods, depending on the use case and data requirements
+		|- Complete Refresh
+		|- Fast Refresh
+		|- Force Refresh
+		|- On-Demand Refresh
+		|- On-Commit Refresh
+		|- Periodic (Scheduled) Refresh
+
+
+
+
+
+
+3) How does the refresh process work internally?
+	|- meterialied view also stores data same like a table but when we are refreshing  materialied view it synechronise the data based on base table
+	   if we want to refresh metirialized view  then we are using refresh procedure from dbms_mview package
+	   syntax:    exec dbms_mview.refresh('meterialized view name')
+
+
+
+
+
+4) What is force view?
+	|- In Oracle we can also create a view without having base table these type of views are also called as forced view
+		syntax:-
+			create or replace 
+			force view viewname
+			as 
+			select * from anyname;
+
+
+
+
+
+ 
+5) If Any Changes Happen in the Main Tables Used in the Views, Will the View Update Automatically?
+	|- Yes, a regular view will always show the latest data from the main tables because it is just a stored query. Whenever you query the view, it fetches the 	   most recent data from the base tables.
+
+	|- However, a materialized view does not update automatically. It stores a copy of the data and needs to be refreshed (manually, on a schedule, or on-commit) 	   	   to reflect changes in the base tables.
+
+
+
+
+
+
+6) Is Insertion, Updating, or Deletion Possible Directly on the View?
+
+	Yes, it is possible, but only if the view is updatable.
+	For a view to be updatable:
+		|- It must be based on a single table.
+		|- It should not contain complex joins, aggregations, or calculations.
+		|- The columns being updated must directly map to columns in the base table.
+		
+      Updatable View (Single Table):
+		|- CREATE VIEW emp_view AS
+		   SELECT emp_id, name FROM employees;
+
+      Update works:
+		|- UPDATE emp_view SET name = 'John' WHERE emp_id = 101;
+	
+      Non-Updatable View (Multiple Tables or Aggregation):
+		|- CREATE VIEW emp_dept_view AS
+		   SELECT e.emp_id, e.name, d.dept_name
+		   FROM employees e
+                   JOIN departments d ON e.dept_id = d.dept_id;
+
+      Update will NOT work:
+		|- UPDATE emp_dept_view SET dept_name = 'HR' WHERE emp_id = 101;
+	If the view isn’t updatable, you can use INSTEAD OF triggers to define custom behavior for insert, update, or delete operations.
+
+
+
+
+
+	
+7) How do you schedule a refresh manually?
+	|- Generally we are refreshing Materialized view in 2 ways
+		|- Manually by using dbms_mview package
+		|- Automatically.... with out using dbms_view package this method is called as "on commit" method
+
+
+
+
+
+	
+8) What is a materialized view?
+	|- materialized view stores the result of the quary i.e.. materialized view stores the replication of remote Database  into local node
+	    & also stores data same like table, but when we are refreshing the materialized view it synechronize the data based on the base table.
+
+
+
+
+
+ 
+10) what is View?
+	|- view used for simplifying  query perpose... i.e.. Regularly used quary we are putting in a view and when ever 
+	   neccessary  select that view, when a view contain functions/expressions then we must create alias name for those functions/expressions
+	   otherwise oracle server returns an error.
+
+
+
+
+
+
+11) Difference b/w View and Materialized view?
+	View
+	 |- view does not store data
+	 |- seurity perpose
+	 |- when we are droping base table then view does not be accessble
+	 |- througn the view we can perform DML oparations.
+	Materialized view
+	 |- Materialized view stores data
+	 |- improve perforance purpose
+	 |- when we are droping the base table also Materialized view can be access
+	 |- we can not perform the DML Oparations.
+	
+
+	
+
+
+Indexs
+======
+1) what is index? Explain in details?
+	|- Index is a database Object which is used to retrive the data very fastly from the database thats why indexs are used to improvment of quary
+	|- Genarally idexes are created on table cloumns and also indexes are created by database admin.
+	|- In Oracle we are creating indexes in 2 ways
+		|- Automatically
+			|- in Oracle whenever we are creating a primary key or unique key in a table
+			   column then oracle server internally automatically  creates a btree indexes on those columns
+		|- Manually
+			|- we can also create index explicitly by using following syntax
+				create index indexname on tablename(column name);
+	|- when ever we are requesting the data by using "where clause" or "order by clause"
+	   then only DB server serching for indexes
+	|- In Oracle whenever "where clause" having "!="   or "is null" or "is not null" Oparaters then
+	   oracle server doesn't serch for indexes. if these columns already having indexes also. 
+
+
+
+
+	
+
+2) Types of Indexes?
+     |- Oracle having 2 types of indexes 
+		|- Btree indexes
+		|- Bitmap Indexes
+
+
+
+	
+3) What is the difference between an index-by table, a nested table, and a varray in PL/SQL?
+	index-by table:
+		|- index by tabale is an unbounded table having key value pairs.
+		|- index by tabes are not allowed to store perminently in oracle data base 
+		|- we can not add/remove indexes
+		|- here indexes are either integers or charactors and also +ve,-ve numbers.
+		|- index by table having exists,first, last, prior, next, count, delete(index), delete(one index, another index), delete collection methods.
+	
+	nested table:
+		|- it is a bounded table, nested tables are allowed to store perminently in oracle database by using sql.
+		|- we can add or remove indexes by using extend, trim collection methods
+		|- here always indexes are integer starts with 1
+		|- nested table having exists,extends, trim, frist, last, prior,next,count, delete(index), delete(one index, another index), delete collection methods.
+	varray
+	   |- varry is a bounded table which stores 2GB data, we can also store varry permanently into data base by using  SQL
+	   |- we can add or remove indexes by using extend, trim collection methods
+	   |- here always indexes are integer starts with 1
+	   |- varry having exists,extends, trim, frist, last, prior,next,count,,limit,delete collection methods.
+
+
+
+
+
+
+
+4) Explain bitmap indexes.
+	|- when ever we are creting betmap index then oracle server internally automatically creates a 
+	   bit map table based on the column values in a table
+	|- when user request a data by using "logical oparator" or "equality oparator" in where clause
+	   then bit are oparated with in Bitmap table then oracle server automatically converts result
+	   and  bitmap into RowId by using Internal bitmap function
+		
+            syntax:  create bitmap index indexname on tablename(colunname);
+
+
+
+
+
+
+5) What Function based index?
+
+	|- Whenever "where clause" having functions or expressions then oracle server doesnot serch for 
+	   indexes if these columns already having indexes also.
+	|- to overcome this problem oracle intaduces extension of the btree indexes called function based 
+	   indexes on columns along with functions.
+	By default function based indexes also btree indexes 
+		|- Syntax:- create index indexname on tablename(functionname(columnname));
+									(or)
+								   stored function
+
+
+
+
+			
+6) Diff between clusterd and non clusterd index?
+	|- clustered index:- The data in the table is stored in the order of the index (only one per table). 
+			     example:- the table data is sorted by Employee_ID.
+	|- non-clustered index:- The data in the table stays in its original order, but the index helps quickly 
+				 find data based on a different column (like Salary).
+
+
+
+
+
+	
+7) How to find query is using index or not?
+	|- use an explain plan for clause in front the Quary.
+		Syntax:-  explain plan for select statement.
+	   when ever we use specifying this clause oracle server internally autoatically creates a plan table, which display Quary performance
+	|- if we want to view plan table then we are using DISPLAY function dbms_xplan.package by using following syntax
+		syntax:-  select * from table(dbms_xplan.display())
+		
+
+
+
+
+Triggers
+========
+1) What is trigger and explain its types in PL/SQL?
+    |-trigger is also same as stored procedure & also it will automatically invoked whenever
+       DML oparation performed against table or view
+	  |- There are two types of triggers supported in PL?SQL
+		|- Statement level trigger	
+		|- Row level trigger
+   Statement level trigger: 
+	|- In Statement level trigger, trigger body is executed only once for DML statement, here 
+	   we are not allowed to use old, new Qualifiers and also Statement level trigger doesn't have for row.
+	   in all DB if we want to implement  time compliment application  through triggers then we must use statement level triggers
+   Row level trigger:-
+	|- In Row level trigger, trigger body is executed by each row for DML statement.thats why we are using for each row clause
+	   in trigger specification  and also DML transaction  values are internally stored in two two rollback segments qualifiers,
+	   these Qualifiers :old, :new, are also called as record type variables.
+
+
+
+
+
+2) What is mutating error? How to avoid mutating error using compound trigger?
+
+	|- into a row level trigger based on a table trigger body connot read data from same table and also we can not perform DML Oparation on same table 
+	   if we are tring this oracle server returns an error Ora-4019: table is mutating 
+	|- this error is called mutating error. and this trigger is also called mutating trigger, and table is called mutating table.
+	|- mutating error are not occures in statement level trigger becouse through these statement level trigger when we are performing  DML Oparations Automatically
+	   data comminted into the data base, where as in row level trigger when we are performing transaction data is not committed and also 
+	   again we are reading this data  from the same table then only mutating errors occured.
+	|- To Avoid mutating errors we are using autonomous transaction gives previous result.
+
+
+
+
+   
+3)What is the "follows" clause in a trigger?
+
+	|- Generally in all data bases we can not control execution order of the trigger when we are using the same level of trigger in same table.
+	   to overcome this problem oracle 11g intraduced follows clause in triggers specification. which is used to control execution order of the 
+	   trigger s explicitlly. when we are using same level of triggers in same table.
+
+
+
+
+4) Write a trigger to log insert activities into a log table?
+
+5) What is the difference between constraints and triggers in a database?
+	|- Constraints: Simple, declarative rules to enforce data integrity (e.g., primary keys, foreign keys). They are automatic and efficient.
+	|- Triggers: Procedural and flexible, used for complex logic or extra actions (e.g., logging or custom validations).
+
+
+
+
+
+6)Can you use commit and rollback commands in a trigger?
+	|- The use of COMMIT and ROLLBACK commands in a trigger is not allowed.
+	|- If you need to execute a COMMIT or ROLLBACK logic in a trigger-like scenario, you can use autonomous transactions.
+	    An autonomous transaction is a separate transaction that is independent of the main transaction.
+	|- The PRAGMA AUTONOMOUS_TRANSACTION allows the trigger to commit changes in the audit_log table without affecting the main transaction.
+
+
+
+	
+ 
+7)What is an "instead of" trigger in PL/SQL?
+	|- Genarally we can not perform the DML Oparations throuh complex views to base table.
+	|- To Over come this problem 8.0 intraduced "instead of triggers" in pl/sql. By default 
+	   instead of trigger are row-level trigger and also insted of trigger are created a views
+
+
+
+
+		
+
+8)What are triggering events or trigger predicate clauses in PL/SQL?
+	|- Triggering Events:
+		These are the actions (like INSERT, UPDATE, or DELETE) that cause a trigger to fire. Triggers can also
+		respond to DDL commands (CREATE, DROP) or database events (LOGON, SHUTDOWN)."
+	|- Trigger Predicate Clauses:
+		These are conditions (INSERTING, UPDATING, DELETING) inside a trigger that let us know which specific 
+		event caused the trigger to fire, so we can handle each case differently
+
+
+
+
+
+9)What does ‘FOR EACH ROW’ mean in a trigger?
+	|- "FOR EACH ROW makes a trigger once for every row affected by a DML operation. It allows us to handle each row individually
+	    and access its old and new values using the :OLD and :NEW pseudo-records."
+
+
+
+
+Functions/Procedures
+=====================
+1) What are the functions used in SQL?
+	|- Functions used in SQL is
+		|- Aggregate Functions (min,max,sum,avg,count)
+		|- charactor Functions (upper,lower,initcap,length,trim,L-trim, R-trim, substr,instr,l-pad,r-pad, replace,tanslate,concat)
+		|- Number Functions (abs, mod, round, ceil, floor, gratest, least)
+		|- Date Functions ( sysdate, add_months, next_day, months_between)
+
+
+
+
+	
+
+2) Explain the difference between a function and a procedure in PL/SQL?
+	Function:
+	   |- A function is a block of code that returns a single value.
+	   |- It is typically used when you need to perform a calculation or retrieve a value (like a result from a query).
+	   |- You can use a function in SQL expressions (e.g., in a SELECT statement, or as part of an assignment).
+	Procedure:
+	   |- A procedure is a block of code that does not return a value directly (it may modify data or perform an action).
+	   |- It is used when you want to perform an operation, such as updating records, logging, or calling other procedures.
+	   |- You cannot use a procedure in a SQL expression.
+
+
+
+
+	
+3) How do you optimize stored procedures for improved performance in PL/SQL?
+	|- To improve the performance of stored procedures in PL/SQL, focus on writing efficient code and avoiding unnecessary operations.
+	    |- Genaerally procedures are used to improves performance of the application  because procedures internally having one time compilation
+	    |- in all DB's by default one time compilation programs improves performance of Application.
+
+
+
+
+
+4) What Is a Stored Procedure?
+	|- proceure is a named pl/sql block which is used to solve perticular task. and proceure may or maynot return a value
+	|- In oracle whenever we are using "create or replace" keyword in front of the procedure. then those procedures are automatically
+	   perminently stored in database. thats why these procedures are also called as stored procedures.
+
+
+
+
+		
+	
+5) What is the use of the raise_application_error procedure in PL/SQL?
+	|- raise_application_error is predefind procedure avilable in dbms_standard package.
+	|- if we want to display userdefind exception messages as same as oracle error displayed formate  then we must use raise_application_error()
+	   procedure this procedure is used either in executable section or the exception section of pl/sql block
+
+
+
+ 
+
+
+6) What is an overloaded procedure in PL/SQL?
+	|- overlode is refers to same name can be used for difference purpose in oracle we can also 
+	   implement overoding procedure through package. overloding procedure having same name with diff type or
+	   diff no of parameters
+
+
+
+
+
+7) When should you use a procedure, and when should you use a function in PL/SQL?
+	|- In oracle when Application request to return multiple value then we must use procedures by using out parameters
+	|- whenever an application requires DML statements then also must use procedures.
+	|- Whenever application request to execute by using select statement then must use function and also if we want 
+	   to calulate the value then also must use functions.
+
+
+
+
+
+8) What is the difference between a procedure and a package in PL/SQL?
+	|- "If I just need to do one specific task, I use a procedure. But if I have several related tasks,
+	    I group them into a package for better organization. For example, managing employee data might have 
+	    multiple tasks like updating salaries, calculating bonuses, and fetching details. Instead of having 
+	    separate procedures scattered around, I put them all into a package, making it easier to manage and maintain."
+
+
+
+
+
+	
+9) How Do You Create a Small Stored Procedure?
+	|- Define the Procedure:
+		|- Use the CREATE OR REPLACE PROCEDURE statement.
+		|- Specify the name of the procedure.
+		|- Optionally, include parameters (input, output, or both).
+	|- Write the Body:
+		|- The body begins with the IS or AS keyword.
+		|- Add any necessary declarations, if required, in the DECLARE section.
+		|- Write the logic in the BEGIN ... END block.
+	|- Compile the Procedure:
+		|- Execute the CREATE PROCEDURE command in a PL/SQL environment (like SQL*Plus, SQL Developer, or any database client).
+		|- If there are no errors, the procedure is stored in the database.
+	|- Call the Procedure:
+		|- Use the EXECUTE command or call it within an anonymous block.
+
+
+
+
+10) What is pragma autonomous transaction / autonomous transaction?
+	|- Genarally orcale will not create separate transactions for procedure.. i.e.. when we are calling proceure in main transaction then procedure 
+	   transcations are always behaves like a part of main trancsaction. to overcome this problem oracle 8i intraduced  autonomus transactions in
+	   procedures. when ever we are using autonomus transactions in procedures then oracle server create saparate transactions for procedures.
+
+	|- thats why in this case procedure transactions are never effected  in main transactions and also main transactions commit/rollback commands
+	   are never effected in procedure transactions.
+
+	|- if we want to procedure autonumus then we are using atonumus_transaction_pragma, commit.
+	|- in declare section of the procedure we are defining autonumus transcation pragma and also must use commit in procedure coding.
+		 syntax:-     pragma autonomus_transaction.
+
+  uses of autonomus transactions:
+	|- error logging:- in pl/sql storing error numbers, error numbers with exception messages in a table and also cancel invalid transactions is called 
+			   error loging . in this case we must use autonomus transactions.
+	
+
+
+
+11) What is the purpose of the pragma exception_init in PL/SQL?
+	|- in oracle if we want to handle other than 20 predefind exception name error then we must used unnamed method.
+	|- in this method we are creating our own exception name and they associates this exception name with appropriate error number by using
+	   EXCEPTION_INIT function, this function accepts 2 parameters.	
+	|- syntax:   pragma exception_init(userdefind-exception-name, error name);
+	|- and this function is used in declare section pl/sql block.
+	|- here pragma is a compilar diclarative. i.e... when ever we are using pragma, oracle server internally associates error no, with exception
+	   name at the time of compilation.
+
+12)What is the significance of the 'PRAGMA' directive in PL/SQL? In what situations would you use it?
+
+	|- The PRAGMA directive in PL/SQL provides special instructions to the compiler for optimization, compatibility, and advanced control.
+	|-Common use cases:
+		|- EXCEPTION_INIT: Map Oracle errors to custom exceptions.
+		|- AUTONOMOUS_TRANSACTION: Perform independent transactions (e.g., logging).
+		|- SERIALLY_REUSABLE: Optimize memory in multi-user systems.
+		|- RESTRICT_REFERENCES: Ensure purity for SQL-callable functions.	
+	|- By using PRAGMA, we can make your code more efficient, organized, and adaptable to specific needs.
+
+Joins
+======
+1) Types of Joins.
+	          |- Joins are used to retrive the data from multiple tables
+	          |- In all databases if you are joining 'n' table then we are using (n-l) joining condition.
+	      8i- Joins
+		        |- Equi join/inner join
+		        |- non-equi join
+		        |- self join
+		        |- outer join
+	      9i- Joins
+		        |- INNER JOIN
+		        |- LEFT OUTER JOIN,
+		        |- RIGHT OUTER JOIN
+		        |- FULL OUTER JOIN
+		        |- NATURAL JOIN
+
+
+
+
+		
+2) Differentiate between INNER JOIN, LEFT OURTER JOIN,RIGHT OUTER JOIN, FULL OUTER JOIN, NATURAL JOIN? When to use each of these join?
+		      |- INNER JOIN:
+			            |- this join also returns matching rows only, here also join conditional colunm must belongs to the same type. 
+			               when tables having common column then only we are allowd to use inner join. here inner join performance is very high 
+			               compare to oracle 8i equi join
+			            |- using clause:
+				                |- in 9i joins we can also use "using clause" in place of "on clause"  genarally using clause performance very high
+				                   compare to on clause and also "using clause" returns common column one time only
+				                |- when ever we are using "using clause" then we are not allowed to use alias name in joining condition.
+
+		    |- LEFT OUTER JOIN:
+			            |- This join always returns all rows from the left side and matching rows form the right side table & also returns 
+		                 null values inplace of non-matching rows in another table.
+		    |- RIGHT OUTER JOIN
+			            |- This join always returns all rows from the right side and matching rows form the left side table & also returns 
+		                  null values inplace of non-matching rows in another table.
+		    |- FULL OUETRT JOIN
+			            |- this join returns all rows from all tables becouse it is a combination of left, right- outer joins.
+			            |- this join also returns null values in place of non matching rows in another table.
+		    |- Natural Join
+			            |- this join also returns matching rows only, this join performance is very high compare to inner join.
+			            |- in this join we are not requred to use joining condition explicitly. but inthis case resource tables must have  
+			               a comman column name based on this common  column oracle server only internally automatically establishes joining condition.
+			            |-  when ever we are using natural join oracle server always returns common column one time only because natural join'		
+			                internally use using clause.
+			            |-  when ever we using natural join also then we are not allowed to use alias name to joining conditional column, because
+			                natural join internally uses using clause. 
+
+
+
+
+
+
+
+CURSORS
+=========
+1) What is implicit cursor, explicit cursor? What are the cursor attributes?
+	        |- cursor is a private sql memory area which is used to process multiple records & also this is a record by record process
+	        |- All DB system having 2 types static cursors those are
+		            |- Explicit cursor
+		            |- implicit cursor	
+	Explicit cursor:
+		    |- for sql statement returns multiple records is called explicit cursur & also this is a record by record process
+		       and also this memory area we can call it as Active set area.
+	     Attributes:
+	        	|- %no data found
+		        |- %found
+		        |- %is Open
+		        |- %rowcount
+	Implicit cursor:
+		    |- For SQL statements returns single record is called implicit cursor, implicit memory area is also called as context area.
+		    |- In oracle whenever pl/sql block having select into clause or pure DML statements then oracle server internally automatically
+		       allocates the memory area is called as SQL area/context area/implicit cursor. 
+		    |- this memory area always returns single record when pl/sql block having select into clause.
+	   Attributes:
+		    |- sql%no data found
+		    |- sql%found
+		    |- sql%is open
+		    |- sql%rowcount.
+
+
+
+
+2) What is a cursor for loop in PL/SQL?
+	      |- Using cursor "for" loop we are eliminating explicit cursor life-cycle. i.e.. when ever we are using cursor for loop no need to
+	         use open, fetch, close statements explicitly
+	      |- when we are using cursor for loop oracle server only internally automatically open the cursor, and then fetch data from cursor
+	         and close the cursor.... and it is used in Executable section of pl/sql block.
+	      |- in cursor for loop index veriable internally behaves like a record type veriable(%rowtype).
+
+
+  
+	
+3) What is a parameterized cursor in PL/SQL?
+	      |- In Oracle we can also pass parameters to the cursor same like a subprogram "in" parameters. these parametes cursor are called as 
+	         prameterized cursor.
+      	|- in Prametarized cursor we are defining foral parameter when we are defining the cursor and also pass actual parameters when we are
+	          open in the cursor.
+	      |- in Oracle whenever we are defining the formal parameter in cursor/function/procedure then we are not allowd to use datatype size in
+	         formal parameter declaration.
+
+
+
+
+4) What is the difference between a strong refcursor and a weak refcursor in PL/SQL? 
+	   |- Refcursor is a pointer to a query result set. These are two types: strong refcursor and weak refcursor.
+     strong refcursor:
+	          |- Predefined structure: The refcursor has a fixed return type defined at compile time (e.g., specific columns and data types).
+	          |- Error checking: It’s safer because the compiler ensures that the cursor’s query matches the defined structure.
+      weak refcursor:
+	          |- Flexible structure: The refcursor can return any structure at runtime; it doesn’t have a fixed return type.
+	          |- No error checking: The structure is checked only at runtime, so there’s more risk of mismatches.
+ 
+
+	
+5) What is the difference between a cursor and a refcursor in PL/SQL?
+	            |- Cursor is static and fixed to one query, while refcursor is dynamic and can be used for multiple queries.
+	            |- Cursor is local, whereas refcursor is flexible and reusable across different program units.
+
+
+6) What is the difference between a cursor and a collection in PL/SQL?
+	        |- Use a cursor when you need to fetch and process rows from a query directly.
+	        |- Use a collection when you need to store data in memory for temporary storage, manipulation, or bulk processing.
+
+
+7) When should you use a cursor, and when should you use a collection in PL/SQL?
+	      |- Use cursors to fetch and process data directly from the database, especially when the dataset is large and you process it incrementally.
+	      |- Use collections for in-memory storage and bulk processing when you want to work with data without repeatedly querying the database.
+
+
+
+
+
+8) What is Dynamic Cursor(ref cursor) ? Diff between static cursor and dynamic cursor?
+	    |- Ref Cursor: A pointer to a query result set, dynamic and reusable. Use it for flexible and modular programming.
+		                 allowing the query to be defined at runtime, ideal for changing query requirements.
+	    |- Static Cursor: Predefined and fixed, best when the query is constant.
+
+
+
+
+
+9) Discuss the significance of cursor variables in PL/SQL?
+	          |- Provide flexibility to handle dynamic queries at runtime.
+	          |- Enhance reusability by being passed between program units.
+	          |- Enable efficient result set management and resource control.
+          	|- Support dynamic applications and improve modularity.
+	          |- Simplify code maintenance by reducing the need for multiple static cursors.
+
+
+
+
+
+Exceptions
+===========
+1) What are the exceptions in PL/SQL? How to handle exceptions in PL/SQL
+	      |- whenever the runtime error is occured  use an appropriate exception name in exception handler under exception section of pl/sql block
+	      |- Oracle provided 3 types of exceptions
+		          |- predefind exception
+		          |- user defind exception
+		          |- unnamed exception/ non-predefind exception
+	
+    predefind exception:
+	                  |- oracle provided 20 predefind exception name for regularly occured runtime error
+	                  |- whenever the runtime error is occured use corresponding  predefind exception name in exception handler and eception section of pl/sql block.
+    user defind exception:
+	                  |- in oracle we can also create our own exception name and raised when ever neccesary, these exceptions explicitly these type of exceptions are also 
+	                     called as user defind exceptions
+	                  |- in DB's if we want to raise exception based on the client business rule then only we are using user defind exception. 
+    unnamed exception/ non-predefind exception
+	                  |- in oracle if we want to handle other than 20 predefind exception name error then we must used unnamed method.
+	                  |- in this method we are creating our own exception name and they associates this exception name with appropriate error number by using
+	                     EXCEPTION_INIT function, this function accepts 2 parameters.	
+	                                |- syntax:   pragma exception_init(userdefind-exception-name, error name);
+	                  |- and this function is used in declare section pl/sql block.
+	                  |- here pragma is a compilar diclarative. i.e... when ever we are using pragma, oracle server internally associates error no, with exception
+	                     name at the time of compilation.
+
+
+2) Explain the predefined exceptions in PL/SQL?
+	|- Some regularly used predefind exceptions are:
+		|- no_data_found
+		|- too_many_rows
+		|- dup_val_on_index
+		|- Invalid_cursor
+		|- Cursor_already_open
+		|- zero_devide
+		|- invalid_number
+		|- value_error
+    
+     no_data_found:
+	        |- when ever pl/sql block having select into clause and also if the requested data is not available then oracle server returns an error
+	           ora-1403: no data found. eception name
+     too_many_rows:
+	        |- when ever select into clause try to return multiple records or try to return multiple values in a single column at a time then oracle
+	           server returns ann error  ora-1422: exact fetech returns more then requeste number of rows.
+     dup_val_on_index:
+	        |- in oracle when we try to insert duplicate value into "primary key" column or when we try to insert duplicate values in "unique constraints" 
+	           column then oracle server returns an error ora-0001: unique constrains Violated.
+     Invalid_cursor:
+	        |- In Oracle when we are not Open the cursor but we are try to perform Oparation of cursor then oracle server returns an error 
+	           ora-1001: invalid cursor
+     Cursor_already_open:
+	        |- before we are re-open the cursor we must close the cursor properly otherwise oracle server retruns an error.
+	           ora-6511: cursor already open.
+    zero_devide:
+	        |- in oracle when we are try to perform division by zero then oracle sever retruns an error
+	           ora-1476: divisor is equal to zero.
+    invalid_number:
+	        |- when pl/sql block have sql statements  and also these sql statements try to convert STRING type to NUMBER type or DATE STRING into DATE 
+	           then oracle server retruns an error.. ora-1722:invalid number
+    value_error:
+	        |- when ever pl/sql block having procedural statements and also these statements find to convert string type to number type then oracle server
+	           retruns an error... ora-6502: numaric or value error: charactor to number conversion error.
+
+ 
+3) What is exception propagation in PL/SQL?
+	        |- In Pl/SQL exceptions also occured in declare section, exception section, executable section.
+	        |- when exeption raised in executable section those exceptions are handled in inner blocks and outer blocks
+	        |- where as when exceptions are raised in  declare section or in exception section those exceptions are handled in outer block only. 
+	           this is called pl/sql propagation.
+
+
+4) If a PL/SQL block has two exceptions: user-defined and pre-defined, which one will be executed first?
+	      |- In PL/SQL, whichever exception (user-defined or pre-defined) is raised first during program execution will be handled first. 
+	         The order of occurrence determines which exception runs, not the type.
+
+
+
+5) What is SAVE EXCEPTION? Implement it in your program.
+ 
+
+
+
+
+Collections/BULK COLLECT 
+========================
+1)Explain the usage of collections in PL/SQL?
+	|- Simplifies Code: 
+			|- Collections reduce the need for multiple variables, making the code cleaner and easier to maintain.
+	|- Improves Performance:
+			|- Bulk operations with collections reduce context switching between PL/SQL and SQL.
+	|- Dynamic and Flexible: 
+			|- Collections can grow or shrink as needed, depending on the type.
+
+
+2)What are the Collections in PL/SQL?
+	|- Collections in PL/SQL are dynamic data structures that store multiple values of the same type.
+		|- Types:	
+			|- Associative Arrays: Key-value pairs for dynamic and sparse data.
+			|- Nested Tables: Table-like collections that grow dynamically.
+			|- VARRAYs: Fixed-size arrays for bounded data.
+	  Use collections for efficient data handling, bulk operations, and query result processing.
+
+
+3)What is the use of the LIMIT clause in the BULK COLLECT statement?
+	|- LIMIT is used in BULK COLLECT to fetch rows in smaller chunks, to improving performance and managing memory effectively.
+	|- When we are using this like, When working with large datasets to avoid excessive memory usage or runtime errors.
+	|- For Example to say, Fetching and processing millions of rows in manageable batches (e.g., 100 rows at a time).
+
+
+4)What is a bulk exception / forall and dml errors  in PL/SQL?
+	|- The FORALL statement is used to improve performance by processing multiple rows in a single DML operation, 
+	   reducing the time spent switching between PL/SQL and SQL. The SAVE EXCEPTIONS clause allows the operation to
+	   continue even if some rows cause errors, and it captures those errors for later review. If an error occurs,
+	   the SQL%BULK_EXCEPTIONS array stores details like which row caused the error (ERROR_INDEX) and the specific error code (ERROR_CODE). 
+	   This makes it easy to track and handle errors while processing data in bulk.
+
+5)How does bulk processing enhance performance in PL/SQL?
+	|- Bulk processing enhances performance in PL/SQL by allowing multiple rows to be processed in a single operation, rather than one at a time. 
+	   This reduces the number of context switches between PL/SQL and SQL engines, which are typically time-consuming. By using techniques like 
+	   FORALL and BULK COLLECT, large amounts of data can be processed more efficiently and improving overall execution speed.
+	
+6)Write a program to update data in the EMP table using bulk updates.
+		
+
+      DECLARE
+    	 -- Declare a collection to hold the employee IDs and new salaries
+    	    TYPE emp_id_table IS TABLE OF EMP.EMPLOYEE_ID%TYPE;
+    	    TYPE emp_salary_table IS TABLE OF EMP.SALARY%TYPE;
+
+   	-- Initialize the collections with employee IDs and new salary values
+    	   emp_ids emp_id_table := emp_id_table(101, 102, 103, 104);
+    	   new_salaries emp_salary_table := emp_salary_table(5000, 5500, 6000, 6500);
+
+      BEGIN
+    	-- Perform bulk update using FORALL
+    	   FORALL i IN 1 .. emp_ids.COUNT
+        	UPDATE EMP
+        	SET SALARY = new_salaries(i)
+       		 WHERE EMPLOYEE_ID = emp_ids(i);
+
+    		-- Commit the changes
+    	   COMMIT;
+
+   	 -- Output to confirm the updates were successful
+    	    DBMS_OUTPUT.PUT_LINE('Bulk update completed successfully.');
+    
+      EXCEPTION
+    	WHEN OTHERS THEN
+        -- Handle exceptions and output the error
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+   END;
+
+
+
+SUBQUERIES
+==========
+
+1)What is subquery and explain its types?
+	|- Subquerys are used to retrive the data from single or mutiple tables
+	|- All DB systems having 2 types Sub-Querys and they are:
+		|- Non-corelated Sub_Queries
+			|- In Non_corelated SubQueries child queries are executed first then only parent quesries are executed. 
+			   And these are clasified into 3 types they are
+					|- single row subQuery
+					|- multiple row subQuery
+					|- multiple columns subQuery  
+		|- Corelated Sub_Queries 
+			|- In Corelated SubQuries parent queries are executed first then only chaild quaries are executed.
+	
+	|- Child Query: A query which provides values to the another query is called child query.
+	|- Parent Query:A Query which receives values form another Query is called Parent Query.
+	 
+
+
+2) What is the difference between ROW_NUMBER, RANK & DENSE_RANK?
+	|- Row_Number Analitical function automatically assigns different rank number when values are same
+	|- Rank & Dense_rank analitical functions automatically assigns same rank numbers when values are same and also rank skips 
+	   next consecutive number like(1,1,3,4,5)
+	|- where as dence_rank doesnot skip next consecutive rank numbers.
+
+
+
+	
+3) What are SQL window functions? Explain it's types? 
+	|- Analitical functions also similar to group function, genarally group function reduces no.of rows  in each group where as 
+	  analitical functions doesn't reduces no.of rows in each group. i.e.. analitical function executes each and every group.
+	|- Analitical functions must have "over clause" having 3 types of clauses
+								|- partition by clause
+								|- order by clause
+								|- window frame clause.
+
+
+4)When does a single-row subquery error occured?
+	  |-A single-row subquery error occurs when:
+		    |- No rows are returned (NO_DATA_FOUND).
+		    |- More than one row is returned (TOO_MANY_ROWS).
+ 
+
+5) what is ROWID?
+	|- Rowid is an pseudo column, it behaves like a singlr column, Genarally here rownum having temporary values where as rowid having fixed values
+	|- when ever we ar inserting data into table then oracle server automatically generates an unique identification number to identify the record 
+	   uniquely this is called row_id.
+	|- in oracle if we want to retrive the data very fastly by using row_id, by default rowid having ascending order. 
+
+
+6)what is ROWNUM?
+	|- Rownum is a pseudo column which behaves like a table colunm & it is used to restrict no.of rows in a table, where as when ever we are instaling 
+ 	   oracle server then automatically some pseudo columns are created in a data base. these pseudo columns are rownum, rowid... and rownum column is
+	   also same as limit clause in Mysql database.
+	|- Rownum is pseudo column which automatically assign no.to each row in a table at the time of selection
+	|- genrally rownum doesnot work with more than 1 positive number. i.e.. it works with <, <= Oparators.
+	|- here Rownum values are never pre-assigned. i.e rownum generates numbers at runtime based on where clause.  
+
+
+7)Write an SQL Query delete duplicate records from a table?
+	|- delete from TableName where rowid not in(select min(rowid) from TableName group by columnName);
+		
+      (or)
+
+	|- DELETE FROM employees
+	   WHERE (name, salary) IN (
+   		 SELECT name, salary
+    		 FROM (
+        	    SELECT 
+           		 name, salary,
+            		 ROW_NUMBER() OVER (PARTITION BY name, salary ORDER BY employee_id) AS rn
+        	    FROM employees
+    		      )
+   	         WHERE rn > 1
+	     );
+
+
+8)Write an SQL Query to display  nth highest salary?
+	|- by using co-related sub Quary
+		|- select * from emp e1 where &n=
+		   (select count(distint(sal)) from  emp e2 where e2.sal>e1.sal);
+	
+	|- by using Analytical function
+		|- select * from(select deptno, ename, sal, dence_rank() over(order by sal desc) r from emp) where r= &n;
+
+
+	
+
+
+9)find out 3rd and 4th highest salary?
+	|- SELECT salary FROM (
+    		SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+    		FROM employees
+		)
+		WHERE rnk IN (3, 4);
+
+	(or)
+	
+	|- SELECT salary FROM (
+    		SELECT DISTINCT salary FROM employees
+    		ORDER BY salary DESC) OFFSET 2 ROWS FETCH NEXT 2 ROWS ONLY;
+
+
+
+
+10)find out the latest one-month records?
+		|- SELECT * FROM your_table
+		   WHERE your_date_column >= ADD_MONTHS(SYSDATE, -1);
+
+
+
+
+
+11) Write an SQL Query to display most recently joined employee in each department from emp table by using lead function?
+	|- select * from (
+	      select deptno, ename, hiredate, lead(hiredate) over(
+	      partition by deptno order by hiredate) r from emp) where r is null;
+
+
+
+
+
+12)Write an SQL Query to display 1st and last row from emp table?
+	|- select * from (select rounum r, ename, sal from emp) where r=1 or r=(select count(*) from emp);
+
+
+
+
+
+13) Write an SQL Query to display last 2 rows from emp table?
+	|- select * from emp
+	   minus
+	   select * from emp where rownum <=(select count(*)-2 from emp);
+
+
+
+
+14) Write an SQL Query to display the rows b/w  3 to 7 from emp table;
+	|- select * from emp where rownum<=7
+	   minus
+	   select * from emp where rownum <= 3;
+	   
+
+
+
+
+
+
+1)Write an SQL query to get data present in table A but not in table B.
+
+	|- Using LEFT JOIN:
+		|- SELECT A.* FROM TableA A LEFT JOIN TableB B
+		   ON A.id = B.id  
+		   WHERE B.id IS NULL;
+		
+		|-Explanation: This query uses a LEFT JOIN to get all rows from TableA. When there is no match in TableB,
+	  	 	       the columns from TableB will be NULL, and the WHERE B.id IS NULL condition filters out those rows
+			       that exist in both tables.
+
+	|- Using NOT IN:
+		|- SELECT A.* FROM TableA A 
+		  WHERE A.id NOT IN (
+                 SELECT B.id FROM TableB B);
+		
+		|- Explanation: This query selects rows from TableA where the id does not exist in TableB. 
+		                The NOT IN operator filters out any rows from TableA that have matching id values in TableB
+
+
+		
+
+2)Write an SQL query using SUBSTR and INSTR together.
+	|- Let's assume you have a table employees with a column email that contains email addresses, and you want to extract 
+	   the domain part (after the @ symbol) of the email addresses.
+
+	|- SELECT email,
+           SUBSTR(email, INSTR(email, '@') + 1) AS domain
+           FROM employees;
+
+	Explanation:
+		|- INSTR(email, '@'): Finds the position of the @ symbol in the email string.
+		|- SUBSTR(email, INSTR(email, '@') + 1): Extracts the substring from the position right after the @ symbol
+		   until the end of the string, which is the domain part of the email.
+  
+3)Discuss the importance of query execution plans and how they impact performance?
+
+
+
+
+
+
+
+
+4)How to get unique records without using distinct clause?
+	|- we get unique records by Using group by, row_number(),union 
+
+5)Explain the difference between WHERE and HAVING clauses?
+	 |- Use WHERE to filter individual rows and HAVING to filter grouped data.
+	 |- WHERE works before GROUP BY, and HAVING works after.
+	 |- WHERE cannot use aggregate functions, but HAVING can.
+
+6)Difference between EXISTS operator and IN operator? When would you use one over the other?
+	|- The EXISTS operator checks if a subquery returns any results and stops as soon as it finds one match. It’s faster for large
+	   datasets because it doesn't need to compare all values. It’s best used when you just need to know if something exists, not the actual data.
+
+	|- The IN operator checks if a value matches any value in a list or subquery result. It looks at all the values in the list,
+	   which can be slower for large datasets. It's ideal for smaller datasets or when you need to check specific values.
+
+7)What is the difference between NVL and NVL2?
+	|- The NVL function replaces NULL with a specified value. If the first argument is NULL, it returns the second argument.
+	   If it’s not NULL, it returns the first argument.	
+	|- The NVL2 function is similar, but it gives different results depending on whether the first argument is NULL or not.
+	   If the first argument is NULL, it returns the second argument; if it’s not NULL, it returns the third argument.
+
+8)What is the difference between VARCHAR and VARCHAR2en  
+	|- VARCHAR2 data type is used to stroe variable length of allpha numeric data in bytes and maximum size is 4000 Bytes 
+	   when we are try to store less no of bytes then data type specified in varchar2 data type. then oracle server does not 
+	   added the blank spaces at the end of the string. that's why this data type doesn't waste disk space.
+
+	|- VARCHAR it is also same as varchar2 datatype. varchar also stores variable leghth alpha numeic data in bytes but maximum size of the
+	   varchar datatype is upto 2000 bytes
+ 
+
+
+9)What is the difference between GROUP BY and PARTITION BY?
+	|- group by clause is used to arrange similar data items into a set of logical groups. when ever we are using group by clause 
+	   database server selects similar data items from a table column and then reduces no of data item in each group.
+
+	|- PARTITION BY, on the other hand, is used in window functions. It divides the result set into partitions (subsets of rows), 
+	   but unlike GROUP BY, it doesn’t reduce the number of rows in the output. It allows you to perform calculations over subsets of rows,
+	   like calculating running totals or averages with in each partition.
+ 
+
+
+10)How many types of constraints are there?
+	|- there are five types of constraints
+		NOT NULL, UNIQUE, PRIMARY KEY, FOREIGN KEY, CHECK.
+
+
+
+11)What is a check constraint? Please provide an example?
+	|- check constraints are used to define logical condition according to client business rule. in Oracle check constraints 
+	   doesn't work with sys date function.
+		syntax: create table tablename(col1 datatype(size) check(logical condition), col2 datatype(size).....);
+
+12)difference between Primary key and Foreign Key
+	Primary key:
+		|- primary key is uniqely identifying a record in a table in all data bases, there can be only one primary key  in a table 
+		   and also primarykey does not accept the duplicate/null values.
+		|- when ever we are creating the primary key also oracle server internally automatically creates B-tree indexes on these columns
+		|- and we can create primary key on both column level & Table level(this is also called as composite primary key i.e... it is a 
+		   combination of columns as a single primary key)
+	
+	Foreign Key:
+		|-  in all DB's if we want to establish the relationship b/w tables then we are using referencial integrity constraints foreign key.
+		|- one table forgin key must belong to the another table primary key and also these two columns must belongs to same data type.
+		|- always forgin key values, always based on primary key values only.
+		|- Genarally primary key doesnot accepts duplicate, null values.
+	when ever we are establishing the relationship between table by using forgin key then oracle server automatically violet 2 rules and 
+	they are:
+		|- deletion in master table  
+		|- insertion in child table
+	
+	Deletion in master table:
+			|- when we are try to delete a master table record in master table, if the record exist in child table then oracle server returns an 
+			   error ora-2292. to overcome this problem if we want to delete master table record in master table then first we must to delete 
+			   child table record in child table then only we are allowed to delete those record in master table Otherwise use an on delete cascade clause.
+ 	
+	On delete cascade:
+			|- this clause is used along with foreign key only. whenever we are specifying this clause in chaild table then we are able to delete 
+			   master table record with in master table, then automatically the record is deleted in master table and these records are automatically 
+			   deleted in child table
+	Syntax:
+		create table tablenamme(col1 datatype(size) references mastertablename(primarykey columnname) on delete cascade,...);
+	
+
+13)difference between deleting and Truncate?
+	|- whenever we are using delete from tablename then automatically deleted data internally stored in buffer we can also get back this data using rollback.
+
+	|- whenever we are using truncate table tablename then all rows are perminently deleted, we can not get it back this data by using rollback, becouse
+	  truncate is a DDL command and also DDL command transactions are automatically commited.
+
+
+
+14)How do you use SQL%ROWCOUNT?
+	|- It is a PL/SQL cursor attribute that tells how many rows were affected by the most recent SQL operation, such as INSERT, UPDATE, DELETE, or SELECT INTO.
+
+
+
+
+15)What is the difference between %TYPE and %ROWTYPE?
+	column_level_attribute:
+		|- In  this method we are defining attributes for individual columns and these attributes are represented by using "%type" 
+		   when ever we are using these attributes oracle server internally automatically allocates some memory for the variable 
+		   as corresponding colunm data type in a type. 	syntax:  variablename tablename.columnname%type
+	Row_level_attribute:
+		|- In  method a single variable can represent all different datatype into single unit. this variable is also called as record type veriable
+		   here rowlevel attributes are represented by using  %rowtype
+			Syntax: varaiablename tablename%rowtype. 
+		
+
+16) Explain the difference between UNION and UNION ALL?
+	|- The UNION and UNION ALL operators combine the results of two or more SELECT queries, but they handle duplicate rows differently.
+		|- UNION: Removes duplicate rows, so the result will only have unique rows. This makes UNION a bit slower because 
+			  it needs extra processing to find and remove duplicates.
+
+		|- UNION ALL: Includes all rows from the queries, even if they are duplicates. It is faster because it doesn’t check for duplicates.
+
+  
+What are SQL CODE and SQL ERRM in PL/SQL?
+What is no copy compiler hint?
+What is the difference between SUBSTR and REGEXP_SUBSTR?
+What is table partitioning in SQL?
+What is normalization? why its needed? explain diff normal forms?
+what is normalization? need for normalization?
+Explain the concept of normalization and its different forms? Uses of the normalization?
+What is Pivot function?
+What is SQL Loader?
+Have you worked with XML?
+What is the difference between DECODE and CASE?
+Can we use DDL and DML commands in a PL/SQL block?
+How can you trace the error line number in PL/SQL?
+How would you handle data migration between two different database systems?
+Explain the packages in PL/SQL? its advantages?
+Can a Package Specification exist without a Package Body?
+How do you call a refresh?
+What is performance tuning in Oracle?
+
+
+
+
+
+
+
+
+
+
+
+Describe dynamic SQL queries with an example
+ What is a dblink, and how do you create one?
+ What are pseudo columns?
+ What is COALESCE?
+ Design a database schema for an online exam.
+ What is a VARRAY?
+ Can a VARRAY contain values of different data types?
+ What is a PL/SQL table? Can it contain different data types?
+ What is the LIMIT clause? Implement it in your program.
+ What is CLOB? I have CLOB data with 30,000 bytes—how do I append more data to it?
+ What is SIZE in the context of CLOBs?
+What is V$SESSION? 
+Explain the importance of dynamic SQL and when it's appropriate to use it in PL/SQL development?
+Explain the concept of database locking and how it affects concurrent access?
+If a query is performing slow then how would you approach and troubleshoot it?
+ What are the advantages of using packages in Oracle?
+Difference Between SQL and PL/SQL
+What is dynamic SQL?
+Explain the Oracle Hints?
+ What are CTEs (Common Table Expressions) and why are they useful?
+Which are the set operators used in Oracle?
+What are the null value functions in SQL?
+What is global temporary table?
