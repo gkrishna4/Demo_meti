@@ -61,9 +61,11 @@ VIWES
 
 
 5) If Any Changes Happen in the Main Tables Used in the Views, Will the View Update Automatically?
-	|- Yes, a regular view will always show the latest data from the main tables because it is just a stored query. Whenever you query the view, it fetches the 	   most recent data from the base tables.
+	|- Yes, a regular view will always show the latest data from the main tables because it is just a stored query. Whenever you query the view, it fetches the 	  
+	    most recent data from the base tables.
 
-	|- However, a materialized view does not update automatically. It stores a copy of the data and needs to be refreshed (manually, on a schedule, or on-commit) 	   	   to reflect changes in the base tables.
+	|- However, a materialized view does not update automatically. It stores a copy of the data and needs to be refreshed (manually, on a schedule, or on-commit) 	   	  
+	   to reflect changes in the base tables.
 
 
 
