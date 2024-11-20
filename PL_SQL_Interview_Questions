@@ -32,8 +32,6 @@ VIWES
 
 
 
-
-
 2) What are the different refresh methods for materialized views?
 	|- Materialized Views can be refreshed using several methods, depending on the use case and data requirements
 		|- Complete Refresh
@@ -42,6 +40,7 @@ VIWES
 		|- On-Demand Refresh
 		|- On-Commit Refresh
 		|- Periodic (Scheduled) Refresh
+
 
 
 3) How does the refresh process work internally?
@@ -1010,7 +1009,6 @@ SUBQUERIES
 
 
 
-
 15)What is the difference between %TYPE and %ROWTYPE?
 	column_level_attribute:
 		|- In  this method we are defining attributes for individual columns and these attributes are represented by using "%type" 
@@ -1029,24 +1027,68 @@ SUBQUERIES
 
 		|- UNION ALL: Includes all rows from the queries, even if they are duplicates. It is faster because it doesn’t check for duplicates.
 
+17) How can you trace the error line number in PL/SQL? 
+	|- in pl/sql if we want to find out line number where error is occured in pl/sql block then we are using format_error_backtrace()
+	    function from dbms_utility package. this function is used in exception section of pl/sql block       syntax:-   dbms_utility.format_error_backtrace()
+
+
+18) What is no copy compiler hint?
+	|- The NOCOPY hint in PL/SQL improves performance by avoiding unnecessary copying of large parameters. Instead of passing parameters by value (default behavior),
+	   it passes them by reference, saving time and memory. It’s useful for optimizing procedures and functions handling large collections or objects.
+	   However, it requires careful use since any unhandled exceptions might affect the original data.
+
+19) What is table partitioning in SQL?
+	|- Table partitioning in SQL splits a large table into smaller, logical pieces called partitions, based on criteria like ranges or specific values. 
+	   This improves query performance by limiting data scans to relevant partitions and makes managing large datasets easier. For example, in a sales table partitioned by year, 
+	   querying 2022’s data only accesses the 2022 partition, saving time and resources.
+
+20) What is Pivot function?
+	|- The PIVOT function in SQL is used to convert rows into columns, It's commonly used in business intelligence, analytics, and reporting workflows.
+	   It simplifies data aggregation and eliminates the need for complex CASE or manual transformations.
+
+21) What is SQL Loader?
+	|- SQLLoader is an Oracle utility for efficiently loading bulk data from external files into database tables. It uses a control file to specify how data from
+	   the input file maps to the database. SQLLoader is highly flexible, supports transformations, and offers performance optimizations like direct path loading.
+	   For example, it can quickly import data from a CSV file into a database, even for millions of rows, while logging errors for troubleshooting.
+
+   How SQL*Loader Works:
+	|- SQL*Loader reads data from flat files (like .csv, .txt, or any delimited text file) and inserts it into database tables based on instructions defined in a control file.
+	
+22) Have you worked with XML?
+	|- Yes, I’ve worked a lot with XML in databases. I’ve read and extracted data from XML using functions like XMLTABLE and EXTRACTVALUE, created XML files for exporting data,
+	  and used the XMLType data type to store and work with XML efficiently. I’ve also used XML to exchange data between applications and optimized processes
+	  for handling large XML files. For example, I once extracted customer information from XML files to insert it into database tables for reporting.
+
+23) How do you call a refresh?
+	|- To refresh a materialized view in Oracle, I use the DBMS_MVIEW.REFRESH procedure. This updates the materialized view so it reflects the latest data from the source tables.
+	   You can choose different refresh modes like complete refresh (rebuilds the entire view) or fast refresh (updates only the changes).
+		For example:     EXEC DBMS_MVIEW.REFRESH('my_materialized_view', 'FAST');
+
+
+24) What are SQL CODE and SQL ERRM in PL/SQL?
+	|- SQLCODE gives you the error number, while SQLERRM provides a description of the error. They are useful in exception handling to understand what went wrong
+	   in your PL/SQL program. For example, if an error occurs during an insert operation, you can use these to log the details and troubleshoot the issue.
+
+25) What is the difference between SUBSTR and REGEXP_SUBSTR?
+	|- SUBSTR is like cutting a specific piece from a string by saying "start here and take this many characters."
+	|- REGEXP_SUBSTR is like searching the string for something that matches a pattern (e.g., numbers, specific words) and extracting it.
+	|-If you know the exact position of what you need, use SUBSTR. If you’re looking for something dynamic or complex, use REGEXP_SUBSTR.
+
+
+26) What is the difference between DECODE and CASE?
+	|- DECODE is like a simpler, older version of CASE. It only compares one value to others and gives a result based on that comparison.
+	|- CASE is more flexible. It allows you to check complex conditions and can handle different situations more clearly, making it more powerful
+	   and easier to read, especially for more complicated logic.
+
+27) What is normalization? why its needed? explain diff normal forms?
   
-What are SQL CODE and SQL ERRM in PL/SQL?
-What is no copy compiler hint?
-What is the difference between SUBSTR and REGEXP_SUBSTR?
-What is table partitioning in SQL?
-What is normalization? why its needed? explain diff normal forms?
-what is normalization? need for normalization?
 Explain the concept of normalization and its different forms? Uses of the normalization?
-What is Pivot function?
-What is SQL Loader?
-Have you worked with XML?
-What is the difference between DECODE and CASE?
+
+
 Can we use DDL and DML commands in a PL/SQL block?
-How can you trace the error line number in PL/SQL?
 How would you handle data migration between two different database systems?
 Explain the packages in PL/SQL? its advantages?
 Can a Package Specification exist without a Package Body?
-How do you call a refresh?
 What is performance tuning in Oracle?
 
 
