@@ -1,0 +1,315 @@
+Erwin
+-------
+
+Defintioan:- Erwin data model is a data modeling technique used to visually represent structure and relationship of data in a DataBase or information system.
+
+Components:-
+===========
+ 
+Entity:- Representing a realword object 
+	 Ex:-
+		|-> customer
+	        |-> order
+
+Attributes:- charactoristics of entities 
+	      Ex:
+		|-> customer name
+		|-> order date
+
+Realtionships:- How entities are interacted or connected
+		Benefits:
+			|-> Enhanced data integrity and consistency.
+			|-> Better communication among stakeholder.
+			|-> esier database design and maintenance.
+
+EDM used in data modeling database Design and Business inteligence projects
+
+Conceptual Data Model(CDM):
+==========================
+High level, Obstract representation of business, focusing on entities and relationships
+
+Logical Data Model(LDM):
+========================
+Detailed platfrom independent representation of data structure, including Attributes and relationships
+		less Options:
+			|-> Domains,
+			|-> Entities, 
+			|-> Relationships.
+
+Physical Data Model(PDM):
+=========================
+    ERD, Subject Area, Model Structure, Validation Rules.
+
+LowLevel Platform: Spesific reparsentation of database design, including Tables, columns and constrains.
+	--> More Opstions and Technology
+	Specific tables, procedures, functions, triggers, synonyms and so on.
+	--> Model Templete
+	--> Entity
+	--> Attributes
+	--> Relations
+		|-> 1:1
+		  |-> 1:M
+		    |-> M:1
+			M:M
+
+Identifying Relations  
+======================
+PrimaryKey of parent table will be a primary key and forgienkey of child table 
+1:1 Relationships
+
+Non-Identifying Relationship
+=============================
+Primary Key of Parent table will be a foregin key of child table but not primary key
+	1:M Relationship 
+
+Sub-category
+=============
+	if we want to map one table to multiple table we will use this
+
+Many-to-Many Relationships
+===========================
+
+Different types of models
+-------------------------
+Hierarchical
+Orthogonal
+tree
+Circulor
+symmentic
+
+
+Model Menu:
+-----------
+Default Values:- Define Variable Values
+Domain: Custom Data Types
+Entity: Table in Physical
+
+Relationships:
+	Subject Area:- Group of Related Tables.
+
+Super Type or SubType:
+-----------------------
+	Any common Attributes b/w two entities create super type entity with common attributes and create a subtype
+
+
+Q1) What are the different types of enities in erwin, How they are used?
+
+Independent Entity:- A standalone entity with its own unique identifier 
+			EX:-
+			    |-> customer
+			    |-> Order
+Dependent Entity:- An entity that relies on another entity for its existance
+		    EX:- Order item dependent on Order
+
+Week Entity:- Dependent entity that can not exist without it's parent entity
+		     EX:- Order item can not exist order
+
+Strong Entity:- Independent entity that can exist on its own
+		EX:- customer
+
+coposite Entity:- An Entity composed of multiple entity.
+		EX:- Adress is composite of street, city, state, Zip.
+
+Abstarct Entity:- That represents a genaralization of common attributes 
+		   EX- Parts is an abstarct entity of customer, vendor, employee.
+ 
+Associative entity:-  An entity that represents a many to many relationship b/w two entities
+
+Subtype Entity:- A Specialied entity that inherites attributes from super type entity 
+	EX:- Employee is a subtype of person
+these entity types helps data models:-
+	--> Organize and structure data
+	--> identify relationship b/w data entities
+	--> Ensure data integrity and consistency
+	--> Improve data reusability.
+
+
+
+Q2) How do you create a new Data model in Erwin, and what are the essential components?
+
+
+Launch Erwin: Open Erwin data Model and Select file ---> New ---> Data Model
+	      |- Choose template: select templete
+		    EX: 
+			      |--> Logical
+			      |--> Physical
+	      |- Define Data Model
+	      |- create Entities
+	      |- Define Attributes
+	      |- Establish Relationships
+	      |- Define Keys
+	      |- Normalize Data
+	      |- Add Indexes
+
+
+Q3) What is the Difference between a logical and physical data model in Erwin?
+
+
+>> In Erwin We can create both logical and physical data Model,
+>> we can Generate Physical data model from Logic using forword Engineering.
+>> we can genarate the logical Data Model reverse Engineering.
+Logical Data Model:
+		|- High Level
+		|- Platfrom Independent 
+		|- Normalized
+		|- For data  Analetics and communications
+Physical Data Model:
+		|- Detaild Level
+		|- Platform Dependent
+		|- De-Normalized
+		|- DB design Implementation.
+
+
+Q4) How Do you Define Relationships between entities in erwin, and what types of relations are Supported.
+
+Erwin supports the following Relationship types:
+	Identifying Relationship: Chaild Entity exists dependent on parent Entity.
+	Non-Identifying Repaltionship: A chaild entity can exist Independency of the Parent entity
+	Many-to-Many Relationship:- RelationShips b/w Two tables that can have multiple instances
+	Recursive Relationship:- A Realtionship between an entity and itself
+	Subtype Relationship:- A Relationship b/w super type and its subtype.
+
+
+Q5)What is the purpose of UDP in Erwin?
+	It Allows users to create custom property or attributes and extend the Metadata of entities,attributes and relationships 
+	 to view entity in specific Mod.
+
+
+Q6) What is data  Normalization, and how is it achived in Erwin?
+
+Data Normalization is a process that ensures data  is stored in a database in consistant and efficient manner, minimalize data Dependency and Redundency.
+
+Organizing data into tables that are related to each other through keys
+	|- eliminate data Redundency
+	|- reduce data in-consistancies 
+	|- Improve data integrity
+	|- Enhance Scalability
+	|- Simplify data Maintenance
+Data Normalization is achived in Erwin
+	|- Identify Entities
+	|- Define Attributes 
+	|- Establish Relationships
+	|- Normalize Tables
+	|- Apply the Normalization Rule
+		1N--> Eliminate the repetative Groups
+		2N--> Eliminate Partial Dependencies
+		3N--> Eliminate Transitive Dependencies
+		BNF--> Ensure each Attribute dependent on entire Primary key.
+
+
+Q7) How do you handle data Redeundancy and  data integrity in Erwin?
+
+Data Redundency:-
+	Normalization:
+		|- Organize data into smaller, related tables so that each piece of data is stored only once.
+			|- Example: Split Customer and Order data into separate tables linked by a relationship.
+	Entity-Relationship:- Eliminate data redundancy by creating relationship b/w entities.
+	Data Profiling:- Help to identify duplicate data allowing you to eliminate redundency.
+
+	Data Integrity:-
+		  |- primary key
+		  |- Foregin key
+	          |- Data Validation rule
+	          |- Data Quality Checks
+
+
+
+Q8) What is the purpose of a superclass in Erwin and how is it used? 
+ 
+	purpose of Super class is:-
+		Reduce Repetition: Common data is stored in one place (superclass) to avoid duplicating it in multiple subclasses.
+		Ensure Consistency: Shared data is managed centrally, so it's always the same across related entities.
+		Enable Inheritance: Subclasses automatically inherit the attributes and relationships from the superclass.
+		
+     Steps to Use a Superclass		
+	|- Create a superclass for shared data.
+	|- Add common attributes and relationships to the superclass
+	|- Create subclasses for specific data.
+	|- Establish Inheritance Relationships b/w superclass and subclass
+
+
+
+
+Q9) how do you genarate physical database schema from a logical data model in Erwin?
+
+Tools--->forward Engineer to create physical database schema from logical database
+
+select database platform:
+	configure settings-->Schema Name, Table Space, Indexing
+	genarate Schema
+	Erwin will create physical database schema that includes 
+		|- Tables
+		|- columns
+		|- Data Types
+		|- Constraints
+		|- Indexes
+	
+
+
+Q10) what are some best pratices for data Modules in Erwin
+
+>> Start with clear understanding of business requireent
+>> use a logical data modeling approch 
+>> use entities,attributes and relationships
+>> Noralize your data 
+>> use meaningfull names and definitions
+>> establish primary key and foreign key
+>> use data types and domains
+>> Document your data model
+>> validate and verify your data model
+
+
+Q11) How do you manage data model version and changes in erwin?
+
+version Management:
+checkin-checkout:- use erwin version control system to checkin/checkout data models ensuring only one user can modify the model at a time
+version History:-
+Erwin maintain version History,allowing you to track changes
+Model Compare:- compare different versions of the data model to identify changes
+
+
+Q12) Can you explain the concept of data lineage in Erwin and how it is used?
+
+Data lineage in Erwin refers to the tracking and documentation of data movement,
+and the transformation throgh its lifecycle.
+
+	|- Track data Origin
+	|- Map data flow
+	|- Document data transformation
+	|- Data Ownership
+	|- Support data Governance 
+
+
+Q13) How do you integrate Erwin with other tools and technology?
+
+Erwin provides various integration options to connect with other tools and 
+techologies
+
+	|- API's:- Offers RestFul API
+	|- Import/Export : support XML, CSV, JSON
+	|- Plug-in
+	|- Scripting
+	|- Web service
+
+
+Q15) what are some common data Modeling Mistakes to avoid in Erwin?
+
+	|- Insufficient Normalization
+	|- Poor entity defination
+	|- Inadequate key constraints
+	|- Inconsistant data types
+        |- Over use of generic entities
+	|- Ignoring data Relationships
+	|- Not Testing the data model
+
+
+Q16) can you discribe your experience with Erwin data model, and Have you Applied in previous Project?
+
+	use Erwin to design and impliment a data warehouse, create a centralized 
+repository for reporting and Analytics
+	To Apply data governance policies and data Quality.
+	To integrate data from multiple data sources.
+	To design DataBase.
+	To Migrate data from legacy systems to new platform.
+
+
