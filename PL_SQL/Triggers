@@ -1,1 +1,77 @@
-hi
+1) What is trigger and explain its types in PL/SQL?
+    |-trigger is also same as stored procedure & also it will automatically invoked whenever
+       DML oparation performed against table or view
+	  |- There are two types of triggers supported in PL?SQL
+		|- Statement level trigger	
+		|- Row level trigger
+   Statement level trigger: 
+	|- In Statement level trigger, trigger body is executed only once for DML statement, here 
+	   we are not allowed to use old, new Qualifiers and also Statement level trigger doesn't have for row.
+	   in all DB if we want to implement  time compliment application  through triggers then we must use statement level triggers
+   Row level trigger:-
+	|- In Row level trigger, trigger body is executed by each row for DML statement.thats why we are using for each row clause
+	   in trigger specification  and also DML transaction  values are internally stored in two two rollback segments qualifiers,
+	   these Qualifiers :old, :new, are also called as record type variables.
+
+
+2) What is mutating error? How to avoid mutating error using compound trigger?
+
+	|- into a row level trigger based on a table trigger body connot read data from same table and also we can not perform DML Oparation on same table 
+	   if we are tring this oracle server returns an error Ora-4019: table is mutating 
+	|- this error is called mutating error. and this trigger is also called mutating trigger, and table is called mutating table.
+	|- mutating error are not occures in statement level trigger becouse through these statement level trigger when we are performing  DML Oparations Automatically
+	   data comminted into the data base, where as in row level trigger when we are performing transaction data is not committed and also 
+	   again we are reading this data  from the same table then only mutating errors occured.
+	|- To Avoid mutating errors we are using autonomous transaction gives previous result.
+
+
+   
+3)What is the "follows" clause in a trigger?
+
+	|- Generally in all data bases we can not control execution order of the trigger when we are using the same level of trigger in same table.
+	   to overcome this problem oracle 11g intraduced follows clause in triggers specification. which is used to control execution order of the 
+	   trigger s explicitlly. when we are using same level of triggers in same table.
+
+
+
+
+4) Write a trigger to log insert activities into a log table?
+
+5) What is the difference between constraints and triggers in a database?
+	|- Constraints: Simple, declarative rules to enforce data integrity (e.g., primary keys, foreign keys). They are automatic and efficient.
+	|- Triggers: Procedural and flexible, used for complex logic or extra actions (e.g., logging or custom validations).
+
+
+
+6)Can you use commit and rollback commands in a trigger?
+	|- The use of COMMIT and ROLLBACK commands in a trigger is not allowed.
+	|- If you need to execute a COMMIT or ROLLBACK logic in a trigger-like scenario, you can use autonomous transactions.
+	    An autonomous transaction is a separate transaction that is independent of the main transaction.
+	|- The PRAGMA AUTONOMOUS_TRANSACTION allows the trigger to commit changes in the audit_log table without affecting the main transaction.
+
+
+
+	
+ 
+7)What is an "instead of" trigger in PL/SQL?
+	|- Genarally we can not perform the DML Oparations throuh complex views to base table.
+	|- To Over come this problem 8.0 intraduced "instead of triggers" in pl/sql. By default 
+	   instead of trigger are row-level trigger and also insted of trigger are created a views
+
+
+
+8)What are triggering events or trigger predicate clauses in PL/SQL?
+	|- Triggering Events:
+		These are the actions (like INSERT, UPDATE, or DELETE) that cause a trigger to fire. Triggers can also
+		respond to DDL commands (CREATE, DROP) or database events (LOGON, SHUTDOWN)."
+	|- Trigger Predicate Clauses:
+		These are conditions (INSERTING, UPDATING, DELETING) inside a trigger that let us know which specific 
+		event caused the trigger to fire, so we can handle each case differently
+
+
+
+
+
+9)What does ‘FOR EACH ROW’ mean in a trigger?
+	|- "FOR EACH ROW makes a trigger once for every row affected by a DML operation. It allows us to handle each row individually
+	    and access its old and new values using the :OLD and :NEW pseudo-records."
