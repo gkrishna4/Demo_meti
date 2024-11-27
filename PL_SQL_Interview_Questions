@@ -41,15 +41,47 @@ VIWES
 		|- On-Commit Refresh
 		|- Periodic (Scheduled) Refresh
 
+3) How do you schedule a refresh manually?
+	|- Generally we are refreshing Materialized view in 2 ways
+		|- Manually by using dbms_mview package
+		|- Automatically.... with out using dbms_view package this method is called as "on commit" method
+
+	
+4) What is a materialized view?
+	|- materialized view stores the result of the quary i.e.. materialized view stores the replication of remote Database  into local node
+	    & also stores data same like table, but when we are refreshing the materialized view it synechronize the data based on the base table.
 
 
-3) How does the refresh process work internally?
+
+5) what is View?
+	|- view used for simplifying  query perpose... i.e.. Regularly used quary we are putting in a view and when ever 
+	   neccessary  select that view, when a view contain functions/expressions then we must create alias name for those functions/expressions
+	   otherwise oracle server returns an error.
+
+6) Difference b/w View and Materialized view?
+	View
+	 |- view does not store data
+	 |- seurity perpose
+	 |- when we are droping base table then view does not be accessble
+	 |- througn the view we can perform DML oparations.
+	Materialized view
+	 |- Materialized view stores data
+	 |- improve perforance purpose
+	 |- when we are droping the base table also Materialized view can be access
+	 |- we can not perform the DML Oparations.
+
+7) How does the refresh process work internally?
 	|- meterialied view also stores data same like a table but when we are refreshing  materialied view it synechronise the data based on base table
 	   if we want to refresh metirialized view  then we are using refresh procedure from dbms_mview package
 	   syntax:    exec dbms_mview.refresh('meterialized view name')
 
+8) How do you call a refresh?
+	|- To refresh a materialized view in Oracle, I use the DBMS_MVIEW.REFRESH procedure. This updates the materialized view so it reflects the latest data from the source tables.
+	   You can choose different refresh modes like complete refresh (rebuilds the entire view) or fast refresh (updates only the changes).
+		For example:     EXEC DBMS_MVIEW.REFRESH('my_materialized_view', 'FAST');
 
-4) What is force view?
+
+9) What is force view?
 	|- In Oracle we can also create a view without having base table these type of views are also called as forced view
 		syntax:-
 			create or replace 
@@ -59,7 +91,7 @@ VIWES
 
 
 
-5) If Any Changes Happen in the Main Tables Used in the Views, Will the View Update Automatically?
+10) If Any Changes Happen in the Main Tables Used in the Views, Will the View Update Automatically?
 	|- Yes, a regular view will always show the latest data from the main tables because it is just a stored query. Whenever you query the view, it fetches the 	  
 	    most recent data from the base tables.
 
@@ -68,7 +100,7 @@ VIWES
 
 
 
-6) Is Insertion, Updating, or Deletion Possible Directly on the View?
+11) Is Insertion, Updating, or Deletion Possible Directly on the View?
 
 	Yes, it is possible, but only if the view is updatable.
 	For a view to be updatable:
@@ -95,35 +127,10 @@ VIWES
 
 
 	
-7) How do you schedule a refresh manually?
-	|- Generally we are refreshing Materialized view in 2 ways
-		|- Manually by using dbms_mview package
-		|- Automatically.... with out using dbms_view package this method is called as "on commit" method
-
-	
-8) What is a materialized view?
-	|- materialized view stores the result of the quary i.e.. materialized view stores the replication of remote Database  into local node
-	    & also stores data same like table, but when we are refreshing the materialized view it synechronize the data based on the base table.
 
 
 
-10) what is View?
-	|- view used for simplifying  query perpose... i.e.. Regularly used quary we are putting in a view and when ever 
-	   neccessary  select that view, when a view contain functions/expressions then we must create alias name for those functions/expressions
-	   otherwise oracle server returns an error.
 
-
-11) Difference b/w View and Materialized view?
-	View
-	 |- view does not store data
-	 |- seurity perpose
-	 |- when we are droping base table then view does not be accessble
-	 |- througn the view we can perform DML oparations.
-	Materialized view
-	 |- Materialized view stores data
-	 |- improve perforance purpose
-	 |- when we are droping the base table also Materialized view can be access
-	 |- we can not perform the DML Oparations.
 	
 
 	
@@ -1059,28 +1066,25 @@ SUBQUERIES
 	  and used the XMLType data type to store and work with XML efficiently. I’ve also used XML to exchange data between applications and optimized processes
 	  for handling large XML files. For example, I once extracted customer information from XML files to insert it into database tables for reporting.
 
-23) How do you call a refresh?
-	|- To refresh a materialized view in Oracle, I use the DBMS_MVIEW.REFRESH procedure. This updates the materialized view so it reflects the latest data from the source tables.
-	   You can choose different refresh modes like complete refresh (rebuilds the entire view) or fast refresh (updates only the changes).
-		For example:     EXEC DBMS_MVIEW.REFRESH('my_materialized_view', 'FAST');
 
 
-24) What are SQL CODE and SQL ERRM in PL/SQL?
+
+23) What are SQL CODE and SQL ERRM in PL/SQL?
 	|- SQLCODE gives you the error number, while SQLERRM provides a description of the error. They are useful in exception handling to understand what went wrong
 	   in your PL/SQL program. For example, if an error occurs during an insert operation, you can use these to log the details and troubleshoot the issue.
 
-25) What is the difference between SUBSTR and REGEXP_SUBSTR?
+24) What is the difference between SUBSTR and REGEXP_SUBSTR?
 	|- SUBSTR is like cutting a specific piece from a string by saying "start here and take this many characters."
 	|- REGEXP_SUBSTR is like searching the string for something that matches a pattern (e.g., numbers, specific words) and extracting it.
 	|-If you know the exact position of what you need, use SUBSTR. If you’re looking for something dynamic or complex, use REGEXP_SUBSTR.
 
 
-26) What is the difference between DECODE and CASE?
+25) What is the difference between DECODE and CASE?
 	|- DECODE is like a simpler, older version of CASE. It only compares one value to others and gives a result based on that comparison.
 	|- CASE is more flexible. It allows you to check complex conditions and can handle different situations more clearly, making it more powerful
 	   and easier to read, especially for more complicated logic.
 
-27) What is normalization? why its needed? explain diff normal forms?
+26) What is normalization? why its needed? explain diff normal forms?
   
 Explain the concept of normalization and its different forms? Uses of the normalization?
 
