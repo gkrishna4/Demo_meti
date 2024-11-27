@@ -2,39 +2,56 @@ I have 3 years of Experience in PL/SQL and i work around Besal support, Batch mo
 here My Roles & Responsibilities are when ever the Batch is failing, we check the Batch monitoring and we fix the Batch issue and any new Enhancement comming
 and guide lines comming we use to implement that new changes and then we change code level, what ever the chages we do in UAT Environment, and after that one
 we execute the batches and genarate the RCA3 reports,and we share those RCA3 reports and Exposer level reports to the Bank,they will check that report,
-if every thing is fine as per them like expected numbers every thing is comming then they will provide the sign-off, after that one we will release code to
-production through CR(Change request) they deploy the CR, along with that Once we done some Optimization of batch also initially it is use to execute  60 to 70
-Hours, after that one we have done optimization, on top of Optimization each Rules optimiation we have done by adding some proper hints,indexes we have added.
+if every thing is fine as per them like expected numbers every thing is comming then they will provide the sign-off, after that once we will release code to
+Production through CR(Change request) they deploy the CR, along with that Once we done some Optimization of batch also initially it is use to execute  60 to 70
+Hours, after that once we have done optimization, on top of Optimization each Rules optimiation we have done by adding some proper hints,indexes we have added.
 
-In Sequence of Batch, initially we get the data from the Bank_Source_System to prestage area, once the data is loded into the prestage, ETL team will do 
-some transformations and after that once they will lode the data into ofssa staging tables & once the data is avilable in ofssa staging table, we internally,
+In Sequence of Batch, initially we get the data from the Bank_Source_System to Pre_stage area, once the data is loded into the Pre_stage, ETL team will do 
+some transformations and after that once they will lode the data into OFSSA staging tables & once the data is avilable in OFSSA staging table, we internally,
 we will do some transformations like what ever the data is comming from the tables.
 				                                                                      Here we have 2 types of tables 
-				                                                                            	|- pp(product processor) tables 
-				                                                                            	|- non-pp tables 
+				                                                                            	|- PP(product processor) tables 
+				                                                                            	|- Non_PP tables 
 
-All pp tables comming from ETL & all non-pp tables are comming from initial uplode and then once the data is available and then internally we do some trasformations 
-and then we lode the data into our internal staging tables  like  stage exposer, master, party master, rating master like that, once that is avilable we will run
+All PP tables comming from ETL & all Non_pp tables are comming from initial uplode and then once the data is available and then internally we do some trasformations 
+and then we lode the data into our internal staging tables  like  Stage exposer, Master, Party master, Rating master like that, once that is avilable we will run
 SED(slowly changing dimention), so here SED's are 3 parts
 						                                      |- type1,2,3 SED's
-Type-1 SED: genarally till not maintain the history, it will override the data what ever the data it is commimg, it will maintain only one record for one to one type of records. Where as
+Type-1 SED: genarally Will not maintain the history, it will override the data what ever the data it is commimg, it will maintain only one record for one to one type of records. Where as
 Type-2 SED: it will maintain the history of previous record also in the dimention table, that will maintain the history based on the latest indicator plan along with that
             record start data date. like that we execute the SED's, we can see the SED's types & these things in 2 tables
 						                                                                                                  	|- sys_tbl_master
 						                                                                                                  	|- sys_stg_join_master
 
  
-In sys_stg_join_master we can see the what type of SED's and what are the columns we are useing for the SED's. that is the SED's
-once the SED's are completed, then we will run the DQ checks(Data Quality), suppose any pp table data is there referencial data we check properly like date condition,
-any product code like anything is missing then that records will comming as a failure records. once the DQ checks are completed then DQ reports are Downloded by the banks,
+In sys_stg_join_master we can see the what type of SED's and what are the columns we are using for the SED's. that is the SED's
+once the SED's are completed, then we will run the DQ checks(Data Quality), suppose any pp table data is there any Referencial data we check properly like date condition,
+any Product code, Party type like anything is missing then that records will comming as a failure records. once the DQ checks are completed then DQ reports are Downloded by the banks,
 and then they verify the data, and then any currection is required they do the currections, if at all the data currection is not required they just sed go a head further,
 and then we can run the main Capital calculation(Basel Capital calculation) batch will be start. in this perticular batch we have that Rules, T2T's, Data Transformation & 
 these things, in this batch we actually caluculate the RWC(Risk Weighted caluculations) all these things we do, initially we lode the data from stageing to non packet exposer 
 predictories and after that we do the recaptiliation of product type, party type assect class clasification all these things, once it is done we will apply the credit ratings,
 and apply the risk weight based on the different different conditions, like based on the accet class, credit rating, party type on all these things we apply the ratings and
-then finally we calculated the risk weighted  Accet. after that the data will flow into the rect table(regulatory tables),once the data lode into rect tables on top of the 
-rect table some metirialized views are there those things will be refresh and then the report will be genarated on top of mertilied views.
+then finally we calculated the risk weighted  Accet. after that the data will flow into the rect table(Regulatory tables),once the data lode into rect tables on top of the 
+Rect table some Metirialized views are there those things will be refresh and then the report will be genarated on top of Mertilied views.
 
+
+I do work around data model also, where exactly like, initially do we get any changes or get any new tables .
+
+Type of Data model is 
+		|- Incremental
+		|- Slice
+		|- New
+		|- Re_build
+
+New:- only and only we use NEW in the first time  instalation
+Re_build: actually we do not use, in case when we get any probelm while doing the instalation then only we use Re_build if not we can not use in ongoing process.
+Incremental: when ever we do get any requirement like to add/delete/drop the tables then only we use
+Slice: Here Slice and Incremental both are same, suppose if we want to drop any object then only we use incremental otherwise Slice model will be the fastest data model.
+
+here we have 2 types  of data model
+		|- Physical Data Model( in this we have main data base related things like data base object names )
+		|- Logical Data Model. (what ever the things we have to see in metadata level and all)
 
 
 
