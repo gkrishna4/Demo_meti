@@ -1,0 +1,87 @@
+1) what is index? Explain in details?
+	|- Index is a database Object which is used to retrive the data very fastly from the database thats why indexs are used to improvment of quary
+	|- Genarally idexes are created on table cloumns and also indexes are created by database admin.
+	|- In Oracle we are creating indexes in 2 ways
+		|- Automatically
+			|- in Oracle whenever we are creating a primary key or unique key in a table
+			   column then oracle server internally automatically  creates a btree indexes on those columns
+		|- Manually
+			|- we can also create index explicitly by using following syntax
+				create index indexname on tablename(column name);
+	|- when ever we are requesting the data by using "where clause" or "order by clause"
+	   then only DB server serching for indexes
+	|- In Oracle whenever "where clause" having "!="   or "is null" or "is not null" Oparaters then
+	   oracle server doesn't serch for indexes. if these columns already having indexes also. 
+
+
+
+2) Types of Indexes?
+     |- Oracle having 2 types of indexes 
+		|- Btree indexes
+		|- Bitmap Indexes
+
+
+
+	
+3) What is the difference between an index-by table, a nested table, and a varray in PL/SQL?
+	index-by table:
+		|- index by tabale is an unbounded table having key value pairs.
+		|- index by tabes are not allowed to store perminently in oracle data base 
+		|- we can not add/remove indexes
+		|- here indexes are either integers or charactors and also +ve,-ve numbers.
+		|- index by table having exists,first, last, prior, next, count, delete(index), delete(one index, another index), delete collection methods.
+	
+	nested table:
+		|- it is a bounded table, nested tables are allowed to store perminently in oracle database by using sql.
+		|- we can add or remove indexes by using extend, trim collection methods
+		|- here always indexes are integer starts with 1
+		|- nested table having exists,extends, trim, frist, last, prior,next,count, delete(index), delete(one index, another index), delete collection methods.
+	varray
+	   |- varry is a bounded table which stores 2GB data, we can also store varry permanently into data base by using  SQL
+	   |- we can add or remove indexes by using extend, trim collection methods
+	   |- here always indexes are integer starts with 1
+	   |- varry having exists,extends, trim, frist, last, prior,next,count,,limit,delete collection methods.
+
+
+
+
+4) Explain bitmap indexes.
+	|- when ever we are creting betmap index then oracle server internally automatically creates a 
+	   bit map table based on the column values in a table
+	|- when user request a data by using "logical oparator" or "equality oparator" in where clause
+	   then bit are oparated with in Bitmap table then oracle server automatically converts result
+	   and  bitmap into RowId by using Internal bitmap function
+		
+            syntax:  create bitmap index indexname on tablename(colunname);
+
+
+
+5) What Function based index?
+
+	|- Whenever "where clause" having functions or expressions then oracle server doesnot serch for 
+	   indexes if these columns already having indexes also.
+	|- to overcome this problem oracle intaduces extension of the btree indexes called function based 
+	   indexes on columns along with functions.
+	By default function based indexes also btree indexes 
+		|- Syntax:- create index indexname on tablename(functionname(columnname));
+									(or)
+								   stored function
+
+
+			
+6) Diff between clusterd and non clusterd index?
+	|- clustered index:- The data in the table is stored in the order of the index (only one per table). 
+			     example:- the table data is sorted by Employee_ID.
+	|- non-clustered index:- The data in the table stays in its original order, but the index helps quickly 
+				 find data based on a different column (like Salary).
+
+
+
+	
+7) How to find query is using index or not?
+	|- use an explain plan for clause in front the Quary.
+		Syntax:-  explain plan for select statement.
+	   when ever we use specifying this clause oracle server internally autoatically creates a plan table, which display Quary performance
+	|- if we want to view plan table then we are using DISPLAY function dbms_xplan.package by using following syntax
+		syntax:-  select * from table(dbms_xplan.display())
+		
