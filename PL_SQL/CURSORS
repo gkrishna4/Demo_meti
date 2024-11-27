@@ -1,0 +1,88 @@
+1) What is implicit cursor, explicit cursor? What are the cursor attributes?
+	        |- cursor is a private sql memory area which is used to process multiple records & also this is a record by record process
+	        |- All DB system having 2 types static cursors those are
+		            |- Explicit cursor
+		            |- implicit cursor	
+	Explicit cursor:
+		    |- for sql statement returns multiple records is called explicit cursur & also this is a record by record process
+		       and also this memory area we can call it as Active set area.
+	     Attributes:
+	        	|- %no data found
+		        |- %found
+		        |- %is Open
+		        |- %rowcount
+	Implicit cursor:
+		    |- For SQL statements returns single record is called implicit cursor, implicit memory area is also called as context area.
+		    |- In oracle whenever pl/sql block having select into clause or pure DML statements then oracle server internally automatically
+		       allocates the memory area is called as SQL area/context area/implicit cursor. 
+		    |- this memory area always returns single record when pl/sql block having select into clause.
+	   Attributes:
+		    |- sql%no data found
+		    |- sql%found
+		    |- sql%is open
+		    |- sql%rowcount.
+
+
+
+
+2) What is a cursor for loop in PL/SQL?
+	      |- Using cursor "for" loop we are eliminating explicit cursor life-cycle. i.e.. when ever we are using cursor for loop no need to
+	         use open, fetch, close statements explicitly
+	      |- when we are using cursor for loop oracle server only internally automatically open the cursor, and then fetch data from cursor
+	         and close the cursor.... and it is used in Executable section of pl/sql block.
+	      |- in cursor for loop index veriable internally behaves like a record type veriable(%rowtype).
+
+
+  
+	
+3) What is a parameterized cursor in PL/SQL?
+	      |- In Oracle we can also pass parameters to the cursor same like a subprogram "in" parameters. these parametes cursor are called as 
+	         prameterized cursor.
+      	|- in Prametarized cursor we are defining foral parameter when we are defining the cursor and also pass actual parameters when we are
+	          open in the cursor.
+	      |- in Oracle whenever we are defining the formal parameter in cursor/function/procedure then we are not allowd to use datatype size in
+	         formal parameter declaration.
+
+
+
+
+4) What is the difference between a strong refcursor and a weak refcursor in PL/SQL? 
+	   |- Refcursor is a pointer to a query result set. These are two types: strong refcursor and weak refcursor.
+     strong refcursor:
+	          |- Predefined structure: The refcursor has a fixed return type defined at compile time (e.g., specific columns and data types).
+	          |- Error checking: It’s safer because the compiler ensures that the cursor’s query matches the defined structure.
+      weak refcursor:
+	          |- Flexible structure: The refcursor can return any structure at runtime; it doesn’t have a fixed return type.
+	          |- No error checking: The structure is checked only at runtime, so there’s more risk of mismatches.
+ 
+
+	
+5) What is the difference between a cursor and a refcursor in PL/SQL?
+	            |- Cursor is static and fixed to one query, while refcursor is dynamic and can be used for multiple queries.
+	            |- Cursor is local, whereas refcursor is flexible and reusable across different program units.
+
+
+6) What is the difference between a cursor and a collection in PL/SQL?
+	        |- Use a cursor when you need to fetch and process rows from a query directly.
+	        |- Use a collection when you need to store data in memory for temporary storage, manipulation, or bulk processing.
+
+
+7) When should you use a cursor, and when should you use a collection in PL/SQL?
+	      |- Use cursors to fetch and process data directly from the database, especially when the dataset is large and you process it incrementally.
+	      |- Use collections for in-memory storage and bulk processing when you want to work with data without repeatedly querying the database.
+
+
+8) What is Dynamic Cursor(ref cursor) ? Diff between static cursor and dynamic cursor?
+	    |- Ref Cursor: A pointer to a query result set, dynamic and reusable. Use it for flexible and modular programming.
+		                 allowing the query to be defined at runtime, ideal for changing query requirements.
+	    |- Static Cursor: Predefined and fixed, best when the query is constant.
+
+
+
+9) Discuss the significance of cursor variables in PL/SQL?
+	          |- Provide flexibility to handle dynamic queries at runtime.
+	          |- Enhance reusability by being passed between program units.
+	          |- Enable efficient result set management and resource control.
+          	|- Support dynamic applications and improve modularity.
+	          |- Simplify code maintenance by reducing the need for multiple static cursors.
+
