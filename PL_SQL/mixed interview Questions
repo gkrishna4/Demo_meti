@@ -1,0 +1,248 @@
+1)Write an SQL query to get data present in table A but not in table B.
+
+	|- Using LEFT JOIN:
+		|- SELECT A.* FROM TableA A LEFT JOIN TableB B
+		   ON A.id = B.id  
+		   WHERE B.id IS NULL;
+		
+		|-Explanation: This query uses a LEFT JOIN to get all rows from TableA. When there is no match in TableB,
+	  	 	       the columns from TableB will be NULL, and the WHERE B.id IS NULL condition filters out those rows
+			       that exist in both tables.
+
+	|- Using NOT IN:
+		|- SELECT A.* FROM TableA A 
+		  WHERE A.id NOT IN (
+                 SELECT B.id FROM TableB B);
+		
+		|- Explanation: This query selects rows from TableA where the id does not exist in TableB. 
+		                The NOT IN operator filters out any rows from TableA that have matching id values in TableB
+
+
+		
+
+2)Write an SQL query using SUBSTR and INSTR together.
+	|- Let's assume you have a table employees with a column email that contains email addresses, and you want to extract 
+	   the domain part (after the @ symbol) of the email addresses.
+
+	|- SELECT email,
+           SUBSTR(email, INSTR(email, '@') + 1) AS domain
+           FROM employees;
+
+	Explanation:
+		|- INSTR(email, '@'): Finds the position of the @ symbol in the email string.
+		|- SUBSTR(email, INSTR(email, '@') + 1): Extracts the substring from the position right after the @ symbol
+		   until the end of the string, which is the domain part of the email.
+  
+3)Discuss the importance of query execution plans and how they impact performance?
+
+
+
+
+4)How to get unique records without using distinct clause?
+	|- we get unique records by Using group by, row_number(),union 
+
+5)Explain the difference between WHERE and HAVING clauses?
+	 |- Use WHERE to filter individual rows and HAVING to filter grouped data.
+	 |- WHERE works before GROUP BY, and HAVING works after.
+	 |- WHERE cannot use aggregate functions, but HAVING can.
+
+6)Difference between EXISTS operator and IN operator? When would you use one over the other?
+	|- The EXISTS operator checks if a subquery returns any results and stops as soon as it finds one match. It’s faster for large
+	   datasets because it doesn't need to compare all values. It’s best used when you just need to know if something exists, not the actual data.
+
+	|- The IN operator checks if a value matches any value in a list or subquery result. It looks at all the values in the list,
+	   which can be slower for large datasets. It's ideal for smaller datasets or when you need to check specific values.
+
+7)What is the difference between NVL and NVL2?
+	|- The NVL function replaces NULL with a specified value. If the first argument is NULL, it returns the second argument.
+	   If it’s not NULL, it returns the first argument.	
+	|- The NVL2 function is similar, but it gives different results depending on whether the first argument is NULL or not.
+	   If the first argument is NULL, it returns the second argument; if it’s not NULL, it returns the third argument.
+
+8)What is the difference between VARCHAR and VARCHAR2en  
+	|- VARCHAR2 data type is used to stroe variable length of allpha numeric data in bytes and maximum size is 4000 Bytes 
+	   when we are try to store less no of bytes then data type specified in varchar2 data type. then oracle server does not 
+	   added the blank spaces at the end of the string. that's why this data type doesn't waste disk space.
+
+	|- VARCHAR it is also same as varchar2 datatype. varchar also stores variable leghth alpha numeic data in bytes but maximum size of the
+	   varchar datatype is upto 2000 bytes
+ 
+
+
+9)What is the difference between GROUP BY and PARTITION BY?
+	|- group by clause is used to arrange similar data items into a set of logical groups. when ever we are using group by clause 
+	   database server selects similar data items from a table column and then reduces no of data item in each group.
+
+	|- PARTITION BY, on the other hand, is used in window functions. It divides the result set into partitions (subsets of rows), 
+	   but unlike GROUP BY, it doesn’t reduce the number of rows in the output. It allows you to perform calculations over subsets of rows,
+	   like calculating running totals or averages with in each partition.
+ 
+
+
+10)How many types of constraints are there?
+	|- there are five types of constraints
+		NOT NULL, UNIQUE, PRIMARY KEY, FOREIGN KEY, CHECK.
+
+
+
+11)What is a check constraint? Please provide an example?
+	|- check constraints are used to define logical condition according to client business rule. in Oracle check constraints 
+	   doesn't work with sys date function.
+		syntax: create table tablename(col1 datatype(size) check(logical condition), col2 datatype(size).....);
+
+12)difference between Primary key and Foreign Key
+	Primary key:
+		|- primary key is uniqely identifying a record in a table in all data bases, there can be only one primary key  in a table 
+		   and also primarykey does not accept the duplicate/null values.
+		|- when ever we are creating the primary key also oracle server internally automatically creates B-tree indexes on these columns
+		|- and we can create primary key on both column level & Table level(this is also called as composite primary key i.e... it is a 
+		   combination of columns as a single primary key)
+	
+	Foreign Key:
+		|-  in all DB's if we want to establish the relationship b/w tables then we are using referencial integrity constraints foreign key.
+		|- one table forgin key must belong to the another table primary key and also these two columns must belongs to same data type.
+		|- always forgin key values, always based on primary key values only.
+		|- Genarally primary key doesnot accepts duplicate, null values.
+	when ever we are establishing the relationship between table by using forgin key then oracle server automatically violet 2 rules and 
+	they are:
+		|- deletion in master table  
+		|- insertion in child table
+	
+	Deletion in master table:
+			|- when we are try to delete a master table record in master table, if the record exist in child table then oracle server returns an 
+			   error ora-2292. to overcome this problem if we want to delete master table record in master table then first we must to delete 
+			   child table record in child table then only we are allowed to delete those record in master table Otherwise use an on delete cascade clause.
+ 	
+	On delete cascade:
+			|- this clause is used along with foreign key only. whenever we are specifying this clause in chaild table then we are able to delete 
+			   master table record with in master table, then automatically the record is deleted in master table and these records are automatically 
+			   deleted in child table
+	Syntax:
+		create table tablenamme(col1 datatype(size) references mastertablename(primarykey columnname) on delete cascade,...);
+	
+
+13)difference between deleting and Truncate?
+	|- whenever we are using delete from tablename then automatically deleted data internally stored in buffer we can also get back this data using rollback.
+
+	|- whenever we are using truncate table tablename then all rows are perminently deleted, we can not get it back this data by using rollback, becouse
+	  truncate is a DDL command and also DDL command transactions are automatically commited.
+
+
+
+14)How do you use SQL%ROWCOUNT?
+	|- It is a PL/SQL cursor attribute that tells how many rows were affected by the most recent SQL operation, such as INSERT, UPDATE, DELETE, or SELECT INTO.
+
+
+
+15)What is the difference between %TYPE and %ROWTYPE?
+	column_level_attribute:
+		|- In  this method we are defining attributes for individual columns and these attributes are represented by using "%type" 
+		   when ever we are using these attributes oracle server internally automatically allocates some memory for the variable 
+		   as corresponding colunm data type in a type. 	syntax:  variablename tablename.columnname%type
+	Row_level_attribute:
+		|- In  method a single variable can represent all different datatype into single unit. this variable is also called as record type veriable
+		   here rowlevel attributes are represented by using  %rowtype
+			Syntax: varaiablename tablename%rowtype. 
+		
+
+16) Explain the difference between UNION and UNION ALL?
+	|- The UNION and UNION ALL operators combine the results of two or more SELECT queries, but they handle duplicate rows differently.
+		|- UNION: Removes duplicate rows, so the result will only have unique rows. This makes UNION a bit slower because 
+			  it needs extra processing to find and remove duplicates.
+
+		|- UNION ALL: Includes all rows from the queries, even if they are duplicates. It is faster because it doesn’t check for duplicates.
+
+17) How can you trace the error line number in PL/SQL? 
+	|- in pl/sql if we want to find out line number where error is occured in pl/sql block then we are using format_error_backtrace()
+	    function from dbms_utility package. this function is used in exception section of pl/sql block       syntax:-   dbms_utility.format_error_backtrace()
+
+
+18) What is no copy compiler hint?
+	|- The NOCOPY hint in PL/SQL improves performance by avoiding unnecessary copying of large parameters. Instead of passing parameters by value (default behavior),
+	   it passes them by reference, saving time and memory. It’s useful for optimizing procedures and functions handling large collections or objects.
+	   However, it requires careful use since any unhandled exceptions might affect the original data.
+
+19) What is table partitioning in SQL?
+	|- Table partitioning in SQL splits a large table into smaller, logical pieces called partitions, based on criteria like ranges or specific values. 
+	   This improves query performance by limiting data scans to relevant partitions and makes managing large datasets easier. For example, in a sales table partitioned by year, 
+	   querying 2022’s data only accesses the 2022 partition, saving time and resources.
+
+20) What is Pivot function?
+	|- The PIVOT function in SQL is used to convert rows into columns, It's commonly used in business intelligence, analytics, and reporting workflows.
+	   It simplifies data aggregation and eliminates the need for complex CASE or manual transformations.
+
+21) What is SQL Loader?
+	|- SQLLoader is an Oracle utility for efficiently loading bulk data from external files into database tables. It uses a control file to specify how data from
+	   the input file maps to the database. SQLLoader is highly flexible, supports transformations, and offers performance optimizations like direct path loading.
+	   For example, it can quickly import data from a CSV file into a database, even for millions of rows, while logging errors for troubleshooting.
+
+   How SQL*Loader Works:
+	|- SQL*Loader reads data from flat files (like .csv, .txt, or any delimited text file) and inserts it into database tables based on instructions defined in a control file.
+	
+22) Have you worked with XML?
+	|- Yes, I’ve worked a lot with XML in databases. I’ve read and extracted data from XML using functions like XMLTABLE and EXTRACTVALUE, created XML files for exporting data,
+	  and used the XMLType data type to store and work with XML efficiently. I’ve also used XML to exchange data between applications and optimized processes
+	  for handling large XML files. For example, I once extracted customer information from XML files to insert it into database tables for reporting.
+
+
+
+
+23) What are SQL CODE and SQL ERRM in PL/SQL?
+	|- SQLCODE gives you the error number, while SQLERRM provides a description of the error. They are useful in exception handling to understand what went wrong
+	   in your PL/SQL program. For example, if an error occurs during an insert operation, you can use these to log the details and troubleshoot the issue.
+
+24) What is the difference between SUBSTR and REGEXP_SUBSTR?
+	|- SUBSTR is like cutting a specific piece from a string by saying "start here and take this many characters."
+	|- REGEXP_SUBSTR is like searching the string for something that matches a pattern (e.g., numbers, specific words) and extracting it.
+	|-If you know the exact position of what you need, use SUBSTR. If you’re looking for something dynamic or complex, use REGEXP_SUBSTR.
+
+
+25) What is the difference between DECODE and CASE?
+	|- DECODE is like a simpler, older version of CASE. It only compares one value to others and gives a result based on that comparison.
+	|- CASE is more flexible. It allows you to check complex conditions and can handle different situations more clearly, making it more powerful
+	   and easier to read, especially for more complicated logic.
+
+26) What is normalization? why its needed? explain diff normal forms?
+  
+Explain the concept of normalization and its different forms? Uses of the normalization?
+
+
+Can we use DDL and DML commands in a PL/SQL block?
+How would you handle data migration between two different database systems?
+Explain the packages in PL/SQL? its advantages?
+Can a Package Specification exist without a Package Body?
+What is performance tuning in Oracle?
+
+
+
+
+
+
+
+
+
+
+
+Describe dynamic SQL queries with an example
+ What is a dblink, and how do you create one?
+ What are pseudo columns?
+ What is COALESCE?
+ Design a database schema for an online exam.
+ What is a VARRAY?
+ Can a VARRAY contain values of different data types?
+ What is a PL/SQL table? Can it contain different data types?
+ What is the LIMIT clause? Implement it in your program.
+ What is CLOB? I have CLOB data with 30,000 bytes—how do I append more data to it?
+ What is SIZE in the context of CLOBs?
+What is V$SESSION? 
+Explain the importance of dynamic SQL and when it's appropriate to use it in PL/SQL development?
+Explain the concept of database locking and how it affects concurrent access?
+If a query is performing slow then how would you approach and troubleshoot it?
+ What are the advantages of using packages in Oracle?
+Difference Between SQL and PL/SQL
+What is dynamic SQL?
+Explain the Oracle Hints?
+ What are CTEs (Common Table Expressions) and why are they useful?
+Which are the set operators used in Oracle?
+What are the null value functions in SQL?
+What is global temporary table?
