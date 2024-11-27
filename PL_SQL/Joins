@@ -1,0 +1,46 @@
+1) Types of Joins.
+	          |- Joins are used to retrive the data from multiple tables
+	          |- In all databases if you are joining 'n' table then we are using (n-l) joining condition.
+	      8i- Joins
+		        |- Equi join/inner join
+		        |- non-equi join
+		        |- self join
+		        |- outer join
+	      9i- Joins
+		        |- INNER JOIN
+		        |- LEFT OUTER JOIN,
+		        |- RIGHT OUTER JOIN
+		        |- FULL OUTER JOIN
+		        |- NATURAL JOIN
+
+
+
+
+		
+2) Differentiate between INNER JOIN, LEFT OURTER JOIN,RIGHT OUTER JOIN, FULL OUTER JOIN, NATURAL JOIN? When to use each of these join?
+		      |- INNER JOIN:
+			            |- this join also returns matching rows only, here also join conditional colunm must belongs to the same type. 
+			               when tables having common column then only we are allowd to use inner join. here inner join performance is very high 
+			               compare to oracle 8i equi join
+			            |- using clause:
+				                |- in 9i joins we can also use "using clause" in place of "on clause"  genarally using clause performance very high
+				                   compare to on clause and also "using clause" returns common column one time only
+				                |- when ever we are using "using clause" then we are not allowed to use alias name in joining condition.
+
+		    |- LEFT OUTER JOIN:
+			            |- This join always returns all rows from the left side and matching rows form the right side table & also returns 
+		                 null values inplace of non-matching rows in another table.
+		    |- RIGHT OUTER JOIN
+			            |- This join always returns all rows from the right side and matching rows form the left side table & also returns 
+		                  null values inplace of non-matching rows in another table.
+		    |- FULL OUETRT JOIN
+			            |- this join returns all rows from all tables becouse it is a combination of left, right- outer joins.
+			            |- this join also returns null values in place of non matching rows in another table.
+		    |- Natural Join
+			            |- this join also returns matching rows only, this join performance is very high compare to inner join.
+			            |- in this join we are not requred to use joining condition explicitly. but inthis case resource tables must have  
+			               a comman column name based on this common  column oracle server only internally automatically establishes joining condition.
+			            |-  when ever we are using natural join oracle server always returns common column one time only because natural join'		
+			                internally use using clause.
+			            |-  when ever we using natural join also then we are not allowed to use alias name to joining conditional column, because
+			                natural join internally uses using clause. 
