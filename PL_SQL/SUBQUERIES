@@ -1,0 +1,134 @@
+1)What is subquery and explain its types?
+	|- Subquerys are used to retrive the data from single or mutiple tables
+	|- All DB systems having 2 types Sub-Querys and they are:
+		|- Non-corelated Sub_Queries
+			|- In Non_corelated SubQueries child queries are executed first then only parent quesries are executed. 
+			   And these are clasified into 3 types they are
+					|- single row subQuery
+					|- multiple row subQuery
+					|- multiple columns subQuery  
+		|- Corelated Sub_Queries 
+			|- In Corelated SubQuries parent queries are executed first then only chaild quaries are executed.
+	
+	|- Child Query: A query which provides values to the another query is called child query.
+	|- Parent Query:A Query which receives values form another Query is called Parent Query.
+	 
+
+
+2) What is the difference between ROW_NUMBER, RANK & DENSE_RANK?
+	|- Row_Number Analitical function automatically assigns different rank number when values are same
+	|- Rank & Dense_rank analitical functions automatically assigns same rank numbers when values are same and also rank skips 
+	   next consecutive number like(1,1,3,4,5)
+	|- where as dence_rank doesnot skip next consecutive rank numbers.
+
+
+
+	
+3) What are SQL window functions? Explain it's types? 
+	|- Analitical functions also similar to group function, genarally group function reduces no.of rows  in each group where as 
+	  analitical functions doesn't reduces no.of rows in each group. i.e.. analitical function executes each and every group.
+	|- Analitical functions must have "over clause" having 3 types of clauses
+								|- partition by clause
+								|- order by clause
+								|- window frame clause.
+
+
+4)When does a single-row subquery error occured?
+	  |-A single-row subquery error occurs when:
+		    |- No rows are returned (NO_DATA_FOUND).
+		    |- More than one row is returned (TOO_MANY_ROWS).
+ 
+
+5) what is ROWID?
+	|- Rowid is an pseudo column, it behaves like a singlr column, Genarally here rownum having temporary values where as rowid having fixed values
+	|- when ever we ar inserting data into table then oracle server automatically generates an unique identification number to identify the record 
+	   uniquely this is called row_id.
+	|- in oracle if we want to retrive the data very fastly by using row_id, by default rowid having ascending order. 
+
+
+6)what is ROWNUM?
+	|- Rownum is a pseudo column which behaves like a table colunm & it is used to restrict no.of rows in a table, where as when ever we are instaling 
+ 	   oracle server then automatically some pseudo columns are created in a data base. these pseudo columns are rownum, rowid... and rownum column is
+	   also same as limit clause in Mysql database.
+	|- Rownum is pseudo column which automatically assign no.to each row in a table at the time of selection
+	|- genrally rownum doesnot work with more than 1 positive number. i.e.. it works with <, <= Oparators.
+	|- here Rownum values are never pre-assigned. i.e rownum generates numbers at runtime based on where clause.  
+
+
+7)Write an SQL Query delete duplicate records from a table?
+	|- delete from TableName where rowid not in(select min(rowid) from TableName group by columnName);
+		
+      (or)
+
+	|- DELETE FROM employees
+	   WHERE (name, salary) IN (
+   		 SELECT name, salary
+    		 FROM (
+        	    SELECT 
+           		 name, salary,
+            		 ROW_NUMBER() OVER (PARTITION BY name, salary ORDER BY employee_id) AS rn
+        	    FROM employees
+    		      )
+   	         WHERE rn > 1
+	     );
+
+
+8)Write an SQL Query to display  nth highest salary?
+	|- by using co-related sub Quary
+		|- select * from emp e1 where &n=
+		   (select count(distint(sal)) from  emp e2 where e2.sal>e1.sal);
+	
+	|- by using Analytical function
+		|- select * from(select deptno, ename, sal, dence_rank() over(order by sal desc) r from emp) where r= &n;
+
+
+	
+
+
+9)find out 3rd and 4th highest salary?
+	|- SELECT salary FROM (
+    		SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+    		FROM employees
+		)
+		WHERE rnk IN (3, 4);
+
+	(or)
+	
+	|- SELECT salary FROM (
+    		SELECT DISTINCT salary FROM employees
+    		ORDER BY salary DESC) OFFSET 2 ROWS FETCH NEXT 2 ROWS ONLY;
+
+
+
+
+10)find out the latest one-month records?
+		|- SELECT * FROM your_table
+		   WHERE your_date_column >= ADD_MONTHS(SYSDATE, -1);
+
+
+
+11) Write an SQL Query to display most recently joined employee in each department from emp table by using lead function?
+	|- select * from (
+	      select deptno, ename, hiredate, lead(hiredate) over(
+	      partition by deptno order by hiredate) r from emp) where r is null;
+
+
+
+12)Write an SQL Query to display 1st and last row from emp table?
+	|- select * from (select rounum r, ename, sal from emp) where r=1 or r=(select count(*) from emp);
+
+
+
+13) Write an SQL Query to display last 2 rows from emp table?
+	|- select * from emp
+	   minus
+	   select * from emp where rownum <=(select count(*)-2 from emp);
+
+
+
+
+14) Write an SQL Query to display the rows b/w  3 to 7 from emp table;
+	|- select * from emp where rownum<=7
+	   minus
+	   select * from emp where rownum <= 3;
+	   
