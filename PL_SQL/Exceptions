@@ -1,0 +1,153 @@
+1) What are the exceptions in PL/SQL? How to handle exceptions in PL/SQL
+	      |- whenever the runtime error is occured  use an appropriate exception name in exception handler under exception section of pl/sql block
+	      |- Oracle provided 3 types of exceptions
+		          |- predefind exception
+		          |- user defind exception
+		          |- unnamed exception/ non-predefind exception
+	
+    predefind exception:
+	                  |- oracle provided 20 predefind exception name for regularly occured runtime error
+	                  |- whenever the runtime error is occured use corresponding  predefind exception name in exception handler and eception section of pl/sql block.
+    user defind exception:
+	                  |- in oracle we can also create our own exception name and raised when ever neccesary, these exceptions explicitly these type of exceptions are also 
+	                     called as user defind exceptions
+	                  |- in DB's if we want to raise exception based on the client business rule then only we are using user defind exception. 
+    unnamed exception/ non-predefind exception
+	                  |- in oracle if we want to handle other than 20 predefind exception name error then we must used unnamed method.
+	                  |- in this method we are creating our own exception name and they associates this exception name with appropriate error number by using
+	                     EXCEPTION_INIT function, this function accepts 2 parameters.	
+	                                |- syntax:   pragma exception_init(userdefind-exception-name, error name);
+	                  |- and this function is used in declare section pl/sql block.
+	                  |- here pragma is a compilar diclarative. i.e... when ever we are using pragma, oracle server internally associates error no, with exception
+	                     name at the time of compilation.
+
+
+2) Explain the predefined exceptions in PL/SQL?
+	|- Some regularly used predefind exceptions are:
+		|- no_data_found
+		|- too_many_rows
+		|- dup_val_on_index
+		|- Invalid_cursor
+		|- Cursor_already_open
+		|- zero_devide
+		|- invalid_number
+		|- value_error
+    
+     no_data_found:
+	        |- when ever pl/sql block having select into clause and also if the requested data is not available then oracle server returns an error
+	           ora-1403: no data found. eception name
+     too_many_rows:
+	        |- when ever select into clause try to return multiple records or try to return multiple values in a single column at a time then oracle
+	           server returns ann error  ora-1422: exact fetech returns more then requeste number of rows.
+     dup_val_on_index:
+	        |- in oracle when we try to insert duplicate value into "primary key" column or when we try to insert duplicate values in "unique constraints" 
+	           column then oracle server returns an error ora-0001: unique constrains Violated.
+     Invalid_cursor:
+	        |- In Oracle when we are not Open the cursor but we are try to perform Oparation of cursor then oracle server returns an error 
+	           ora-1001: invalid cursor
+     Cursor_already_open:
+	        |- before we are re-open the cursor we must close the cursor properly otherwise oracle server retruns an error.
+	           ora-6511: cursor already open.
+    zero_devide:
+	        |- in oracle when we are try to perform division by zero then oracle sever retruns an error
+	           ora-1476: divisor is equal to zero.
+    invalid_number:
+	        |- when pl/sql block have sql statements  and also these sql statements try to convert STRING type to NUMBER type or DATE STRING into DATE 
+	           then oracle server retruns an error.. ora-1722:invalid number
+    value_error:
+	        |- when ever pl/sql block having procedural statements and also these statements find to convert string type to number type then oracle server
+	           retruns an error... ora-6502: numaric or value error: charactor to number conversion error.
+
+ 
+3) What is exception propagation in PL/SQL?
+	        |- In Pl/SQL exceptions also occured in declare section, exception section, executable section.
+	        |- when exeption raised in executable section those exceptions are handled in inner blocks and outer blocks
+	        |- where as when exceptions are raised in  declare section or in exception section those exceptions are handled in outer block only. 
+	           this is called pl/sql propagation.
+
+
+4) If a PL/SQL block has two exceptions: user-defined and pre-defined, which one will be executed first?
+	      |- In PL/SQL, whichever exception (user-defined or pre-defined) is raised first during program execution will be handled first. 
+	         The order of occurrence determines which exception runs, not the type.
+
+
+
+5) What is SAVE EXCEPTION? Implement it in your program.
+ 
+
+
+Collections/BULK COLLECT 
+========================
+1)Explain the usage of collections in PL/SQL?
+	|- Simplifies Code: 
+			|- Collections reduce the need for multiple variables, making the code cleaner and easier to maintain.
+	|- Improves Performance:
+			|- Bulk operations with collections reduce context switching between PL/SQL and SQL.
+	|- Dynamic and Flexible: 
+			|- Collections can grow or shrink as needed, depending on the type.
+
+
+2)What are the Collections in PL/SQL?
+	|- Collections in PL/SQL are dynamic data structures that store multiple values of the same type.
+		|- Types:	
+			|- Associative Arrays: Key-value pairs for dynamic and sparse data.
+			|- Nested Tables: Table-like collections that grow dynamically.
+			|- VARRAYs: Fixed-size arrays for bounded data.
+	  Use collections for efficient data handling, bulk operations, and query result processing.
+
+
+3)What is the use of the LIMIT clause in the BULK COLLECT statement?
+	|- LIMIT is used in BULK COLLECT to fetch rows in smaller chunks, to improving performance and managing memory effectively.
+	|- When we are using this like, When working with large datasets to avoid excessive memory usage or runtime errors.
+	|- For Example to say, Fetching and processing millions of rows in manageable batches (e.g., 100 rows at a time).
+
+
+4)What is a bulk exception / forall and dml errors  in PL/SQL?
+	|- The FORALL statement is used to improve performance by processing multiple rows in a single DML operation, 
+	   reducing the time spent switching between PL/SQL and SQL. The SAVE EXCEPTIONS clause allows the operation to
+	   continue even if some rows cause errors, and it captures those errors for later review. If an error occurs,
+	   the SQL%BULK_EXCEPTIONS array stores details like which row caused the error (ERROR_INDEX) and the specific error code (ERROR_CODE). 
+	   This makes it easy to track and handle errors while processing data in bulk.
+
+5)How does bulk processing enhance performance in PL/SQL?
+	|- Bulk processing enhances performance in PL/SQL by allowing multiple rows to be processed in a single operation, rather than one at a time. 
+	   This reduces the number of context switches between PL/SQL and SQL engines, which are typically time-consuming. By using techniques like 
+	   FORALL and BULK COLLECT, large amounts of data can be processed more efficiently and improving overall execution speed.
+	
+6)Write a program to update data in the EMP table using bulk updates.
+		
+
+      DECLARE
+    	 -- Declare a collection to hold the employee IDs and new salaries
+    	    TYPE emp_id_table IS TABLE OF EMP.EMPLOYEE_ID%TYPE;
+    	    TYPE emp_salary_table IS TABLE OF EMP.SALARY%TYPE;
+
+   	-- Initialize the collections with employee IDs and new salary values
+    	   emp_ids emp_id_table := emp_id_table(101, 102, 103, 104);
+    	   new_salaries emp_salary_table := emp_salary_table(5000, 5500, 6000, 6500);
+
+      BEGIN
+    	-- Perform bulk update using FORALL
+    	   FORALL i IN 1 .. emp_ids.COUNT
+        	UPDATE EMP
+        	SET SALARY = new_salaries(i)
+       		 WHERE EMPLOYEE_ID = emp_ids(i);
+
+    		-- Commit the changes
+    	   COMMIT;
+
+   	 -- Output to confirm the updates were successful
+    	    DBMS_OUTPUT.PUT_LINE('Bulk update completed successfully.');
+    
+      EXCEPTION
+    	WHEN OTHERS THEN
+        -- Handle exceptions and output the error
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+   END;
+
+
+
+
+
+
