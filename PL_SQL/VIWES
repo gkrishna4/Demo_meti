@@ -1,0 +1,125 @@
+1) Can we update a view if it is created using multiple table joins?
+
+	|- Yes, but only if the view directly maps to one table for the columns you want to update.
+	|- If the view involves complex joins or calculations, you can't update it directly.
+	|- For cases where direct updates are not possible, we can use INSTEAD OF triggers to handle updates.
+	If a view shows data from two tables, you can update it only if the column belongs to one table, not both or neither.
+
+		Imagine we have two tables:
+		|- employees
+			|- Columns: emp_id, name, dept_id
+		|- departments
+			|- Columns: dept_id, dept_name
+
+	We create a view joining these tables:
+		|- CREATE OR REPLACE VIEW emp_dept_view AS
+			SELECT e.emp_id, e.name, d.dept_name
+			FROM employees e
+			JOIN departments d ON e.dept_id = d.dept_id;
+    Now, can we update this view?
+	If you try to update name (from employees), it works because it belongs to one table.
+		Example:
+			|- UPDATE emp_dept_view
+			   SET name = 'John Doe'
+                           WHERE emp_id = 101;
+
+	This will update the employees table.
+	If you try to update dept_name (from departments), it won’t work because it’s not clear how to handle updates across multiple tables.
+	For more complex scenarios, we use INSTEAD OF triggers to define how updates should be applied.
+
+
+
+
+2) What are the different refresh methods for materialized views?
+	|- Materialized Views can be refreshed using several methods, depending on the use case and data requirements
+		|- Complete Refresh
+		|- Fast Refresh
+		|- Force Refresh
+		|- On-Demand Refresh
+		|- On-Commit Refresh
+		|- Periodic (Scheduled) Refresh
+
+3) How do you schedule a refresh manually?
+	|- Generally we are refreshing Materialized view in 2 ways
+		|- Manually by using dbms_mview package
+		|- Automatically.... with out using dbms_view package this method is called as "on commit" method
+
+	
+4) What is a materialized view?
+	|- materialized view stores the result of the quary i.e.. materialized view stores the replication of remote Database  into local node
+	    & also stores data same like table, but when we are refreshing the materialized view it synechronize the data based on the base table.
+
+
+
+5) what is View?
+	|- view used for simplifying  query perpose... i.e.. Regularly used quary we are putting in a view and when ever 
+	   neccessary  select that view, when a view contain functions/expressions then we must create alias name for those functions/expressions
+	   otherwise oracle server returns an error.
+
+6) Difference b/w View and Materialized view?
+	View
+	 |- view does not store data
+	 |- seurity perpose
+	 |- when we are droping base table then view does not be accessble
+	 |- througn the view we can perform DML oparations.
+	Materialized view
+	 |- Materialized view stores data
+	 |- improve perforance purpose
+	 |- when we are droping the base table also Materialized view can be access
+	 |- we can not perform the DML Oparations.
+
+7) How does the refresh process work internally?
+	|- meterialied view also stores data same like a table but when we are refreshing  materialied view it synechronise the data based on base table
+	   if we want to refresh metirialized view  then we are using refresh procedure from dbms_mview package
+	   syntax:    exec dbms_mview.refresh('meterialized view name')
+
+8) How do you call a refresh?
+	|- To refresh a materialized view in Oracle, I use the DBMS_MVIEW.REFRESH procedure. This updates the materialized view so it reflects the latest data from the source tables.
+	   You can choose different refresh modes like complete refresh (rebuilds the entire view) or fast refresh (updates only the changes).
+		For example:     EXEC DBMS_MVIEW.REFRESH('my_materialized_view', 'FAST');
+
+
+9) What is force view?
+	|- In Oracle we can also create a view without having base table these type of views are also called as forced view
+		syntax:-
+			create or replace 
+			force view viewname
+			as 
+			select * from anyname;
+
+
+
+10) If Any Changes Happen in the Main Tables Used in the Views, Will the View Update Automatically?
+	|- Yes, a regular view will always show the latest data from the main tables because it is just a stored query. Whenever you query the view, it fetches the 	  
+	    most recent data from the base tables.
+
+	|- However, a materialized view does not update automatically. It stores a copy of the data and needs to be refreshed (manually, on a schedule, or on-commit) 	   	  
+	   to reflect changes in the base tables.
+
+
+
+11) Is Insertion, Updating, or Deletion Possible Directly on the View?
+
+	Yes, it is possible, but only if the view is updatable.
+	For a view to be updatable:
+		|- It must be based on a single table.
+		|- It should not contain complex joins, aggregations, or calculations.
+		|- The columns being updated must directly map to columns in the base table.
+		
+      Updatable View (Single Table):
+		|- CREATE VIEW emp_view AS
+		   SELECT emp_id, name FROM employees;
+
+      Update works:
+		|- UPDATE emp_view SET name = 'John' WHERE emp_id = 101;
+	
+      Non-Updatable View (Multiple Tables or Aggregation):
+		|- CREATE VIEW emp_dept_view AS
+		   SELECT e.emp_id, e.name, d.dept_name
+		   FROM employees e
+                   JOIN departments d ON e.dept_id = d.dept_id;
+
+      Update will NOT work:
+		|- UPDATE emp_dept_view SET dept_name = 'HR' WHERE emp_id = 101;
+      If the view isn’t updatable, you can use INSTEAD OF triggers to define custom behavior for insert, update, or delete operations.
+
