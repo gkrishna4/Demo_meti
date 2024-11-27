@@ -1,0 +1,124 @@
+1) What are the functions used in SQL?
+	|- Functions used in SQL is
+		|- Aggregate Functions (min,max,sum,avg,count)
+		|- charactor Functions (upper,lower,initcap,length,trim,L-trim, R-trim, substr,instr,l-pad,r-pad, replace,tanslate,concat)
+		|- Number Functions (abs, mod, round, ceil, floor, gratest, least)
+		|- Date Functions ( sysdate, add_months, next_day, months_between)
+
+	
+
+2) Explain the difference between a function and a procedure in PL/SQL?
+	Function:
+	   |- A function is a block of code that returns a single value.
+	   |- It is typically used when you need to perform a calculation or retrieve a value (like a result from a query).
+	   |- You can use a function in SQL expressions (e.g., in a SELECT statement, or as part of an assignment).
+	Procedure:
+	   |- A procedure is a block of code that does not return a value directly (it may modify data or perform an action).
+	   |- It is used when you want to perform an operation, such as updating records, logging, or calling other procedures.
+	   |- You cannot use a procedure in a SQL expression.
+
+
+
+
+	
+3) How do you optimize stored procedures for improved performance in PL/SQL?
+	|- To improve the performance of stored procedures in PL/SQL, focus on writing efficient code and avoiding unnecessary operations.
+	    |- Genaerally procedures are used to improves performance of the application  because procedures internally having one time compilation
+	    |- in all DB's by default one time compilation programs improves performance of Application.
+
+
+
+
+
+4) What Is a Stored Procedure?
+	|- proceure is a named pl/sql block which is used to solve perticular task. and proceure may or maynot return a value
+	|- In oracle whenever we are using "create or replace" keyword in front of the procedure. then those procedures are automatically
+	   perminently stored in database. thats why these procedures are also called as stored procedures.
+
+
+		
+	
+5) What is the use of the raise_application_error procedure in PL/SQL?
+	|- raise_application_error is predefind procedure avilable in dbms_standard package.
+	|- if we want to display userdefind exception messages as same as oracle error displayed formate  then we must use raise_application_error()
+	   procedure this procedure is used either in executable section or the exception section of pl/sql block
+
+ 
+
+
+6) What is an overloaded procedure in PL/SQL?
+	|- overlode is refers to same name can be used for difference purpose in oracle we can also 
+	   implement overoding procedure through package. overloding procedure having same name with diff type or
+	   diff no of parameters
+
+
+
+7) When should you use a procedure, and when should you use a function in PL/SQL?
+	|- In oracle when Application request to return multiple value then we must use procedures by using out parameters
+	|- whenever an application requires DML statements then also must use procedures.
+	|- Whenever application request to execute by using select statement then must use function and also if we want 
+	   to calulate the value then also must use functions.
+
+
+
+8) What is the difference between a procedure and a package in PL/SQL?
+	|- "If I just need to do one specific task, I use a procedure. But if I have several related tasks,
+	    I group them into a package for better organization. For example, managing employee data might have 
+	    multiple tasks like updating salaries, calculating bonuses, and fetching details. Instead of having 
+	    separate procedures scattered around, I put them all into a package, making it easier to manage and maintain."
+
+
+	
+9) How Do You Create a Small Stored Procedure?
+	|- Define the Procedure:
+		|- Use the CREATE OR REPLACE PROCEDURE statement.
+		|- Specify the name of the procedure.
+		|- Optionally, include parameters (input, output, or both).
+	|- Write the Body:
+		|- The body begins with the IS or AS keyword.
+		|- Add any necessary declarations, if required, in the DECLARE section.
+		|- Write the logic in the BEGIN ... END block.
+	|- Compile the Procedure:
+		|- Execute the CREATE PROCEDURE command in a PL/SQL environment (like SQL*Plus, SQL Developer, or any database client).
+		|- If there are no errors, the procedure is stored in the database.
+	|- Call the Procedure:
+		|- Use the EXECUTE command or call it within an anonymous block.
+
+
+
+10) What is pragma autonomous transaction / autonomous transaction?
+	|- Genarally orcale will not create separate transactions for procedure.. i.e.. when we are calling proceure in main transaction then procedure 
+	   transcations are always behaves like a part of main trancsaction. to overcome this problem oracle 8i intraduced  autonomus transactions in
+	   procedures. when ever we are using autonomus transactions in procedures then oracle server create saparate transactions for procedures.
+
+	|- thats why in this case procedure transactions are never effected  in main transactions and also main transactions commit/rollback commands
+	   are never effected in procedure transactions.
+
+	|- if we want to procedure autonumus then we are using atonumus_transaction_pragma, commit.
+	|- in declare section of the procedure we are defining autonumus transcation pragma and also must use commit in procedure coding.
+		 syntax:-     pragma autonomus_transaction.
+
+  uses of autonomus transactions:
+	|- error logging:- in pl/sql storing error numbers, error numbers with exception messages in a table and also cancel invalid transactions is called 
+			   error loging . in this case we must use autonomus transactions.
+	
+
+
+11) What is the purpose of the pragma exception_init in PL/SQL?
+	|- in oracle if we want to handle other than 20 predefind exception name error then we must used unnamed method.
+	|- in this method we are creating our own exception name and they associates this exception name with appropriate error number by using
+	   EXCEPTION_INIT function, this function accepts 2 parameters.	
+	|- syntax:   pragma exception_init(userdefind-exception-name, error name);
+	|- and this function is used in declare section pl/sql block.
+	|- here pragma is a compilar diclarative. i.e... when ever we are using pragma, oracle server internally associates error no, with exception
+	   name at the time of compilation.
+
+12)What is the significance of the 'PRAGMA' directive in PL/SQL? In what situations would you use it?
+
+	|- The PRAGMA directive in PL/SQL provides special instructions to the compiler for optimization, compatibility, and advanced control.
+	|-Common use cases:
+		|- EXCEPTION_INIT: Map Oracle errors to custom exceptions.
+		|- AUTONOMOUS_TRANSACTION: Perform independent transactions (e.g., logging).
+		|- SERIALLY_REUSABLE: Optimize memory in multi-user systems.
+		|- RESTRICT_REFERENCES: Ensure purity for SQL-callable functions.	
+	|- By using PRAGMA, we can make your code more efficient, organized, and adaptable to specific needs.
