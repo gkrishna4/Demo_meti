@@ -325,22 +325,47 @@ $ git merge feature
 =================================================================================================
 
 15) what does git rebase?
-Step-1:
----------
-We have to rebase feature branch on top of master branch.
-git checkout feature 
-git rebase master
-Whatever new commits are there in the feature branch will be duplicated by git. 
-Here everything(like commit message,timestamp,author name and mail) is same, Except that commit ids will be changed.
-The base commit of the feature branch(duplicate copy) will be updated as latest commit of parent branch(master branch).
 
-Step-2:
----------
-We have to merge feature branch into the master branch (fast-forwar merge will be happend)
-git checkout master
-git merge feature
-The master branch pointer will be changed to last commit(duplicate copy) of the feature branch. 
-In this case Fast-forward merge will be happend.
+You are working on "feature-branch", but "main" has new updates. You want to update your branch with the latest main changes.
+Step-by-Step Process:
+---------------------
+# Step 1: Switch to the feature branch
+git checkout feature-branch  
+
+# Step 2: Fetch the latest changes
+git fetch origin  
+
+# Step 3: Rebase the feature branch onto main
+git rebase main  
+
+Your commits are now on top of the latest main.
+
+Handling Conflicts During Rebase
+=================================
+When you run git rebase main, Git reapplies your commits on top of the latest main. If any commit modifies the same file as in main, a conflict occurs.
+Git will pause and ask you to fix it.
+
+Steps to Fix a Rebase Conflict
+-------------------------------
+Identify the Conflict and RUN the command: git status  
+You'll see:---- both modified: file.txt files
+This means file.txt has changes from both your branch and main.
+
+
+Open the Conflicted File----->Manually Fix the Conflict---->Mark the Conflict as Resolved.
+
+After fixing the file, stage the changes:-- git add file.txt
+Continue the Rebase:--  git rebase --continue
+
+Git will reapply the next commit. If there are more conflicts, repeat the process.
+
+If things go wrong, you can abort(cancel) the rebase and return to the original state:---   git rebase --abort
+NOTE:
+=====
+✅ Conflicts happen when changes overlap
+✅ Fix them manually, stage, and continue rebase
+
+
 
 
 =================================================================================================
