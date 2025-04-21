@@ -10,6 +10,13 @@ bash -n script.sh
 sh -n script.sh
 ksh -n script.sh
 
+Maven Life cycle?
+=================
+> compile:---- compiles the source code
+> test:------ Runs Unit Tests
+> package:----- creates JAR/WAR/EAR
+> install:---- installs artifact to local repo
+> deploy:----- deployes the artifact to remote Repo
 
 How Many ways you can trigger the Build?
 ===========================================
