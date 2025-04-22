@@ -25,6 +25,28 @@ we can trigger the Build in 3 ways
 2) Web hook
 3) Build piriadically
 
+ How to add a new worker node in Jenkins ?
+=========================================
+ Log into the Jenkins master and navigate to Manage Jenkins > Manage Nodes > New Node. Enter a name for the new node and select Permanent Agent.
+Configure SSH and click on Launch.
+
+How to add a new plugin in Jenkins ?
+=====================================
+Using the CLI, java -jar jenkins-cli.jar install-plugin <PLUGIN_NAME>
+
+Using the UI,
+-------------
+Click on the "Manage Jenkins" link in the left-side menu.
+Click on the "Manage Plugins" link.
+
+ What is JNLP and why is it used in Jenkins ?
+==============================================
+In Jenkins, JNLP is used to allow agents (also known as "slave nodes") to be launched and managed remotely by the Jenkins master instance. This allows Jenkins to distribute build tasks to multiple agents, providing scalability and improving performance.
+When a Jenkins agent is launched using JNLP, it connects to the Jenkins master and receives build tasks, which it then executes.
+The results of the build are then sent back to the master and displayed in the Jenkins user interface.
+
+
+
 Difference between Continuous Delivery & Continuous Deployment
 ================================================================
 Continuous Delivery:-   A process where code changes are automatically built, tested, and prepared for release (The code is always ready to be deployed, but the actual
