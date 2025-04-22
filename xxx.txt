@@ -25,6 +25,34 @@ we can trigger the Build in 3 ways
 2) Web hook
 3) Build piriadically
 
+What is shared library?
+=======================
+In Jenkins, a shared library is a way to store commonly used code(reusable code), such as scripts or functions, that can be used by different Jenkins pipelines.
+Instead of writing the same code again and again in multiple pipelines, you can create a shared library and use it in all the pipelines that need it. 
+This can make your code more organized and easier to maintain.
+*Configuration:
+   - Globally in Jenkins (Manage Jenkins → Configure System → Global Pipeline Libraries)
+   - there we can define the Librari name, Default Version, and  Project Repository where we are maintaining the Shared Libraries.
+   - To access other shared libraries, the Jenkinsfile needs to use the @Library annotation, specifying the library’s name:
+Example:-
+---------
+@Library('my-shared-library') _
+// The underscore is required when no import statements follow 
+pipeline {
+    agent any
+    stages {
+        stage('Example') {
+            steps {
+                mySharedFunction()
+            }
+        }
+    }
+}
+Advantages:
+-----------
+Standarization of Pipelines, Reduce duplication of code, Easy onboarding of new applications, projects or teams, One place to fix issues with the shared or common code
+Code Maintainence, Reduce the risk of errors
+
  How to add a new worker node in Jenkins ?
 =========================================
  Log into the Jenkins master and navigate to Manage Jenkins > Manage Nodes > New Node. Enter a name for the new node and select Permanent Agent.
