@@ -31,6 +31,10 @@ Maven Life cycle?
 > install:---- installs artifact to local repo
 > deploy:----- deployes the artifact to remote Repo
 
+on which jenkins version you Worked On?
+=========================================
+2.44
+
 How Many ways you can trigger the Build?
 ===========================================
 we can trigger the Build in 3 ways
