@@ -1,7 +1,20 @@
  Docker demen process:- https://chatgpt.com/share/dec866e9-7d83-425d-bc75-595da0122823
 jenkins shared libraries :- https://chatgpt.com/share/6415334f-b4ca-4511-aeba-93307161c8b1
 how we can execute the microservices for that how we need to write the jenkins file:-           https://chatgpt.com/share/29edcfc0-3cf5-4e2a-bb9d-a0d8c60a8a18
-we have multiple stages in the Jenkins pipeline, How we can build single stage and how we can skip remaining:-    https://chatgpt.com/share/39060863-61b6-4587-be5c-786510d86ca9
+we have multiple stages in the Jenkins pipeline, How we can build single stage and how we can skip remaining:-    https://chatgpt.com/share/
+39060863-61b6-4587-be5c-786510d86ca9
+
+What is DevOps?
+----------------
+DevOps is a methodology/culture, and Bridge gap b/w Devlopment and Oparations teams. By automating the testing, deployment
+and monitoring, and also we can release the Appications faster.
+
+What is Agile?
+--------------
+Agile is a flexible way to manage projects by braking them into small Sprints.
+Insted of Planning everything upfront, we focus on Delivering small working peaces of the product, and getting the feedback and
+improving along with the way . it involves Teamwork, customer collabaration, and adopting the challenges Quickly.
+
 
 How to check whether the syntax of a shell script is correct without executing it?
 ==================================================================================
