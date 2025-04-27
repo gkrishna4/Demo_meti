@@ -18,6 +18,20 @@ click on connect---> it will navigate to the another page there we have an opcti
 when we click on that it will popup an notification there we can give the username and we click on the connect button
 then automatically it will coonect to the ec2 instance.
 
+How You can Create S3 Bucket?
+==============================
+Clickon AWS S3 --> Buckets --> Create Bucket --> and then configure the bucket like on which region you want to create 
+Bucket type(automatically it will be General Purpose), Bucket Name( must be unic across all the regions ) and if you want
+versioning on the Bucket what we are creating then we can enable by default it will be Disable and then we can click on Create Bucket.
+after creating the Bucket, under General Purpose we can find the bucket what we created, and from there also we can directly uplode the files.
+
+How you can Access the S3 Bucket Objects what you created?
+===========================================================
+under the object/bucket what you created, you can find an option called permissions, there we can find an option called -->Block all Public Access is enabled
+so we can disable it and save the changes, after that we can find an option called Bucket Policy---> click on Edit--> Policy Generator and then we can configure
+S3 bucket policy, after generating the policy we can pasted over Bucket policy and save. and then we can access the objects we created.
+
+
 What is the difference between AWS config and AWS CloudTrail?
 ===============================================================
 Config is focused on the configuration of your AWS resources and reports with detailed snapshots on how your resources have changed. 
