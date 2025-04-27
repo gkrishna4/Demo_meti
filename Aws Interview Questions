@@ -31,6 +31,13 @@ under the object/bucket what you created, you can find an option called permissi
 so we can disable it and save the changes, after that we can find an option called Bucket Policy---> click on Edit--> Policy Generator and then we can configure
 S3 bucket policy, after generating the policy we can pasted over Bucket policy and save. and then we can access the objects we created.
 
+What is Versioning in S3?
+===========================
+when you enable versioning in an S3 bucket, every time you make a change to a file, Aws automatically saves the previous version before storing the new one.
+and it enable at the Bucket Level, and it has ability to restore a version, easy to rollback to previous version. 
+Any file that is not versioned prior to enabling versioning will have version "null".
+Suspending versioning does not delete the previous versions.
+
 
 What is the difference between AWS config and AWS CloudTrail?
 ===============================================================
