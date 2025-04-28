@@ -38,6 +38,43 @@ and it enable at the Bucket Level, and it has ability to restore a version, easy
 Any file that is not versioned prior to enabling versioning will have version "null".
 Suspending versioning does not delete the previous versions.
 
+Explain the diff b/w Buckets & Objects?
+=======================================
+In Amazon S3, data is stored in two main components: Buckets and Objects.
+Buckets:
+---------
+- A Bucket is a container for storing objects. Each bucket has a unique name globally and is created in a specific AWS region.
+- "Buckets can be configured with various settings like versioning, lifecycle policies, logging, and permissions. They can store an unlimited number of objects."
+Objects:
+--------
+- an object is a data storage(The actual content you want to store, which can be anything from a text file to a video)retrieve it easily
+- "Objects can be up to 5 TB in size and can be stored in different storage classes, each designed for various use cases and cost considerations. Access to objects can be controlled using bucket policies, ACLs, and IAM policies."
+
+
+How can you encryption data in S3?
+=================================
+SSE-S3(Server side encryption with Amazon S3 managed keys ),
+SSE-KMS(Server side encryption with Aws key Management Service keys), 
+DSSE-KMS(Dual-layer Server side encryption with Aws key Management Service keys).
+
+what is the Default Encryption in S3?
+=====================================
+Server side encryption(SSE-S3), is automatically to new Objects stored in the bucket. 
+
+what is a VPC Endpoint for S3, and why it is use full?
+=====================================================
+A Vpc endpoint for s3 is like a privare, direct connection b/w your VPC and Amazon S3 that allows your resources(EC2 Instances)
+to access S3 buckets without going over the public internet. this makes data transfers more secure, reduce the cost and and improves the performance
+ 
+How would you troubleshoot slow S3 uplodes/Downlodes?
+=====================================================
+1) need to check with network Bandwidth, 
+2) enable Transfor Acceleration, 
+3) Use Multipart Uplode(recomended for files > 100MB and it seepup the transfor).
+
+How do you ensure that only specific IAM roles can Access an S3 Bucket from a specific VPC?
+===========================================================================================
+use a combination of vpc endpoint policies and S3 bucket policies with conditions like ===> aws:SourceVpc
 
 What is the difference between AWS config and AWS CloudTrail?
 ===============================================================
