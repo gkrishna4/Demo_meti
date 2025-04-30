@@ -1,6 +1,6 @@
 What is a pod?
 ==============
-A pod is a smallest unit in Kubernetes. it represent a single instance of a running process in a cluster
+Pods are the smallest deployable units of computing that you can create and manage in Kubernetes.
 
 K8S architecture 
 =================
