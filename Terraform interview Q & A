@@ -1,0 +1,28 @@
+what is Terraform and how does it differ from other IaC tools like CloudFormation or ARM templates?
+what are terraform providers and how do they work?
+Explain the difference b/w terraform plan & terraform apply?
+what is the purpose of terraform state file?
+How do you manage scerets in terraform?
+what are modules in terraform  and how do you use them?
+How does remote state work and why it is important?
+what are workspaces in terraform?
+How do you handle Terraform code in CI/CD Pipeline?
+what is the diff b/w Count and for_each?
+How dou Handle dependencies in Terraform?
+what is local-exec and remote-exec in terraform?
+How do you import existing infrastructure into terraform?
+what is terraform taint?
+How do you manage terraform versions?
+How do you debug terrafrom errors?
+what are terraform provisioners, and when should they be used?
+what is Sentinel in Terraform?
+How do you Optimize terraform performance for large infrastructure?
+How would you handle a situation where terraform state is out of sync with actual infrastructure?
+How do you roll back changes in terraform?
+what would you do if terraform apply fails midway?
+How do you share terraform modules across teams?
+How  can you manage multiple environments (Dev, Prod) with Terrafrom?
+Write a Terraform script to create an Aws Ec2 Instance?
+How do you modularize a terraform configuration for VPC?
+Write a terraform configuration using for_each to create a multiple S3 buckets?
+
