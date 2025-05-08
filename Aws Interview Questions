@@ -48,7 +48,8 @@ Buckets:
 Objects:
 --------
 - an object is a data storage(The actual content you want to store, which can be anything from a text file to a video)retrieve it easily
-- "Objects can be up to 5 TB in size and can be stored in different storage classes, each designed for various use cases and cost considerations. Access to objects can be controlled using bucket policies, ACLs, and IAM policies."
+- "Objects can be up to 5 TB in size and can be stored in different storage classes, each designed for various use cases and cost considerations. 
+   Access to objects can be controlled using bucket policies, ACLs, and IAM policies."
 
 
 How can you encryption data in S3?
