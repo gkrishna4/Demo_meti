@@ -1,7 +1,21 @@
 what is Terraform and how does it differ from other IaC tools like CloudFormation or ARM templates?
+Ans:-  Terraform is an Infrastructure as code(Iac) tool, that you define cloud resources in config files( .tf) and manage their lifecycle.
+       CloudFormation is for Aws only & ARM is for Azure only.... comming to terraform is multi-cloud(Aws, Azure.Gcp,...etc).
+
 what are terraform providers and how do they work?
+Ans:- Providers are plugins(e.g., aws, azure, k8s, gcp) that intaract with cloud API's
+      Example:-
+                  providers "aws" {
+                      region = "us-east-1"
+                  }
+      terraform downlodes providers during terraform init
+
 Explain the difference b/w terraform plan & terraform apply?
+Ans:-  Plan: Dry run --> shows what changes will be made(no action required).
+       apply:  Excutes the changes(creates/updates infrastructure)
+
 what is the purpose of terraform state file?
+Ans:-  
 How do you manage scerets in terraform?
 what are modules in terraform  and how do you use them?
 How does remote state work and why it is important?
