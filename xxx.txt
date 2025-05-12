@@ -59,7 +59,8 @@ To Create the roles first we need to install the plugin called ==> Role-based au
 after installing the plugin----> Go to the Jenkins DashBord --> Manage Jenkins----> Click on the Configure Global Security  there enable the security check box
 and then goto the authurization section ---> clcik on Rolebased strategy redio button---> and apply save.
 
-and then again go to the jenkins dashbord--> clickon manage jenkins--> click on manage and assign roles---> click on manage role ---> and then go to the Global roles and create a role where it is dev/qa/Oparations/Admin.
+and then again go to the jenkins dashbord--> clickon manage jenkins--> click on manage and assign roles---> click on manage role ---> and then go to the Global roles 
+and create a role where it is dev/qa/Oparations/Admin.
 
 after creating the roles, we can assign the roles to the users.
 clickOn---> Assign roles and add the users as employees.
