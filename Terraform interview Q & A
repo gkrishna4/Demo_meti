@@ -1,7 +1,7 @@
 what is Terraform and how does it differ from other IaC tools like CloudFormation or ARM templates?
 Ans:-  Terraform is an Infrastructure as code(Iac) tool, that you define cloud resources in config files( .tf) and manage their lifecycle.
        CloudFormation is for Aws only & ARM is for Azure only.... comming to terraform is multi-cloud(Aws, Azure.Gcp,...etc).
-------------------------------------------------------------------------------------------
+==============================================================================================
 
 what are terraform providers and how do they work?
 Ans:- Providers are plugins(e.g., aws, azure, k8s, gcp) that intaract with cloud API's
@@ -10,16 +10,19 @@ Ans:- Providers are plugins(e.g., aws, azure, k8s, gcp) that intaract with cloud
                       region = "us-east-1"
                   }
       terraform downlodes providers during terraform init
-------------------------------------------------------------------------------------------
+==============================================================================================
+
 Explain the difference b/w terraform plan & terraform apply?
 Ans:-  Plan: Dry run --> shows what changes will be made(no action required).
        apply:  Excutes the changes(creates/updates infrastructure)
+
+=================================================================================================
 
 what is the purpose of terraform state file?
 Ans:-  The state file is a terraforms memory, it tracks real-world resoureces so terraform knows what to update or delete.
        Example:- If i delete a resource from my config, Terraform uses the state file to find and destroy the actual cloud resource.
                   Here Teams should use remote state with locking to avoid conflicts.
-----------------------------------------------------------------------------------
+=====================================================================================================
 How do you manage scerets in terraform?
 Ans: In Terraform managing the scerets by using the environment Variables.
 
@@ -34,15 +37,58 @@ Ans: In Terraform managing the scerets by using the environment Variables.
        resource "aws_db_instance" "db"{
        password = var.db_password  #Injected
        }
-------------------------------------------------------------------------------------
+===================================================================================
 what are modules in terraform  and how do you use them?
+
+====================================================================================
 How does remote state work and why it is important?
+Ans: Remote state means storing terraform's <terraform.tfstate> file in shared cloud storage(like Aws S3, Azure storage, or Terraform Cloud) insted of 
+     keeping it on Just one person's computer.
+     Remote state safely stores and shares terraforms infrastructure data, enabling team collabaration while preventing conflicts and data loss.
+     when someone is running <terrafrom apply>, locking tempararily "locks the state file so nobody else can make the changes at the same time"
+     Aws S3 automatically enable locking.if you run apply while someone else is using the state: get an error like
+     Error: Error locking state: LockID is already held by another user
+========================================================================================
 what are workspaces in terraform?
+Ans:- Workspaces in Terraform allow you to manage multiple environments(like dev, staging, prod) using the same configuration but with the separate state files.
+      Here Each workspace maintains it's own .tfstate file. same code with diff environments.
+
+       we can create workspace by using the command called===> terraform workspace new <environment-Name>
+       we can switch b/w them by using the command called====> terraform workspace select <environment-Name>
+=====================================================================================================
 How do you handle Terraform code in CI/CD Pipeline?
+
+=====================================================================================================
 what is the diff b/w Count and for_each?
+Ans:
+While both create multiple resources,
+"count" is like cloning identical VMs with numbers(web-0, web-1)
+Ex:-
+       resource "aws_instance" "web"{
+       count = 3
+       ami   = "ami-12345"
+       instance_type = "t3.micro"
+       }
+where as "for_each" is like providing unique VMs with Meaningful names (web-frented, web-backend)
+Ex:
+       resource "aws_instance" "web"{
+              for_each = {
+                 web = "t3.micro"
+                 db = "m5.large"
+              }
+              ami   = "ami-12345"
+              instance_type = each.value
+        }
+=====================================================================================================
 How dou Handle dependencies in Terraform?
+
+=====================================================================================================
 what is local-exec and remote-exec in terraform?
+Ans: 
+======================================================================================================
 How do you import existing infrastructure into terraform?
+
+======================================================================================================
 what is terraform taint?
 How do you manage terraform versions?
 How do you debug terrafrom errors?
