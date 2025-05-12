@@ -42,6 +42,13 @@ we can trigger the Build in 3 ways
 2) Web hook
 3) Build piriadically
 
+what are the suppoted credentials types in jenkins?
+===================================================
+Secrect Text
+secrect file
+User-name with Password
+ssh with privatekey
+
 What is shared library?
 =======================
 In Jenkins, a shared library is a way to store commonly used code(reusable code), such as scripts or functions, that can be used by different Jenkins pipelines.
