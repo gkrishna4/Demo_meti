@@ -76,9 +76,9 @@ If pods are on different nodes, I check node-level routing and firewall rules.
 Check Cloud Firewall Rules (Security Groups):
    >>	If you're on a cloud provider like AWS, GCP, or Azure:
 			       |- Make sure inbound and outbound rules allow traffic on:
-				      |- All ports between nodes (for pod traffic)
-				      |- ICMP (for ping, optional)
-			       |-	TCP/UDP 10250, 30000–32767 (for kubelet and NodePort)
+			       |- All ports between nodes (for pod traffic)
+			       |- ICMP (for ping, optional)
+			       |- TCP/UDP 10250, 30000–32767 (for kubelet and NodePort)
 
 
 For example, in one project, pods on different nodes couldn’t communicate. After investigation, I found that the Calico CNI plugin was misconfigured
