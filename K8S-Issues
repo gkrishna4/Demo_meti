@@ -85,3 +85,87 @@ For example, in one project, pods on different nodes couldn’t communicate. Aft
 and the IP pool didn’t match the node subnet. Fixing the IP pool resolved the issue.”
 
 
+=========================================================================================
+
+
+
+ Pod Eviction Due to Resource Pressure:
+========================================
+When pods are being evicted due to resource pressure, it means the Kubernetes node is running low on resources like CPU, memory, or disk.
+This causes the kubelet to evict pods to protect the node and keep the system stable.
+	 Symptoms:-
+		|- Pods are terminated unexpectedly.
+		|- You see events like Pod was evicted or Evicted due to memory pressure.
+		|- Services become intermittently unavailable.
+
+How to Confirm It:
+	|- Check Pod Events
+		kubectl describe pod <pod-name> -n <namespace>
+		Look for:
+		--------
+		  Status: Failed
+		  Reason: Evicted
+		  Message: The node was low on resource: memory.
+
+	|- Check Node Conditions
+		kubectl describe node <node-name>
+		Look for:
+		--------
+		  MemoryPressure: True
+		  DiskPressure: True
+
+	|- Check Resource Usage
+		kubectl top nodes
+		kubectl top pods -n <namespace>
+
+Fixing Pod Eviction Due to Resource Pressure:
+---------------------------------------------
+	Step 1: Identify the Evicted Pods:
+			|- kubectl get pods --all-namespaces --field-selector=status.phase=Failed
+			|- Then describe one of the evicted pods:
+				|-kubectl describe pod <pod-name> -n <namespace>
+				|-Look for messages like:
+					|-The node was low on resource: memory. Container was using X, but limit is Y.
+	Step 2: Check Node Resource Usage:
+			|- kubectl top nodes
+				This shows CPU and memory usage per node. Look for nodes that are close to 100% usage
+	Step 3: Check Pod Resource Usage:
+			|- kubectl top pods -n <namespace>
+				Identify pods using excessive memory or CPU.
+	Step 4: Set Resource Requests and Limits
+			|- Edit your pod or deployment YAML to include:
+					
+				resources:
+ 				  requests:
+   				     memory: "256Mi"
+                                     cpu: "250m"
+                                  limits:
+                                    memory: "512Mi"
+                                    cpu: "500m"
+			|- Apply the changes: kubectl apply -f <your-deployment>.yaml
+	
+	 Step 5: Scale the Cluster:
+			|- If nodes are consistently under pressure, add more nodes:
+				>> For managed clusters (EKS, GKE, AKS), increase node group size.
+				>> For self-managed clusters, add more worker nodes.
+	
+	 Step 6: Clean Up Unused Resources
+			|- Delete unused pods, jobs, or deployments.
+			|- Remove old logs or temporary files if disk pressure is the issue.
+
+	 Step 7: Monitor Continuously:
+			|- Use tools like:
+				>> Prometheus + Grafana for dashboards
+				>> metrics-server for kubectl top
+				>> Kube-state-metrics for alerts
+
+				
+	
+
+
+
+		
+
+
+
+
