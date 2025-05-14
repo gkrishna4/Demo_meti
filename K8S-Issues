@@ -16,9 +16,9 @@ Ping or curl between pods using kubectl exec to confirm the issue.
 		  	          Get the Pod Names:-   kubectl get pods -n <namespace>
  		 	          Ping Another Pod from Inside a Pod:-   kubectl exec -n <namespace> pod-a -- ping <pod-b-ip>
 
-	=>	If curl fails, it could be a service issue (e.g., app not listening on the port).
+	      => If curl fails, it could be a service issue (e.g., app not listening on the port).
 			           If the pod is running a web service (like on port 80 or 8080), you can test with curl:
-              kubectl exec -n <namespace> pod-a -- curl http://<pod-b-ip>:<port>
+                                   kubectl exec -n <namespace> pod-a -- curl http://<pod-b-ip>:<port>
 
 Check for NetworkPolicies using kubectl get networkpolicy and review their rules.
 	=>	List All NetworkPolicies:-   kubectl get networkpolicy -n <namespace>   note:- This will show you all the NetworkPolicies applied in that namespace.
@@ -65,8 +65,8 @@ Check for NetworkPolicies using kubectl get networkpolicy and review their rules
 			
 If pods are on different nodes, I check node-level routing and firewall rules.
 			When pods are on different nodes and can’t communicate, it could be due to node-level routing or firewall rules.
-		        >> 	Each Kubernetes node has its own network interface. When a pod on Node A tries to talk to a pod on Node B, the traffic must go 
-              through the underlying network infrastructure — like your cloud provider’s VPC or your on-prem network.
+		        >>  Each Kubernetes node has its own network interface. When a pod on Node A tries to talk to a pod on Node B, the traffic must go 
+                            through the underlying network infrastructure — like your cloud provider’s VPC or your on-prem network.
 			
 			How to Check Node-Level Routing and Firewall Rules:
 			       >> Check Node IPs: kubectl get nodes -o wide  ---> This shows the internal IPs of each node.
