@@ -1,86 +1,87 @@
-1. Pod in CrashLoopBackOff:
- - Check the pod logs using kubectl logs.
- - Ensure the required dependencies are available.
+Network connectivity issues between pods 
+=========================================
+In Kubernetes, every pod is assigned an IP address, and by default, all pods can communicate with each other across nodes unless restricted by network policies.
 
-2. ImagePullBackOff:
- - Verify the image name and availability.
- - Check image pull secrets and registry authentication.
+Network connectivity issues between pods can occur due to several reasons. Some common scenarios include:
+     =>	Misconfigured or overly restrictive NetworkPolicies
+	    => Problems with the CNI plugin (like Calico, Flannel, etc.)
+	    => DNS resolution failures
+	    => Firewall rules or cloud security groups blocking traffic
+	    => IP conflicts or routing issues between nodes”.
 
-3. Invalid ClusterIP or Service Port:
- - Ensure correct service and port configurations.
- - Verify network policies and firewall rules.
+When I face such issues, I follow a systematic approach:
+--------------------------------------------------------
+Ping or curl between pods using kubectl exec to confirm the issue.
+		=> If ping fails, it could be a network policy, CNI, or routing issue.
+		  	          Get the Pod Names:-   kubectl get pods -n <namespace>
+ 		 	          Ping Another Pod from Inside a Pod:-   kubectl exec -n <namespace> pod-a -- ping <pod-b-ip>
 
-4. NodeNotReady: 
- - Check the node's status with kubectl get nodes.
- - Examine the kubelet logs on the node.
+	=>	If curl fails, it could be a service issue (e.g., app not listening on the port).
+			           If the pod is running a web service (like on port 80 or 8080), you can test with curl:
+              kubectl exec -n <namespace> pod-a -- curl http://<pod-b-ip>:<port>
 
-5. Insufficient Resources:
- - Confirm resource requests and limits in pod specifications.
- - Use kubectl describe to analyze resource allocations.
+Check for NetworkPolicies using kubectl get networkpolicy and review their rules.
+	=>	List All NetworkPolicies:-   kubectl get networkpolicy -n <namespace>     note:- This will show you all the NetworkPolicies applied in that namespace.
+	=>	Describe a Specific NetworkPolicy
+			     kubectl describe networkpolicy <policy-name> -n <namespace>
+		     	This command gives you detailed information about:
+				       >>   What pods the policy applies to
+				       >>   What ingress (incoming) or egress (outgoing) traffic is allowed
+			        >>  	Which ports and IP blocks are permitted
+			
+		
+	Inspect the CNI plugin logs in the kube-system namespace.
+			 Identify the CNI Plugin Pods
+				     kubectl get pods -n kube-system    ----> this command to list all pods in the kube-system namespace:  
+				     Look for pods related to your CNI plugin. Examples:
+					               >>  Calico: calico-node, calico-kube-controllers
+					               >>  Flannel: kube-flannel-ds
+					               >>  Cilium: cilium, cilium-operator
+					               >>  Weave: weave-net
+			View Logs for a CNI Pod
+					               >> Once you identify the pod, use: kubectl logs <pod-name> -n kube-system
+								               Example: kubectl logs calico-node-abcde -n kube-system
+			What to Look For in Logs
+					              >> Errors like failed to setup network, IPAM error, route not found
+					              >> Warnings about IP pool exhaustion or misconfiguration
+					              >> Messages about failed pod network setup
 
-6. CrashLoopBackOff for Init Containers:
- - Inspect init container logs and configurations.
- - Ensure init container dependencies are satisfied.
 
-7. ConfigMap or Secret Mounting Issues:
- - Verify ConfigMap/Secret existence and correctness.
- - Check pod configuration for volume mounts.
+	Use tools like nslookup or dig to verify DNS resolution.
+			  >>  If nslookup or dig fails, it means CoreDNS might be down or misconfigured.
+			  >>  If it works, DNS is likely functioning correctly.
+			Run a Temporary Pod with DNS Tools:
+				    >> If you don’t already have a pod with nslookup or dig, you can create one like this:
+				         |-  	kubectl run dnsutils --image=busybox:1.28 --restart=Never -it --rm --command -- sh
+				    >> Use nslookup to Test DNS Resolution
+					         syntax:- nslookup <service-name>.<namespace>.svc.cluster.local
+				         	Example:- nslookup my-service.default.svc.cluster.local
+				    >> You can also test external domains:-  nslookup google.com
 
-8. Pod stuck in Pending state:
- - Investigate resource constraints on the nodes.
- - Examine events with kubectl describe pod.
+  >> Use dig (if available):
+					   syntax:- dig <service-name>.<namespace>.svc.cluster.local
+					   Example:- dig my-service.default.svc.cluster.local
 
-9. API Server Unreachable:
- - Verify API server status.
- - Check kubeconfig file for correct API server address.
+			
+If pods are on different nodes, I check node-level routing and firewall rules.
+			When pods are on different nodes and can’t communicate, it could be due to node-level routing or firewall rules.
+		        >> 	Each Kubernetes node has its own network interface. When a pod on Node A tries to talk to a pod on Node B, the traffic must go 
+              through the underlying network infrastructure — like your cloud provider’s VPC or your on-prem network.
+			
+			How to Check Node-Level Routing and Firewall Rules:
+			       >> Check Node IPs: kubectl get nodes -o wide  ---> This shows the internal IPs of each node.
+			       >> Ping Between Nodes: SSH into one node and try to ping another node’s internal IP:- ping <node-2-ip>
+			       >> If this fails, it’s likely a routing or firewall issue.
 
-10. Network Policy Restrictions:
- - Inspect network policies.
- - Ensure correct podSelector and policy rules.
+Check Cloud Firewall Rules (Security Groups):
+   >>	If you're on a cloud provider like AWS, GCP, or Azure:
+			       |- Make sure inbound and outbound rules allow traffic on:
+				      |- All ports between nodes (for pod traffic)
+				      |- ICMP (for ping, optional)
+			       |-	TCP/UDP 10250, 30000–32767 (for kubelet and NodePort)
 
-11. RBAC Permission Issues:
- - Validate service account permissions.
- - Check ClusterRoleBindings and RoleBindings.
 
-12. PersistentVolumeClaims (PVC) Pending:
- - Check available storage classes.
- - Ensure the requested storage is available.
+For example, in one project, pods on different nodes couldn’t communicate. After investigation, I found that the Calico CNI plugin was misconfigured
+and the IP pool didn’t match the node subnet. Fixing the IP pool resolved the issue.”
 
-13. NodePort Service Not Accessible:
- - Confirm the node's firewall allows the specified port.
- - Check Service and NodePort configurations.
-14. Kube-proxy Issues:
- - Inspect kube-proxy logs for errors.
- - Verify kube-proxy configuration.
 
-15. DNS Resolution Problems:
- - Verify CoreDNS status.
- - Check DNS policy and cluster DNS settings.
-
-16. Pod Eviction Due to Resource Pressure:
- - Check resource usage across nodes.
- - Adjust resource limits or add more nodes.
-
-17. NodeOutOfMemory:
- - Inspect node memory usage.
- - Check for memory leaks in applications.
-
-18. Volume Mount Permissions:
- - Ensure correct file permissions in mounted volumes.
- - Verify SELinux or AppArmor settings.
-
-19. Ingress Controller Misconfiguration:
- - Validate Ingress resource configurations.
- - Check the Ingress controller logs.
-
-20. ETCD Cluster Issues:
- - Check etcd pod logs.
- - Verify etcd cluster health.
-
-21. CNI Plugin Issues:
- - Verify CNI plugin status on nodes.
- - Check plugin configurations and logs.
-
-22. Invalid Labels or Selectors:
- - Ensure correct labels and selectors in resources.
- - Use kubectl get with appropriate labels.
