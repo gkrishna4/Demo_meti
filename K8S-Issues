@@ -575,4 +575,60 @@ Step 8: Check Logs and Events:
 	|- kubectl logs <pod-name>
 	|- kubectl get events --sort-by='.lastTimestamp'
 	   (Look for errors in pod logs or service-related events.)
+=====================================================================================================================
+DNS Resolution Failures:
+========================
+"When I face DNS resolution failures in Kubernetes, I start by verifying the issue from within a pod using nslookup or ping. Then I check the CoreDNS pods
+to ensure they’re running and inspect their logs for errors. I also validate the pod’s DNS configuration and ensure the CoreDNS service is correctly set up.
+If needed, I check for network policies that might block DNS traffic and restart CoreDNS to clear transient issues. This layered approach helps me isolate 
+whether the problem is with the DNS service, the pod configuration, or the cluster network."
 
+
+Step-by-Step Resolution for DNS Resolution Failures:
+====================================================
+Step 1: Confirm the Symptom: 
+	  |- From a pod, try resolving a service: kubectl exec -it <pod-name> -- nslookup <service-name>
+								(or)
+						  kubectl exec -it <pod-name> -- ping <service-name>
+	  |- If it fails, DNS is likely broken.
+
+Step 2: Check CoreDNS Pods:
+	      |- kubectl get pods -n kube-system -l k8s-app=kube-dns
+	|- Ensure CoreDNS pods are Running and Ready.
+	|- If not, describe the pod:
+		|- kubectl describe pod <coredns-pod> -n kube-system
+
+Step 3: Check CoreDNS Logs:
+		|- kubectl logs <coredns-pod> -n kube-system
+	|- Look for errors like plugin/forward: no upstreams, SERVFAIL, or connection refused.
+
+Step 4: Validate DNS Config in Pods
+		|- Check the pod’s /etc/resolv.conf:
+			|- kubectl exec -it <pod-name> -- cat /etc/resolv.conf
+		|- It should point to the cluster DNS IP (usually 10.96.0.10).
+		|- If not, the pod may be using a custom DNS policy.
+
+Step 5: Check Network Policies
+		|- kubectl get networkpolicy
+		|- Ensure there are no policies blocking traffic to/from CoreDNS.
+
+Step 6: Check kube-dns Service:
+		|- kubectl get svc -n kube-system
+		|- kubectl describe svc kube-dns -n kube-system
+		|- Ensure the service exists and points to the correct endpoints.
+
+Step 7: Restart CoreDNS (if needed):
+		|- Sometimes restarting CoreDNS can resolve transient issues:
+			|- kubectl rollout restart deployment coredns -n kube-system
+
+Step 8: Check Node DNS Configuration
+		|- Ensure nodes can resolve external domains.
+		|- SSH into a node and run:
+				|- nslookup google.com
+		|- If this fails, the node’s DNS config may be broken.
+		
+	Note: "If DNS fails at the node level, I SSH into the node and test resolution using nslookup or dig. I then inspect /etc/resolv.conf 
+	       to ensure it points to valid DNS servers like 8.8.8.8. If it's misconfigured, I update it and restart the DNS service if needed.
+	       I also ensure the changes persist across reboots. Fixing node-level DNS is crucial because it affects CoreDNS, image pulls, and
+	        other cluster operations."
+==================================================================================================================================================
