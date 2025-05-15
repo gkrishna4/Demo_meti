@@ -1,3 +1,219 @@
+What is CrashLoopBackOff?
+==========================
+your pods are starts, crashes, and Kubernetes keeps trying to restart it, but it keeps failing.
+
+"The CrashLoopBackOff error in Kubernetes indicates that a container is repeatedly crashing after starting. I begin by describing the pod and checking
+the logs using kubectl logs --previous to identify the root cause. Common issues include misconfigured environment variables, incorrect startup commands,
+or application bugs. I also check for OOMKilled events, which suggest resource limits need adjustment. If probes are misconfigured, I disable them temporarily
+to isolate the issue. Once identified, I fix the configuration or code and redeploy the pod. This structured approach helps ensure a quick and effective resolution."
+
+When Do We Get This Error:
+-------------------------
+	The application inside the container crashes immediately after starting.
+	There’s a misconfiguration (e.g., missing environment variables, wrong command).
+	The container depends on a service that isn’t ready yet.
+	There’s a bug in the application code.
+	Resource limits (CPU/memory) are too low, causing OOM (Out of Memory) kills.
+
+Step-by-Step Troubleshooting
+-----------------------------
+Step 1: Describe the Pod
+	kubectl describe pod <pod-name>
+	Look at the Events section for clues.
+	Check for messages like Back-off restarting failed container.
+
+Step 2: Check Container Logs
+	kubectl logs <pod-name> --previous
+
+	Use --previous to see logs from the last crashed container.
+	Look for stack traces, error messages, or missing configs.
+
+
+Step 3: Check the Pod Spec
+	Look at the YAMLfile by using the commad: kubectl get pod <pod-name> -o yaml
+	Verify:
+		Correct command and args
+		Required env variables
+		Mounted volumes and paths
+
+Step 4: Check Resource Limits
+	If the pod is being killed due to memory: kubectl describe pod <pod-name> -n <namespace>
+
+	Look for: OOMKilled
+	Solution: Increase memory limits in the deployment YAML.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-container
+        image: my-image:latest
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+requests: Minimum resources guaranteed.
+limits: Maximum resources the container can use.
+If your app needs more memory, increase the limits.memory value (e.g., from 512Mi to 1Gi).
+
+Apply the updated YAML: kubectl apply -f deployment.yaml
+Monitor the pod: 
+		kubectl get pods
+		kubectl describe pod <pod-name>
+
+Step 5: Use Liveness/Readiness Probes Carefully
+	Misconfigured probes can cause restarts.
+	Temporarily disable them to test
+	EX:-
+	----
+		livenessProbe:
+ 			 initialDelaySeconds: 30
+  	 		 periodSeconds: 10
+
+Step 6: Debug with an Interactive Pod
+	If needed, run a debug container: kubectl run -it debug --image=busybox --restart=Never -- sh
+	Use this to inspect volumes, configs, or network.
+
+
+===========================================================================================================================================================
+ ImagePullBackOff Failures
+===========================
+It means that the pod is unable to pull the container image from the specified container registry.
+
+"The ImagePullBackOff error in Kubernetes indicates that the kubelet on a node is unable to pull the container image from the registry. This can
+happen due to reasons like incorrect image name, missing tags, private registry access issues, or network problems. To resolve it, I first describe
+the pod using kubectl describe pod to check the exact error. If it's an authentication issue, I create a Kubernetes secret and attach it using
+imagePullSecrets. If it's a typo or tag issue, I correct the image reference in the deployment YAML. I also verify network connectivity and try pulling
+the image manually on the node. Once fixed, I redeploy the pod. This structured approach helps quickly identify and resolve the root cause."
+
+First we can Describe the Pod:
+-----------------------------------	
+	kubectl describe pod <pod-name>
+
+And Check for messages like:
+	|- Failed to pull image
+	|- unauthorized
+	|- not found
+
+
+Incorrect Image Name or Tag
+-----------------------------
+Check: Ensure the image name and tag are correct in your pod/deployment YAML.
+Fix: Correct the image name or tag if there's a typo.
+
+Private Registry Authentication Failure
+--------------------------------------------
+Check: If the image is hosted in a private registry (e.g., Docker Hub, AWS ECR, GCR), Kubernetes needs credentials.
+Fix: Create a Kubernetes secret using:
+		
+kubectl create secret docker-registry myregistrykey \
+  --docker-server=<your-registry-server> \
+  --docker-username=<your-name> \
+  --docker-password=<your-pword> \
+  --docker-email=<your-email>
+Then reference it in your pod spec under imagePullSecrets
+
+Network Issues
+-----------------
+Check: Ensure the node can reach the registry (DNS resolution, firewall, proxy settings).
+Fix: Resolve any network connectivity issues.
+
+Rate Limits (e.g., Docker Hub)
+----------------------------------
+Check: Docker Hub enforces rate limits on anonymous and free-tier users.
+Fix: Use authenticated pulls or mirror the image to another registry.
+
+Image Does Not Exist
+--------------------------
+Check: Try pulling the image manually on a node:
+
+docker pull <image-name>
+Fix: Use a valid image that exists in the registry
+
+===========================================================================================================================================================
+cribe the Node: kubectl describe node <node-name>
+	Check for:
+		|- Disk pressure:
+			Look for:
+			  Conditions:
+  				DiskPressure: True
+
+			How to Fix:SSH into the node and execute the command: df -h
+				   Clean up unused Docker images and containers : docker system prune -a
+			           Clear logs or temporary files: sudo journalctl --vacuum-time=2d
+
+
+		|- Memory pressure
+		   	Node is low on available memory.
+			Look for:
+			    Conditions:
+  				MemoryPressure: True
+		
+		    How to Fix: Identify memory-hungry pods: kubectl top pod --all-namespaces
+				Evict or reschedule heavy pods to other nodes.
+				Increase node memory (if using cloud provider).
+				Adjust pod resource requests/limits to prevent overcommitment.
+		
+	       |- Network unavailability
+		  	Node cannot communicate with the control plane or other nodes.
+		  	How to Check: Ping the API server from the node : ping <api-server-ip>
+		  	Check kubelet logs: journalctl -u kubelet
+			
+		 	 How to Fix:  Restart network services: sudo systemctl restart network
+				      Check firewall rules or cloud security groups.
+				      Ensure DNS is working: nslookup kubernetes.default
+
+	      |-Kubelet errors
+			 Kubelet is misconfigured or has crashed.
+
+			How to Check: journalctl -u kubelet
+			How to Fix: Restart kubelet : sudo systemctl restart kubelet
+				    Check kubelet config file (/var/lib/kubelet/config.yaml) for errors.
+				    Ensure correct certificates and API server address.
+	Note:
+		"When a node shows conditions like disk or memory pressure, or kubelet/network issues, I start by describing the node to identify the exact
+                 problem. For disk pressure, I clean up unused Docker images and logs. For memory pressure, I check pod usage and reschedule if needed.
+                 If there's network unavailability, I verify connectivity and DNS. For kubelet errors, I inspect logs and restart the service. This helps 
+		 restore node health and ensure pods are scheduled properly."
+	
+
+Step 3: Check Node Logs: SSH into the node and check logs by using the command: journalctl -u kubelet
+	Look for errors related to kubelet, container runtime, or system resources.
+
+Step 4: Check Cloud Provider Console (if applicable)
+	Ensure the VM/instance is running.
+	Check for:
+		Auto-scaling events
+		Maintenance or preemption
+		Network/firewall issues
+Step 5: Drain and Reboot the Node (if recoverable)
+	kubectl drain <node-name> --ignore-daemonsets --delete-emptydir-data
+	Then reboot the node: sudo reboot
+
+Step 6: Replace or Rejoin the Node: 
+	If the node is permanently down, remove it by using the command: kubectl delete node <node-name>
+	Add a new node or let the auto-scaler replace it.
+
+Step 7: Monitor Cluster Health: kubectl get pods -A -o wide
+	Ensure pods are rescheduled on healthy nodes.
+
+===========================================================================================================================================================
+
 Network connectivity issues between pods 
 =========================================
 In Kubernetes, every pod is assigned an IP address, and by default, all pods can communicate with each other across nodes unless restricted by network policies.
@@ -60,11 +276,9 @@ Check for NetworkPolicies using kubectl get networkpolicy and review their rules
 
   >> Use dig (if available):
 		 syntax:- dig <service-name>.<namespace>.svc.cluster.local
-		  Example:- dig my-service.default.svc.cluster.local
+		  Example:- dig my-service.default.svc.cluster.local		
 
-			
-If pods are on different nodes, I check node-level routing and firewall rules.
-			When pods are on different nodes and can’t communicate, it could be due to node-level routing or firewall rules.
+ When pods are on different nodes and can’t communicate, it could be due to node-level routing or firewall rules.
 		        >>  Each Kubernetes node has its own network interface. When a pod on Node A tries to talk to a pod on Node B, the traffic must go 
                             through the underlying network infrastructure — like your cloud provider’s VPC or your on-prem network.
 			
@@ -86,7 +300,6 @@ and the IP pool didn’t match the node subnet. Fixing the IP pool resolved the 
 
 
 =========================================================================================
-
 
 
  Pod Eviction Due to Resource Pressure:
@@ -159,13 +372,4 @@ Fixing Pod Eviction Due to Resource Pressure:
 				>> metrics-server for kubectl top
 				>> Kube-state-metrics for alerts
 
-				
-	
-
-
-
-		
-
-
-
-
+===============================================================================================================================================
