@@ -373,3 +373,206 @@ Fixing Pod Eviction Due to Resource Pressure:
 				>> Kube-state-metrics for alerts
 
 ===============================================================================================================================================
+
+Persistent Volume Mount Failure
+=================================
+"When I encounter a Persistent Volume mount failure, First, I describe the pod to check for any mount-related errors in the events.
+Then, I verify that the PVC is correctly bound to a PV and that the storage class is valid. I also ensure that the node has access
+to the volume, especially in cloud environments where zone mismatches can cause issues. If using a CSI driver, I check its logs
+for deeper insights. Finally, I validate access modes and permissions. This methodical approach helps me quickly isolate and resolve the issue."
+
+Step-by-Step Resolution for PV Mount Failure:
+--------------------------------------------
+Step 1: Check Pod Events: kubectl describe pod <pod-name>
+	Look under the Events section for messages like Unable to mount volumes or timeout expired waiting for volumes.
+
+Step 2: Inspect PVC and PV
+	Check the status of the PersistentVolumeClaim (PVC):
+		|- kubectl get pvc
+		|- kubectl describe pvc <pvc-name>
+	Ensure the PVC is Bound to a PV.
+	If not, check if a matching PV exists:
+		|- kubectl get pv
+		|- kubectl describe pv <pv-name>
+
+Step 3: Validate Storage Class
+	Ensure the PVC references a valid storageClassName.
+	Check if the StorageClass exists:
+		|- kubectl get storageclass
+	If using dynamic provisioning, ensure the provisioner (e.g., kubernetes.io/aws-ebs, csi) is correctly configured.)
+
+Step 4: Check Node Compatibility
+	Ensure the node where the pod is scheduled can access the volume (e.g., correct zone/region for cloud volumes).
+	|- kubectl get nodes -o wide
+
+Step 5: Review Access Modes and Permissions
+	Ensure the access mode (e.g., ReadWriteOnce, ReadOnlyMany) is compatible with the pod's usage.
+	Check file system permissions if using hostPath or NFS.
+
+Step 6: Logs and CSI Driver
+	If using a CSI driver, check logs: 
+		|- kubectl logs -n kube-system <csi-driver-pod>
+	Look for errors related to volume attachment or mount.
+
+Step 7: Restart Pod
+	Sometimes, simply deleting the pod can help:
+		|- kubectl delete pod <pod-name>
+
+
+=====================================================================================================================
+
+
+ Persistent Volume Claim (PVC) Issues
+=====================================
+"When I encounter a PVC issue, I start by checking the PVC status to see if it's Pending, Bound, or Lost. If it's Pending, I describe the PVC
+to understand what it's requesting—like storage class, size, and access modes. Then I check if a matching PV exists or if dynamic provisioning
+is failing. I also verify that the storage class is valid and the provisioner is functioning. If everything looks good but the PVC is still not bound,
+I check for node affinity issues or recreate the PVC."
+
+Step-by-Step Resolution for PVC Issues
+---------------------------------------
+Step 1: Check PVC Status
+	|-  kubectl get pvc
+
+	Look at the STATUS column:
+		|- Pending: PVC is not bound to any PV.
+		|- Bound: PVC is successfully bound.
+		|- Lost: The PV was deleted or became unavailable.
+
+
+Step 2: Describe the PVC
+		|- kubectl describe pvc <pvc-name>
+		
+		Look for:
+		    |- Events at the bottom (e.g., "no persistent volumes available").
+		    |- Requested storage size and access modes.
+		    |-Storage class name.
+
+Step 3: Check for Matching PV
+		|- kubectl get pv
+		
+		Look for a PV that:
+			|- Has the same storage class.
+			|- Has equal or greater capacity.
+			|- Supports the same access modes.
+			|- Is in Available status.
+
+Step 4: Validate Storage Class
+		|- kubectl get storageclass		
+
+	|- Ensure the PVC’s storageClassName exists.
+	|- If using dynamic provisioning, ensure the provisioner is working (e.g., AWS EBS, GCE PD, CSI drivers).
+
+Step 5: Check for Dynamic Provisioning Errors
+	If PVC is stuck in Pending, it may be waiting for dynamic provisioning:
+		|- kubectl get events --sort-by='.lastTimestamp'
+	Look for errors like:
+		|- failed to provision volume with StorageClass
+		|- no volume plugin matched
+
+Step 6: Check Node Affinity (for static PVs)
+	|- What is Node Affinity in PVs?
+		|- Node affinity in a PV restricts which nodes the volume can be attached to. If a pod is scheduled on a node that
+		   doesn't match the PV's node affinity, the volume won’t mount, and the pod will fail to start.
+
+	|- When working with static PVs, I always check for node affinity settings. If a PV has node affinity, it can only be mounted on
+	   specific nodes. So, if a pod is scheduled on a different node, the volume mount will fail. I describe the PV to inspect its
+	   node affinity and compare it with the node where the pod is running. If there's a mismatch, I either update the pod's nodeSelector 
+           to match the PV or recreate the PV with the correct affinity. This ensures the volume can be successfully mounted."
+
+		|-How to Check and Fix Node Affinity Issues.
+			|- Describe the PV : kubectl describe pv <pv-name>
+			|- Look for a section like:
+
+				nodeAffinity:
+  				   required:
+                                      nodeSelectorTerms:
+                                      - matchExpressions:
+                                        - key: kubernetes.io/hostname
+                                          operator: In
+                                          values:
+                                          - node-1
+
+			|- Check Where the Pod is Scheduled
+				|- kubectl get pod <pod-name> -o wide
+				
+				|- Look at the NODE column.
+                                |- If the pod is scheduled on a different node than the one listed in the PV’s node affinity,
+				   it won’t be able to mount the volume.
+			
+			|- Fix the Mismatch
+				You have two options:
+				 1) Reschedule the Pod to the Correct Node Add a nodeSelector or nodeAffinity to the pod spec:
+					nodeSelector:
+  					  kubernetes.io/hostname: node-1
+
+				 2) Update the PV’s Node Affinity
+					|- Delete and recreate the PV with updated node affinity (PV specs are immutable).
+					|- Make sure the new affinity matches the node where the pod is scheduled.
+
+
+
+Step 7: Recreate PVC or PV (if needed)
+	If the PVC is stuck and no matching PV is available, you may need to:
+		|- Create a new PV manually.
+		|- Delete and recreate the PVC with correct specs.
+
+=============================================================================================================================================================
+ Service Unreachable:
+=======================
+"When a Kubernetes service is reported as unreachable, I follow a layered approach. First, I verify that the service exists and is correctly configured.
+Then I check if the backend pods are running and if the service has valid endpoints. I also test DNS resolution and internal connectivity using a test pod.
+If everything seems fine, I inspect network policies and service types to ensure traffic isn't being blocked or misrouted."
+
+Step-by-Step Resolution for “Service Unreachable” Issues
+===========================================================
+Step 1: Verify the Service Exists
+	|- kubectl get svc
+	|- kubectl describe svc <service-name>
+
+	>> Ensure the service is created in the correct namespace.
+	>> Check the ClusterIP, type, and port mappings.
+
+
+Step 2: Check if Pods Are Running
+	|-  kubectl get pods -l <label-selector>
+	
+	>> Ensure the pods targeted by the service are Running and Ready.
+	>> Use the same label selector as the service’s selector.
+
+Step 3: Validate Endpoints
+	 |- kubectl get endpoints <service-name>
+	
+	 >> If the output is empty, the service has no backend pods.
+	 >> This usually means the label selector in the service doesn’t match any pods.
+
+Step 4: Test DNS Resolution
+	 |- From within a pod: nslookup <service-name>  
+				(or)
+			       dig <service-name>
+
+	 |- If DNS fails, check the CoreDNS pods:
+		|- kubectl get pods -n kube-system -l k8s-app=kube-dns
+	
+Step 5: Test Connectivity from Inside the Cluster
+	|- Use a test pod: 
+		|- kubectl run -it --rm testpod --image=busybox -- sh
+		
+		|- Then try: wget <service-name>:<port>
+		   This helps isolate whether the issue is internal or external.
+
+Step 6: Check Network Policies.
+	|-  kubectl get networkpolicy
+	    Ensure there are no policies blocking traffic to/from the service or pods.
+
+Step 7: Check Service Type
+		|- ClusterIP: Only accessible within the cluster.
+		|- NodePort: Accessible via <NodeIP>:<NodePort>.
+		|- LoadBalancer: Should have an external IP assigne
+	|-  kubectl get svc <service-name>
+
+Step 8: Check Logs and Events:
+	|- kubectl logs <pod-name>
+	|- kubectl get events --sort-by='.lastTimestamp'
+	   (Look for errors in pod logs or service-related events.)
+
