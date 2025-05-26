@@ -583,4 +583,24 @@ Example:
 •	Supports input and output parameters.
 •	Provides security by hiding SQL code.
 
-
+===========================================================================================
+solid principles
+Design patterns
+DI
+MVC life cycle
+oops
+diff b/w interface and abstrac
+var and dynamic
+value & ref type
+out & ref
+Delegates
+generics
+partial views
+filters
+exception handling
+JWT Authentication
+views in sql
+indexs
+primary & unqiue key
+sp & functions
+CTE 
