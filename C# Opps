@@ -536,4 +536,51 @@ and pass values through that Constructor, so every time the instance of the clas
 -----------
 Output : 
 Enter a number: 153
-Armstrong Number	
+Armstrong Number.
+
+
+=======================================================
+What is LINQ?
+Yes, LINQ is a powerful feature in .NET that allows developers to query collections, databases, XML, and other data sources directly within the programming language.
+
+LINQ first or default?
+Ans.	if we have a list of numbers, and need to find one number from the list, then here FIRST or DEFAULT will search from the list whether the number what we are searching from the list is available or not, if the number is available then it will print that number if not the default number is displayed
+
+Q23ii. What is single or first?
+Ans.	if we have a list of numbers, and need to find one number from the list, then here SINGLE or FIRST will search from the list, whether the number, what we are searching from the list, is available or not. if the number is available then, it will print that number. if not, we get an error Message. And also, if we have a number twice in the list then also, we get an error.
+
+
+
+clusterd index: A Clustered Index sorts and stores the data physically in the table based on the indexed column
+syntax: create Clustered Index Index_name  ON  table_name(column_name)
+	only one clusterd index is allowed per table
+	faster for data retrieval
+	automatically creted on primary key by default
+non clustered Index: An non-clusterd Index creates a separate structure from the table data, storing pointers to actual rows
+	syntax: create index index_name ON table_name(column_name)
+	Multiple Non-Clustered Indexes can be created on a table.
+	Improves search performance.
+	Does not affect the physical order of data.
+	Stores pointers to the actual data
+
+
+Explain the difference between a function and a stored procedure?
+	Function:
+•	A function is a block of code that returns a single value.
+•	It is typically used when you need to perform a calculation or retrieve a value  (like a resul  from a query).
+•	You can use a function in SQL expressions (e.g., in a SELECT statement, or as part of  an assignment).
+	Stored procedure
+•	A Stored Procedure is a group of predefined SQL statements stored in the database that can be executed multiple times.
+Example:
+	Create procedure  procedure_name
+	AS
+	BEGIN
+		Sql_statements;
+	END;
+
+•	Improves code reusability.
+•	Increases performance. 
+•	Supports input and output parameters.
+•	Provides security by hiding SQL code.
+
+
