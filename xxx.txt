@@ -269,20 +269,6 @@ command to copy from one instance to another instance. You can also use Job impo
 
 https://www.coachdevops.com/2020/06/migrate-jenkins-jobs-from-one-server-to.html
 
-
-what are the chalenges you fased in devops?
-===========================================
-running pipeline in jenkins, depending on the worklode, secodary node is came to the pitcher,
-if lot of teams are deploying changes or checking the code at the same time. So it is vary slow to scale.
-Because primary node has the fixed size,and upgrade it to bigger size required manuvally
-or it takes some time even if want to do automated way 
-
-hard to troubleshoot because there are so many jenkins plugins, if the team just adopted the new plugin
-they have to get use to how the plugin does error report & all
-
-i sloved it, by using code pipeline for newer projects, codepipeline scales automatically,it doesnt use any ec2
-or any server, it is serverless so it is payas u go.  by using lamda we can check metriks in cloud watch.
-
  what is lamda?
 ================
 lamda is for automation purpose for the daily metrics, for supose we have one usecase is there like ENI triggers 
