@@ -98,14 +98,6 @@ Code Maintainence, Reduce the risk of errors
  Log into the Jenkins master and navigate to Manage Jenkins > Manage Nodes > New Node. Enter a name for the new node and select Permanent Agent.
 Configure SSH and click on Launch.
 
-How to add a new plugin in Jenkins ?
-=====================================
-Using the CLI, java -jar jenkins-cli.jar install-plugin <PLUGIN_NAME>
-
-Using the UI,
--------------
-Click on the "Manage Jenkins" link in the left-side menu.
-Click on the "Manage Plugins" link.
 
  What is JNLP and why is it used in Jenkins ?
 ==============================================
@@ -254,18 +246,9 @@ jenkins can be install by using:-
 
 How to create a backup and copy files in Jenkins?
 =================================================
-Backup data is crucial to any business, If you have right backup’s & in case of any recovery needed to tackle with 
-any unexpected situations like , datacenter outage , Jenkins system failures or accidental deletion of data. 
-
-There are multiple method to backup the Jenkins configuration such as
-
-    using ThinBackup or Backup plugin
-    using the git repo
-    manually backing up the Jenkins configuration or schedule a shell script using the cron. 
-
 The easiest approach which I found is to use the Jenkins plugin for the backup.
 click on manage jenkins----->manage plugins----> Available-->here search for thinbackup plugin & install without restart
-thenafter in manage jenkins there we can find the ThinBackUp click on that and configure the settigs 
+then after in manage jenkins there we can find the ThinBackUp click on that and configure the settigs 
 there we can give the folder where we can store the jenkins backup, cronJobs for when u take the backup, and how many backups we can store...etc
 then after we can Backup and restore the data. 
 
