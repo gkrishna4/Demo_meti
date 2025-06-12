@@ -120,12 +120,22 @@ Problems with Centralized VCSs:
 4) Oranization of central repository is very complex, if number of developers and files increases.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------
-1)what  is git ?
+0)what  is git ?
 
 ✽ Git is Distributed Version Control System Tool. 
 ✽ GIT is developed by Linus Torvalds(Finnish software engineer), who also developed Linux Kenel. 
 
 =================================================================================================
+1)when you use  --amend and what is the use of it?
+
+"git commit --amend" is a command used to modify the most recent commit. it's like an 'undo' and 'recommit'. Allowing you to fix mistackes
+with out creating a new commit.
+Example:-
+Fix the Typos in commit messages: -----------> git commit --amend -m "corrected message"
+Add missed changes(stage the forgotten files):------> git commit --amend --no-edit
+
+
+==================================================================================================
 2)Difference between the Git and GitHub?
 
 Git is a mechanisam and GitHub is a implementation software 
