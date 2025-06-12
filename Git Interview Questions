@@ -134,6 +134,10 @@ Example:-
 Fix the Typos in commit messages: -----------> git commit --amend -m "corrected message"
 Add missed changes(stage the forgotten files):------> git commit --amend --no-edit
 
+1.ii) Which branching Strategy?
+
+Ans: GitHub Flow
+
 
 ==================================================================================================
 2)Difference between the Git and GitHub?
