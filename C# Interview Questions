@@ -145,3 +145,24 @@ It has two individual methods that is "UseRouting()" and "UseEndPoints()". you w
 "UseRouting()" enables routing in your application, and it selects the appropriate endpoint based on the incoming request. it mainly considers the url path, and also http method either get, post or put or delete method.
  
  
+Q17.      What is Authentication and Authorization?
+Ans.     
+Authentication: it checks that whether the user is a valid user or not, if the user is a valid user then he can able to access the application (EX: suppose there is building in that building multiple offices are located. Then entering into the building is Authentication)
+Authorization: it checks whether the user is having access to the particular module/resource. (EX : having access to the particular office is authorization).
+JWT(JSON Web Token)  is widely used for authentication and authorization purposes because it is stateless, compact, and easy to verify.
+A JWT token consists of three parts(Header, Payload, Signature).
+Set Expiration Times and Use Short-Lived Tokens
+JWTs should have short expiration times (exp claim) to minimize the window of opportunity for attackers.
+Set a reasonable token lifespan based on the application's security requirements. Typically, tokens are set to expire within minutes or hours for high-security apps.
+Implement Refresh Tokens for Long-Lived Sessions
+Instead of making JWTs valid for extended periods, use short-lived tokens with refresh tokens to allow the user to obtain a new JWT without re-authenticating.
+Refresh tokens are stored securely on the client side (usually in HTTP-only cookies) and are only exchanged when a new JWT is needed.
+Example Flow
+------------
+User Login:
+The client sends login credentials to the server.
+The server authenticates the user and, if successful, generates a JWT.
+The server sends the token back to the client.
+Requesting Protected Resource:
+The client includes the JWT in the request header to access a protected endpoint.
+The server verifies the JWT and, if valid, allows acce
