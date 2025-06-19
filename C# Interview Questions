@@ -49,3 +49,99 @@ Sl. No.	Question
 19	How do you use Entity Framework Core with .NET Core?
 20	How to improve performance in .Net core application?
 21	How do you write unit tests in .NET Core using xUnit/NUnit?
+
+==================================================================
+Q39. What is reflection in C#? and how it is used?
+Ans. Reflection inspects the assembly and shows the metadata of that assembly.
+Example:
+Class program{
+             Static void main(string[] args)
+             {
+                            String obj;
+                            obj.
+}
+}
+When you type obj. then visual studio intelligence showing all the methods, properties, fields of that object. This is possible because reflection in c#.
+ 
+Q40. Types of design patterns used in C# ?
+Ans.      We have 3 main types of design patterns
+Creational
+Like Singleton for single-instance objects, Factory for flexible object creation
+Structural
+Like Adapter for incompatible Interfaces, Decorator for adding features dynamically
+Behavioral
+Like Observer for event notifications, Strategy for interchangeable algorithms
+ 
+Q41. What is the difference between "Task" and "Thread" in C#?
+Ans.
+Threads and tasks are two different ways for doing multithreading.
+Thread is a general programming concept. On the other hand, Microsoft created Task in .NET to simplify the use of Threads.
+Tasks are like a wrapper over Threads.
+Tasks internally uses threads only
+Q42.How do you create a new .NET Core project using CLI?
+             use the dotnet new command to create a new project with template(like webapi for APIs or console for CLI apps)
+             Example:
+dotnet new webapi -m <project-name>
+Q43. What is appsettings.json?
+Ans:
+The appsettings. json file is an application configuration file used to store configuration settings such as database connections strings etc.
+Q44. What is launchSettings. Json?
+Ans:
+The launchSettings. json file is used to store the configuration information, which is used to start the ASP.NET Core application.
+ 
+Q33.  What is CORS policy and what is the use of it?
+Ans. The CORS policy is used to control how web browsers handle requests that come from a different domain, protocol or port from the web application is running on.
+Basic CORS Setup in Program.cs file
+// Add services to the container.
+Builder.Services.AddCors( options =>   {
+          Options.AddPolicy(“AllowAll”, policy => {
+                  Policy.AllowAnyOrigin()
+                             .AllowAnyMethod()
+                             .AllowAnyHeader();
+});
+    });
+// configure the http request pipeline
+App.UseCors(“AllowAll”);
+ 
+Q19i. What is Program.cs?
+Ans:
+Program.cs file contains the application startup code. 
+The main method of Program.cs file is the entry point of application.
+From .NET 6.0, the startup class code is merged in Program.cs file and therefore there is no separate Startup.cs class.
+ 
+ 
+Q5i. What is custom middleware? How to implement custom middleware?
+Ans:
+ Custom middleware class is used to separate the middleware logic into a separate reusable class. . and by default the middleware class has to implement an interface called IMiddleware in order to register that, this class is a middleware. and this IMiddleware interface forces us to write invokeAsync() method which will be executed when the request reaches to that particular middleware.
+Code Explanation
+Let's dissect the code you provided:
+// MyCustomMiddleware.cs
+namespace MiddlewareExample.CustomMiddleware
+{
+   public class MyCustomMiddleware : IMiddleware 
+   {
+       public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+       {
+           await context.Response.WriteAsync("My Custom Middleware - Starts\n");
+           await next(context);
+            await context.Response.WriteAsync("My Custom Middleware - Ends\n");
+        }
+    }
+ 
+    // Extension method for easy registration
+    public static class CustomMiddlewareExtension
+    {
+        public static IApplicationBuilder UseMyCustomMiddleware(this IApplicationBuilder app)
+        {
+            return app.UseMiddleware<MyCustomMiddleware>();
+        }
+    }
+}
+ 
+Q45. What is routing and how it works in .net core?
+Ans:
+  Routing is the mechanism to match incoming HTTP requests to specific endpoints (e.g., controller actions, Razor Pages, or minimal API handlers) within your application.
+It has two individual methods that is "UseRouting()" and "UseEndPoints()". you would like to invoke them in the same order. that is first "UseRouting()" and after that only "UseEndPoints()".
+"UseRouting()" enables routing in your application, and it selects the appropriate endpoint based on the incoming request. it mainly considers the url path, and also http method either get, post or put or delete method.
+ 
+ 
