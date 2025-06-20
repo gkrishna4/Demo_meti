@@ -165,4 +165,57 @@ The server authenticates the user and, if successful, generates a JWT.
 The server sends the token back to the client.
 Requesting Protected Resource:
 The client includes the JWT in the request header to access a protected endpoint.
-The server verifies the JWT and, if valid, allows acce
+The server verifies the JWT and, if valid, allows acces
+
+ 
+Q20ii. The default order of middle ware components in program.cs file.
+Ans:
+var builder = WebApplication.CreateBuilder(args);
+// Add services to the DI container
+builder.Services.AddControllers();
+var app = builder.Build();
+// Middleware pipeline (executes in THIS ORDER):
+app.UseHttpsRedirection();       // 1. Redirect HTTP to HTTPS
+app.UseStaticFiles();           // 2. Serve static files (wwwroot)
+app.UseRouting();              // 3. Route requests
+app.UseAuthentication();       // 4. Who are you? (AuthN)
+app.UseAuthorization();        // 5. Are you allowed? (AuthZ)
+app.MapControllers();          // 6. Execute controller endpoints
+app.Run();
+ 
+Q46. what is Nullable type? How to access the value of Nullable type variables?
+The Nullable type allows you to assign a null value to a variable
+You cannot directly access the value of the Nullable type. You have to use GetValueOrDefault() method to get an original assigned value if it is not null.
+You will get the default value if it is null. The default value for null will be zero.
+
+// this will give compile time error
+int j = null;           
+// Valid declaration
+Nullable<int> j = null;   
+// Valid declaration
+int? j = null;
+ 
+ 
+Example:
+using System;
+class Geeks { 
+   // Main Method
+   static void Main(string[] args)
+   {
+       // defining Nullable type
+       Nullable<int> n = null;
+       // using the method output will be 0 as default value of null is 0
+      Console.WriteLine(n.GetValueOrDefault()); 
+       // defining Nullable type
+       int? n1 = null;
+       // using the method output will be 0 as default value of null is 0
+      Console.WriteLine(n1.GetValueOrDefault());  
+       // using Nullable type syntax to define non-nullable
+       int? n2 = 47;
+      Console.WriteLine(n2.GetValueOrDefault()); 
+      // using Nullable type syntax to define non-nullable
+       Nullable<int> n3 = 457;
+      Console.WriteLine(n3.GetValueOrDefault()); 
+       }
+}
+ 
