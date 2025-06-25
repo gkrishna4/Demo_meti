@@ -219,3 +219,9 @@ class Geeks {
        }
 }
  
+ using System;
+
+ List<int> numbers = new List<int> { 1, 2, 3, 4, 5, 5};
+
+ int FirstOrDefault = numbers.SingleOrDefault( n  => n == 5 );
+ Console.WriteLine( FirstOrDefault );
