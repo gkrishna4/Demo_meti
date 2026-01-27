@@ -476,3 +476,205 @@ step:8
 and go to the dashbord of sonarqube server ------click on adminstartion------>we can find system and click on that----->and expand 
 now we can see the ---->Default H2 DB server is changed to------->postgreSQL  
 
+
+=========================================================================================================
+what are the folders inside the SonarQube server?
+
+sonarqube/
+├── bin/
+ 	Startup and shutdown scripts, Used to start/stop the SonarQube service
+├── conf/
+ 	 sonar.properties → main server configuration (DB, ports, paths)
+ 	 wrapper.conf → JVM and service wrapper settings
+├── data/
+├── extensions/
+ 	Plugins and extensions,Where you manually add custom or third-party plugins.
+ 	plugins/ → Installed .jar plugin files
+├── lib/
+ 	Core SonarQube libraries (.jar files),Normally not modified
+├── logs/
+ 	All server logs(First place to check when troubleshooting), Important files:
+ 		sonar.log → main server lifecycle
+ 		web.log → web server
+ 		ce.log → background task processing
+ 		es.log → Elasticsearch
+└── temp/
+
+
+what is the purpose of sonar.properties?
+
+The sonar.properties file is the main configuration file of the SonarQube server.
+It controls how the server starts, connects to the database, listens on the network, stores data, secures access, and behaves at runtime.
+
+You use sonar.properties to:
+
+Configure database connection
+Define server host, port, and URL
+Set paths for data, logs, temp
+Tune performance and JVM behavior
+Enable security (LDAP, SSO, HTTPS)
+Configure email notifications
+Control logging and proxies
+
+Without this file, SonarQube cannot run properly in production.
+
+
+How you can install the plugins?
+
+Installing plugins via the UI (recommended)
+
+Log in as Administrator -> Go to Administration → Marketplace -> Search for the plugin -> Click Install
+
+Restart SonarQube when prompted
+
+
+whare we can place the plugins inside the SonarQube?
+plugins are installed in a specific directory on the SonarQube server
+Linux:-   /opt/sonarqube/extensions/plugins/
+Windows:- C:\sonarqube\extensions\plugins\
+Docker:- /opt/sonarqube/extensions/plugins/
+
+Quality gate:
+percentage of code coverage, security hotspots, duplicate line, when we took the value zero when the critical issues came,
+accepted issues on over all code  60%
+
+> 50% of false-positive(conditions on over all code it will apply only for the Branches not for PR's) it  show as false
+adding extra conditions to a quality gate can result in drawbacks.
+
+security hotspots will match 100 %
+code coverage 80%
+duplicate line not reach more then 50%, if it reach more then that sonar analysis is failed.
+
+maintainability rating, reliability rating, security rating is must be "A"
+if it exceeds sonar analysis will fail.
+
+rules:
+=====
+where the bug, vulnerability, code smell, blocker(critical, major, miner)
+it will show's branch PR
+
+
+
+Create a user manually (local SonarQube user)
+============================================
+
+Steps
+
+Log in as a System Administrator
+Go to Administration → Security → Users
+Click Create User
+Fill in:
+	Login (username)
+	Name
+	Email
+	Password
+	Click Create
+
+✅ User account is created
+🔐 Permissions are none by default (you must grant access separately)
+
+
+How to delete a user (local SonarQube user)
+============================================
+Steps
+1.Log in as a System Administrator
+2.Go to Administration → Security → Users
+3.Find the user you want to remove
+4.Click the three-dot menu (⋮) next to the user
+5.Click Delete
+6.Confirm the deletion
+
+✅ The user account is removed from SonarQube
+
+
+Give access to a specific project (most common)
+===============================================
+Steps
+
+Log in as a System Administrator or Project Administrator
+Go to Projects
+Click the project name
+Open Project Settings → Permissions
+Find the user (or group)
+Grant the needed permission(s):
+
+Minimum permissions by role
+----------------------------
+Role			Permissions to give
+-----			---------------------
+Read-only user		✅ Browse
+Developer		Browse + Create/Edit Issues
+CI user			Browse + Execute Analysis
+Project 		admin	Administer
+
+💡 For read-only access, only enable Browse.
+
+
+
+
+Why Sonar analysis fails when ratings are not A?
+=================================================
+
+SonarQube Quality Gate contains rules like:
+
+Maintainability Rating must be A
+Reliability Rating must be A
+Security Rating must be A
+
+If any one of these conditions is violated → Quality Gate FAILS → Sonar analysis fails
+
+SonarQube converts issues into ratings (A–E) based on severity and impact
+
+Maintainability Rating (Code Smells)
+Based on
+	Code smells
+	Complexity
+	Duplications
+
+Reliability Rating (Bugs)
+	Based on Bugs detected by rules
+
+Security Rating (Vulnerabilities)
+	Based on Vulnerabilities (SQL injection, XSS, etc.)
+
+
+============================================================
+SonarQube Migration
+=====================
+Migrating SonarQube from a GCP instance to an Oracle Cloud instance while upgrading from version 8.3 to 9.9.6 LTS involves several key 
+steps.
+1. Backup SonarQube on GCP      
+	|-> Database Backup: Backup the SonarQube database PostgreSQL on the GCP instance using below command 
+	|-> pg_dump -U <username> -h <hostname> -d <database_name> > sonarqube_backup.sql
+	|-> SonarQube Configuration: Backup the SonarQube configuration files, typically found in the conf    directory.
+	|-> Plugins and Data: Backup  installed plugins and the data directory if you have any customized rules or profiles.
+
+2. Set Up Oracle Cloud Environment
+	|-> Instance Setup: Create a new Oracle Cloud instance with the necessary specifications to run SonarQube 9.9.6 LTS.
+	|-> Database Setup: Set up a compatible database instance on Oracle Cloud. Ensure it matches the requirements for SonarQube 9.9.6 LTS to PostgreSQL v14
+
+3. Transfer Data from GCP to Oracle Cloud       
+	|->Database Migration: Restore the database backup to the new instance on Oracle Cloud.
+	|->Restore Database on OCI
+	|->Create a new database instance in Oracle Cloud if needed PostgreSQL
+	|->Restore the backup of your database to the new instance in Oracle Cloud:
+	|->psql -U <username> -h <hostname> -d <database_name> -f sonarqube_backup.sql
+	|->File Transfer: Copy the SonarQube configuration files and any custom data (plugins, etc.) from the GCP instance to the Oracle Cloud instance
+       
+4. Install SonarQube 8.3.1 LTS on new Oracle Cloud
+	|->Install SonarQube 8.9 LTS on new Oracle Cloud
+	|->Install SonarQube 9.9.6 LTS on new Oracle Cloud
+	|->Download and Install: Download SonarQube 8.3.1 LTS from the official SonarQube website. Extract and install it on the Oracle Cloud instance.       
+	|->Update Configuration: Modify the sonar.properties file in the conf directory to point to the new database and configure any additional 
+	  settings (e.g., Elasticsearch memory settings).
+
+Configure SonarQube       
+	Update the sonar.properties file on the new instance to reflect the Oracle Cloud database and other configuration changes (database credentials, etc.):
+		sonar.jdbc.url=jdbc:postgresql://<OCI_DB_Host>:<Port>/<DB_Name>
+		sonar.jdbc.username=<DB_Username>
+		sonar.jdbc.password=<DB_Password>
+		Test and Validate.
+
+Access SonarQube at http://<OCI_Instance_IP>:9000 and ensure the upgrade was successful. Check logs for any issues:
+tail -f /opt/sonarqube/logs/sonar.log
+
