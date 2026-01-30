@@ -142,3 +142,294 @@ USER jenkins
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
 ENV PATH /usr/local/bin:/usr/bin:/bin:/opt/gradle-6.9/bin
 WORKDIR /home/jenkins
+
+
+========================================================================================================
+
+pipeline {
+  agent any
+
+  parameters {
+    choice(name: 'BUILD_PROFILE', choices: ['dev', 'qa', 'prod'], description: 'Maven/Deployment profile')
+    string(name: 'APP_VERSION', defaultValue: '1.0.0', description: 'Version tag to build & publish')
+    booleanParam(name: 'RUN_SONAR', defaultValue: false, description: 'Run SonarQube analysis?')
+    booleanParam(name: 'PUSH_IMAGE', defaultValue: true, description: 'Push image to Artifactory?')
+    booleanParam(name: 'TRIVY_SCAN', defaultValue: true, description: 'Run Trivy image scan before push?')
+    booleanParam(name: 'XRAY_SCAN',  defaultValue: true, description: 'Run JFrog Xray build scan after push?')
+    choice(name: 'TRIVY_FAIL_ON', choices: ['CRITICAL', 'HIGH,CRITICAL', 'MEDIUM,HIGH,CRITICAL'], description: 'Fail build on these severities')
+    booleanParam(name: 'DEPLOY_TO_K8S', defaultValue: false, description: 'Deploy to Kubernetes? (non-prod without approval; prod with approval)')
+  }
+
+  environment {
+    // --- SonarQube (optional) ---
+    SONARQUBE_SERVER = 'SonarQube-Server'
+
+    // --- Docker / Artifactory ---
+    ARTIFACTORY_URL          = 'https://artifactory.example.com'   // <-- change
+    ARTIFACTORY_REGISTRY     = 'artifactory.example.com'           // <-- change
+    ARTIFACTORY_REPO_DOCKER  = 'docker-local'                      // <-- change
+    DOCKER_REPO              = 'your-team/yourapp'                 // logical image name
+    IMAGE_TAG                = "${APP_VERSION}"
+
+    // --- JFrog build-info ---
+    JFROG_CLI_BUILD_NAME     = 'yourapp-build'
+    JFROG_CLI_BUILD_NUMBER   = "${env.BUILD_NUMBER}"
+
+    // --- Kubernetes (deployment) ---
+    K8S_CONTEXT   = 'your-kube-context'                            // <-- change
+    K8S_NAMESPACE = 'default'
+    K8S_DEPLOYMENT= 'yourapp-deployment'                           // <-- change
+
+    // --- Email notifications ---
+    EMAIL_TO   = 'devops-team@example.com, you@example.com'        // <-- change
+    EMAIL_FROM = 'jenkins@example.com'                             // <-- change
+  }
+
+  triggers {
+    pollSCM('H/10 * * * *')
+  }
+
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '10'))
+    ansiColor('xterm')
+    timestamps()
+    disableConcurrentBuilds()
+  }
+
+  tools {
+    maven 'Maven-3.9'
+    jdk 'Temurin-17'
+  }
+
+  stages {
+
+    stage('Checkout the Code') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Build & Test (Parallel)') {
+      parallel {
+        stage('Maven Build') {
+          steps {
+            sh """
+              mvn -B -U -P ${params.BUILD_PROFILE} clean package -DskipTests=false
+            """
+          }
+        }
+        stage('Unit Tests') {
+          steps {
+            sh "mvn -B test"
+          }
+          post {
+            always { junit '**/target/surefire-reports/*.xml' }
+          }
+        }
+      }
+    }
+
+    stage('Static Code Quality (SonarQube)') {
+      when { expression { return params.RUN_SONAR } }
+      steps {
+        withSonarQubeEnv("${SONARQUBE_SERVER}") {
+          sh """
+            mvn -B sonar:sonar \
+              -Dsonar.projectKey=yourapp-${params.BUILD_PROFILE} \
+              -Dsonar.projectVersion=${env.IMAGE_TAG}
+          """
+        }
+      }
+      post {
+        success {
+          script {
+            try {
+              timeout(time: 10, unit: 'MINUTES') {
+                waitForQualityGate abortPipeline: true
+              }
+            } catch (err) {
+              error "Quality gate failed/timed out: ${err}"
+            }
+          }
+        }
+      }
+    }
+
+    stage('Docker Build') {
+      steps {
+        sh """
+          docker build \
+            --build-arg APP_VERSION=${IMAGE_TAG} \
+            -t ${DOCKER_REPO}:${IMAGE_TAG} .
+          docker tag ${DOCKER_REPO}:${IMAGE_TAG} ${ARTIFACTORY_REGISTRY}/${DOCKER_REPO}:${IMAGE_TAG}
+        """
+      }
+    }
+
+    stage('Security Scan (Trivy - Image)') {
+      when { expression { return params.TRIVY_SCAN } }
+      steps {
+        sh """
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v ${WORKSPACE}:/workspace \
+            aquasec/trivy:latest image \
+            --timeout 5m \
+            --format sarif \
+            --output /workspace/trivy-image.sarif \
+            --severity ${params.TRIVY_FAIL_ON} \
+            --exit-code 1 \
+            ${ARTIFACTORY_REGISTRY}/${DOCKER_REPO}:${IMAGE_TAG}
+        """
+      }
+      post {
+        always {
+          archiveArtifacts allowEmptyArchive: true, artifacts: 'trivy-image.sarif'
+        }
+      }
+    }
+
+    stage('JFrog: Configure CLI') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'jfrog-artifactory', usernameVariable: 'JF_USER', passwordVariable: 'JF_PASS')]) {
+          sh """
+            # If jfrog CLI isn't preinstalled, uncomment bootstrap:
+            # curl -fL https://getcli.jfrog.io | sh
+            # mv jfrog /usr/local/bin/
+
+            jfrog config add artifactory-server --interactive=false \\
+              --url='${ARTIFACTORY_URL}' \\
+              --user="$JF_USER" --password="$JF_PASS"
+            jfrog config use artifactory-server
+            jfrog rt ping
+          """
+        }
+      }
+    }
+
+    stage('Push to Artifactory (Docker) + Publish Build Info') {
+      when { expression { return params.PUSH_IMAGE } }
+      steps {
+        sh """
+          jfrog rt docker-login ${ARTIFACTORY_REGISTRY}
+
+          jfrog rt docker-push ${ARTIFACTORY_REGISTRY}/${DOCKER_REPO}:${IMAGE_TAG} ${ARTIFACTORY_REPO_DOCKER} \\
+            --build-name ${JFROG_CLI_BUILD_NAME} --build-number ${JFROG_CLI_BUILD_NUMBER}
+
+          jfrog rt build-collect-env ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER}
+          jfrog rt build-add-git  ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER}
+          jfrog rt build-publish  ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER}
+        """
+      }
+    }
+
+    stage('JFrog Xray Build Scan') {
+      when { expression { return params.XRAY_SCAN && params.PUSH_IMAGE } }
+      steps {
+        sh """
+          jfrog rt build-scan ${JFROG_CLI_BUILD_NAME} ${JFROG_CLI_BUILD_NUMBER} --fail=false --vuln
+        """
+      }
+    }
+
+    /* -------------------- Manual Approval for PROD only -------------------- */
+    stage('Prod Approval') {
+      when {
+        allOf {
+          expression { return params.DEPLOY_TO_K8S }
+          expression { return params.BUILD_PROFILE == 'prod' }
+        }
+      }
+      steps {
+        timeout(time: 60, unit: 'MINUTES') {
+          script {
+            // Only users in "ops" group or specific users below can approve
+            def gate = input(
+              id: 'ProdApproval',
+              message: "Approve PRODUCTION deployment of ${DOCKER_REPO}:${IMAGE_TAG}?",
+              ok: 'Deploy',
+              submitter: 'ops,rama.krishna.reddy,platform-admin',
+              parameters: [
+                string(name: 'CHANGE_TICKET', defaultValue: 'CHG-XXXX', description: 'Change ticket ID (e.g., CHG-12345)'),
+                booleanParam(name: 'CONFIRM', defaultValue: false, description: 'Confirm deployment to PROD')
+              ]
+            )
+            if (!gate.CONFIRM) {
+              error "Production deployment not confirmed. Aborting."
+            }
+            env.CHANGE_TICKET = gate.CHANGE_TICKET as String
+            echo "Approved PROD deploy. Change ticket: ${env.CHANGE_TICKET}"
+          }
+        }
+      }
+    }
+
+    stage('Deploy to Kubernetes') {
+      when {
+        expression { return params.DEPLOY_TO_K8S }
+      }
+      steps {
+        sh """
+          kubectl config use-context ${K8S_CONTEXT}
+          kubectl -n ${K8S_NAMESPACE} set image deployment/${K8S_DEPLOYMENT} \\
+            ${K8S_DEPLOYMENT}=${ARTIFACTORY_REGISTRY}/${DOCKER_REPO}:${IMAGE_TAG}
+          kubectl -n ${K8S_NAMESPACE} rollout status deployment/${K8S_DEPLOYMENT} --timeout=180s
+        """
+      }
+    }
+  }
+
+  /* -------------------- Global Notifications -------------------- */
+  post {
+    success {
+      emailext(
+        subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER} (${params.BUILD_PROFILE})",
+        to: "${EMAIL_TO}",
+        from: "${EMAIL_FROM}",
+        mimeType: 'text/html',
+        body: """
+        <h3>✅ Build Succeeded</h3>
+        <p><b>Job:</b> ${env.JOB_NAME} #${env.BUILD_NUMBER}</p>
+        <p><b>Profile:</b> ${params.BUILD_PROFILE}</p>
+        <p><b>Image:</b> ${ARTIFACTORY_REGISTRY}/${DOCKER_REPO}:${IMAGE_TAG}</p>
+        <p><a href="${env.BUILD_URL}console">View Console</a> | <a href="${env.BUILD_URL}artifact">Artifacts</a></p>
+        """
+      )
+      // If email-ext not available, fallback:
+      // mail to: "${EMAIL_TO}", subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}", body: "Build success. ${env.BUILD_URL}"
+    }
+    failure {
+      emailext(
+        subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER} (${params.BUILD_PROFILE})",
+        to: "${EMAIL_TO}",
+        from: "${EMAIL_FROM}",
+        mimeType: 'text/html',
+        body: """
+        <h3>❌ Build/Deployment Failed</h3>
+        <p><b>Job:</b> ${env.JOB_NAME} #${env.BUILD_NUMBER}</p>
+        <p><b>Profile:</b> ${params.BUILD_PROFILE}</p>
+        <p><b>Last Stage likely failed:</b> Check console log.</p>
+        <p><a href="${env.BUILD_URL}console">View Console</a></p>
+        """
+      )
+    }
+    aborted {
+      emailext(
+        subject: "ABORTED: ${env.JOB_NAME} #${env.BUILD_NUMBER} (${params.BUILD_PROFILE})",
+        to: "${EMAIL_TO}",
+        from: "${EMAIL_FROM}",
+        mimeType: 'text/html',
+        body: """
+        <h3>⚠️ Build Aborted</h3>
+        <p><b>Job:</b> ${env.JOB_NAME} #${env.BUILD_NUMBER}</p>
+        <p><b>Profile:</b> ${params.BUILD_PROFILE}</p>
+        <p>This often means the <b>PROD approval</b> was declined or timed out.</p>
+        <p><a href="${env.BUILD_URL}console">View Console</a></p>
+        """
+      )
+    }
+    always {
+      archiveArtifacts allowEmptyArchive: true, artifacts: '**/target/*.jar'
+    }
+  }
+}
