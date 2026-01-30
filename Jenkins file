@@ -433,3 +433,285 @@ pipeline {
     }
   }
 }
+==========================================
+
+GitHub Actions pipeline
+-----------------------
+name: CI-CD EKS with JFrog, Trivy, SonarQube, Manual Approval & Email
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      BUILD_PROFILE:
+        description: "Build/Deployment profile"
+        type: choice
+        required: true
+        options: [ "dev", "qa", "prod" ]
+        default: "dev"
+      APP_VERSION:
+        description: "Version tag to build & publish"
+        required: true
+        default: "1.0.0"
+      RUN_SONAR:
+        description: "Run SonarQube analysis?"
+        type: boolean
+        default: false
+      TRIVY_SCAN:
+        description: "Run Trivy scan before push?"
+        type: boolean
+        default: true
+      TRIVY_FAIL_ON:
+        description: "Fail build on these severities"
+        type: choice
+        options: [ "CRITICAL", "HIGH,CRITICAL", "MEDIUM,HIGH,CRITICAL" ]
+        default: "HIGH,CRITICAL"
+      PUSH_IMAGE:
+        description: "Push image to Artifactory?"
+        type: boolean
+        default: true
+      XRAY_SCAN:
+        description: "Run JFrog Xray build scan after push?"
+        type: boolean
+        default: true
+      DEPLOY_TO_K8S:
+        description: "Deploy to Kubernetes? (non-prod direct; prod needs approval)"
+        type: boolean
+        default: false
+
+env:
+  # App / Build
+  DOCKER_REPO: your-team/yourapp
+  IMAGE_TAG: ${{ inputs.APP_VERSION || '1.0.0' }}
+  BUILD_PROFILE: ${{ inputs.BUILD_PROFILE || 'dev' }}
+
+  # JFrog / Artifactory
+  JFROG_BUILD_NAME: yourapp-build
+  JFROG_BUILD_NUMBER: ${{ github.run_number }}
+  ARTIFACTORY_REGISTRY: ${{ secrets.ARTIFACTORY_REGISTRY }}      # e.g., artifactory.example.com
+  ARTIFACTORY_DOCKER_REPO: ${{ secrets.ARTIFACTORY_DOCKER_REPO }}# e.g., docker-local
+
+  # Email
+  MAIL_FROM: ${{ secrets.MAIL_FROM }}
+  MAIL_TO:   ${{ secrets.MAIL_TO }}
+
+  # Sonar
+  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  # Control flags (default when triggered by push/pr)
+  RUN_SONAR:  ${{ inputs.RUN_SONAR || false }}
+  TRIVY_SCAN: ${{ inputs.TRIVY_SCAN || true }}
+  TRIVY_FAIL_ON: ${{ inputs.TRIVY_FAIL_ON || 'HIGH,CRITICAL' }}
+  PUSH_IMAGE: ${{ inputs.PUSH_IMAGE || true }}
+  XRAY_SCAN:  ${{ inputs.XRAY_SCAN || true }}
+  DEPLOY_TO_K8S: ${{ inputs.DEPLOY_TO_K8S || false }}
+
+permissions:
+  contents: read
+  id-token: write     # for AWS OIDC if assuming role
+  actions: read
+
+concurrency:
+  group: yourapp-${{ github.ref }}-deploy
+  cancel-in-progress: false
+
+jobs:
+
+  build-test:
+    name: Build & Test (Maven)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Maven Build
+        run: mvn -B -U -P "${BUILD_PROFILE}" clean package -DskipTests=false
+
+      - name: Unit Tests
+        run: mvn -B test
+
+      - name: Archive surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: "**/target/surefire-reports/*.xml"
+          if-no-files-found: ignore
+
+      - name: SonarQube Scan (optional)
+        if: ${{ env.RUN_SONAR == 'true' }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn -B sonar:sonar \
+            -Dsonar.host.url="${SONAR_HOST_URL}" \
+            -Dsonar.token="${SONAR_TOKEN}" \
+            -Dsonar.projectKey=yourapp-${BUILD_PROFILE} \
+            -Dsonar.projectVersion=${IMAGE_TAG}
+
+  docker-and-scan:
+    name: Docker Build + Trivy + Push + Build Info + Xray
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build image (local)
+        run: |
+          docker build \
+            --build-arg APP_VERSION=${IMAGE_TAG} \
+            -t ${DOCKER_REPO}:${IMAGE_TAG} .
+          docker tag ${DOCKER_REPO}:${IMAGE_TAG} ${ARTIFACTORY_REGISTRY}/${DOCKER_REPO}:${IMAGE_TAG}
+
+      - name: Trivy Scan (pre-push)
+        if: ${{ env.TRIVY_SCAN == 'true' }}
+        uses: aquasecurity/trivy-action@0.22.0
+        with:
+          image-ref: "${{ env.ARTIFACTORY_REGISTRY }}/${{ env.DOCKER_REPO }}:${{ env.IMAGE_TAG }}"
+          format: 'sarif'
+          output: 'trivy-image.sarif'
+          severity: "${{ env.TRIVY_FAIL_ON }}"
+          exit-code: '1'    # fail build if matches severities
+          timeout: '5m'
+      - name: Upload Trivy SARIF
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-image-scan
+          path: trivy-image.sarif
+          if-no-files-found: ignore
+
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: ${{ secrets.JFROG_URL }}
+          JF_USER: ${{ secrets.JFROG_USERNAME }}
+          JF_PASSWORD: ${{ secrets.JFROG_PASSWORD }}
+
+      - name: Login Docker to Artifactory via JFrog CLI
+        run: jfrog rt docker-login $ARTIFACTORY_REGISTRY
+
+      - name: Push image to Artifactory (and capture build-info)
+        if: ${{ env.PUSH_IMAGE == 'true' }}
+        run: |
+          jfrog rt docker-push ${ARTIFACTORY_REGISTRY}/${DOCKER_REPO}:${IMAGE_TAG} ${ARTIFACTORY_DOCKER_REPO} \
+            --build-name ${JFROG_BUILD_NAME} --build-number ${JFROG_BUILD_NUMBER}
+          jfrog rt build-collect-env ${JFROG_BUILD_NAME} ${JFROG_BUILD_NUMBER}
+          jfrog rt build-add-git  ${JFROG_BUILD_NAME} ${JFROG_BUILD_NUMBER}
+          jfrog rt build-publish  ${JFROG_BUILD_NAME} ${JFROG_BUILD_NUMBER}
+
+      - name: Xray Scan (build-info)
+        if: ${{ env.XRAY_SCAN == 'true' && env.PUSH_IMAGE == 'true' }}
+        run: |
+          # Set --fail=true after you tune Xray policies/watches to gate builds
+          jfrog rt build-scan ${JFROG_BUILD_NAME} ${JFROG_BUILD_NUMBER} --fail=false --vuln
+
+  prod-approval:
+    name: Manual Approval (PROD)
+    runs-on: ubuntu-latest
+    needs: docker-and-scan
+    if: ${{ env.DEPLOY_TO_K8S == 'true' && env.BUILD_PROFILE == 'prod' }}
+    steps:
+      - name: Wait for Approval (up to 60 minutes)
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.token }}
+          approvers: "ops-team,rama-krishna-reddy,platform-admin"  # GitHub usernames
+          minimum-approvals: 1
+          issue-title: "PROD Deploy Approval: ${{ env.DOCKER_REPO }}:${{ env.IMAGE_TAG }}"
+          issue-body: "Approve production deployment for change ticket? Provide CHG-ID in comment."
+          timeout-minutes: 60
+          exclude-workflow-initiator-as-approver: false
+
+  deploy-nonprod:
+    name: Deploy to K8s (non-PROD)
+    runs-on: ubuntu-latest
+    needs: docker-and-scan
+    if: ${{ env.DEPLOY_TO_K8S == 'true' && env.BUILD_PROFILE != 'prod' }}
+    steps:
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      - name: Update kubeconfig (EKS)
+        run: aws eks update-kubeconfig --name "${{ secrets.EKS_CLUSTER_NAME }}" --region "${{ secrets.AWS_REGION }}"
+      - name: Rollout image
+        run: |
+          kubectl -n default set image deployment/yourapp-deployment \
+            yourapp-deployment=${ARTIFACTORY_REGISTRY}/${DOCKER_REPO}:${IMAGE_TAG}
+          kubectl -n default rollout status deployment/yourapp-deployment --timeout=180s
+
+      # If NOT using EKS, comment above and use:
+      # - name: Write kubeconfig from secret
+      #   run: echo "${KUBECONFIG_B64}" | base64 -d > $HOME/.kube/config
+      #   env:
+      #     KUBECONFIG_B64: ${{ secrets.KUBECONFIG_B64 }}
+
+  deploy-prod:
+    name: Deploy to K8s (PROD)
+    runs-on: ubuntu-latest
+    needs: [docker-and-scan, prod-approval]
+    if: ${{ env.DEPLOY_TO_K8S == 'true' && env.BUILD_PROFILE == 'prod' }}
+    steps:
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      - name: Update kubeconfig (EKS)
+        run: aws eks update-kubeconfig --name "${{ secrets.EKS_CLUSTER_NAME }}" --region "${{ secrets.AWS_REGION }}"
+      - name: Rollout image
+        run: |
+          kubectl -n default set image deployment/yourapp-deployment \
+            yourapp-deployment=${ARTIFACTORY_REGISTRY}/${DOCKER_REPO}:${IMAGE_TAG}
+          kubectl -n default rollout status deployment/yourapp-deployment --timeout=180s
+
+  notify:
+    name: Email Notifications
+    runs-on: ubuntu-latest
+    needs:
+      - build-test
+      - docker-and-scan
+      - deploy-nonprod
+      - deploy-prod
+    if: always()
+    steps:
+      - name: Compose subject/body (SUCCESS)
+        if: ${{ success() }}
+        run: |
+          echo "subject=SUCCESS: ${GITHUB_WORKFLOW} #${GITHUB_RUN_NUMBER} (${BUILD_PROFILE})" >> $GITHUB_ENV
+          echo "body=<h3>✅ Build Succeeded</h3><p>Image: ${ARTIFACTORY_REGISTRY}/${DOCKER_REPO}:${IMAGE_TAG}</p><p>Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}</p>" >> $GITHUB_ENV
+      - name: Compose subject/body (FAILURE)
+        if: ${{ failure() }}
+        run: |
+          echo "subject=FAILED: ${GITHUB_WORKFLOW} #${GITHUB_RUN_NUMBER} (${BUILD_PROFILE})" >> $GITHUB_ENV
+          echo "body=<h3>❌ Build/Deployment Failed</h3><p>Check logs: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}</p>" >> $GITHUB_ENV
+      - name: Compose subject/body (CANCELLED)
+        if: ${{ cancelled() }}
+        run: |
+          echo "subject=ABORTED: ${GITHUB_WORKFLOW} #${GITHUB_RUN_NUMBER} (${BUILD_PROFILE})" >> $GITHUB_ENV
+          echo "body=<h3>⚠️ Workflow Cancelled</h3><p>Most likely the PROD approval timed out or was rejected.</p>" >> $GITHUB_ENV
+
+      - name: Send Email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: ${{ env.subject }}
+          to: ${{ env.MAIL_TO }}
+          from: ${{ env.MAIL_FROM }}
+          content_type: text/html
+          body: ${{ env.body }}
