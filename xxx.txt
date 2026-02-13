@@ -4,6 +4,23 @@ how we can execute the microservices for that how we need to write the jenkins f
 we have multiple stages in the Jenkins pipeline, How we can build single stage and how we can skip remaining:-    https://chatgpt.com/share/
 39060863-61b6-4587-be5c-786510d86ca9
 
+CAB Meeting
+===========
+is a change advisory board meeting.. it means whenever we are ready with the change we have to meet with diff stakeholders
+of different different departments
+domains with in the company means(include people from development, QA, DevOps, operations, architecture, database,
+networking, security, cloud/infra, business, and the change manager.)  because each domain is related to some other domain
+in particular way.
+so in that meeting we have to justify the changes in that meeting we have to tell the people that this is my change and it
+is not going to impact yours..
+once we clarify that, we have to provide all such documents, declarations. other team will also look into your changes if
+possible what changes you do, what change in the code you have done after all this all people of the cab meeting will give
+the approval   
+                                (or)
+“In a CAB meeting for a Java project, stakeholders include people from development, QA, DevOps, operations, architecture, 
+database, networking, security, cloud/infra, business, and the change manager. Each team checks if the change impacts their
+area. After all teams validate that the change is safe, they provide approval.”
+
 What is DevOps?
 ----------------
 DevOps is a methodology/culture, and Bridge gap b/w Devlopment and Oparations teams. By automating the testing, deployment
@@ -767,6 +784,7 @@ find /opt/backup -type f -mtime +30 -delete (For under /opt/backup
 directory)
 find /var/log -name "*.log" -type f -mtime +30 -delete (For files 
 matching the criteria)
+
 
 
 
