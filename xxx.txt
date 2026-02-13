@@ -4,11 +4,10 @@ how we can execute the microservices for that how we need to write the jenkins f
 we have multiple stages in the Jenkins pipeline, How we can build single stage and how we can skip remaining:-    https://chatgpt.com/share/
 39060863-61b6-4587-be5c-786510d86ca9
 
-CAB Meeting
-===========
+While doing the major Deployment CAB Meeting
+=============================================
 is a change advisory board meeting.. it means whenever we are ready with the change we have to meet with diff stakeholders
-of different different departments
-domains with in the company means(include people from development, QA, DevOps, operations, architecture, database,
+of different different departments (include people from development, QA, DevOps, operations, architecture, database,
 networking, security, cloud/infra, business, and the change manager.)  because each domain is related to some other domain
 in particular way.
 so in that meeting we have to justify the changes in that meeting we have to tell the people that this is my change and it
@@ -784,6 +783,7 @@ find /opt/backup -type f -mtime +30 -delete (For under /opt/backup
 directory)
 find /var/log -name "*.log" -type f -mtime +30 -delete (For files 
 matching the criteria)
+
 
 
 
