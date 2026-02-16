@@ -17,9 +17,7 @@ In a Jenkins declarative pipeline, you can execute multiple stages in parallel w
 Here’s an example that shows how you could structure a Jenkins pipeline to execute two stages in parallel within a single "wrapper" stage.
 ### Example 1:
 ```
-pipeline {
-    agent any
-        stage("maven build & test") {
+stage("maven build & test") {
   parallel {
     stage("maven build") {
       steps {
@@ -65,9 +63,6 @@ pipeline {
     }
   }
 }
-``
-}
-
 ```
 ### Example 2:
 ```
