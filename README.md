@@ -19,25 +19,53 @@ Here’s an example that shows how you could structure a Jenkins pipeline to exe
 ```
 pipeline {
     agent any
-    
-    stages {
-        stage('Parallel Testing') {
-            parallel {
-                stage('Linux Tests') {
-                    steps {
-                        echo 'Running tests on Linux'
-                        // Insert commands to run Linux tests here, e.g., `./run-linux-tests.sh`
-                    }
-                }
-                stage('Windows Tests') {
-                    steps {
-                        echo 'Running tests on Windows'
-                        // Insert commands to run Windows tests here, e.g., `run-windows-tests.bat`
-                    }
-                }
-            }
+        stage("maven build & test") {
+  parallel {
+    stage("maven build") {
+      steps {
+        script {
+          // Uses the Maven installation configured in Jenkins
+          def mavenHome = tool name: 'M3', type: 'maven'  // change 'M3' to your Maven tool name
+          withEnv(["PATH+MAVEN=${mavenHome}/bin"]) {
+
+            // Optional: point to a settings.xml if needed
+            // def mvnSettings = "${env.WORKSPACE}/.jenkins/settings.xml"
+
+            sh """
+              echo "Maven Home: ${mavenHome}"
+              mvn --version
+
+              # Build without running tests (common in multi-stage pipelines)
+              mvn -B -U -DskipTests clean package
+            """
+          }
         }
+      }
     }
+
+    stage("test") {
+      steps {
+        script {
+          def mavenHome = tool name: 'M3', type: 'maven'
+          withEnv(["PATH+MAVEN=${mavenHome}/bin"]) {
+            sh """
+              mvn -B -U test
+            """
+          }
+
+          // Publish test reports (JUnit/Surefire)
+          junit testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true
+
+          // If you also use JaCoCo for coverage:
+          // recordCoverage(tools: [[parser: 'JACOCO']], sourceCodeRetention: 'LAST_BUILD', failIfCoverageEmpty: false)
+          // Or explicit:
+          // jacoco execPattern: '**/target/jacoco.exec', classPattern: '**/target/classes', sourcePattern: '**/src/main/java'
+        }
+      }
+    }
+  }
+}
+``
 }
 
 ```
