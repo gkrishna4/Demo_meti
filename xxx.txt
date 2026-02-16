@@ -129,6 +129,17 @@ Advantages:
 Standarization of Pipelines, Reduce duplication of code, Easy onboarding of new applications, projects or teams, One place to fix issues with the shared or common code
 Code Maintainence, Reduce the risk of errors
 
+How you can secure the jenkins_File/pipeline?
+=============================================
+We secure a Jenkinsfile by making sure no passwords or sensitive data are written inside it.Instead, we store secrets 
+safely in Jenkins Credentials.
+We also protect the Jenkinsfile in Git using branch protection and code reviews, so only the right people can change it.
+To keep pipelines safe, we run them in the Groovy sandbox, use shared libraries for sensitive logic, and make sure 
+Jenkins hides or masks secrets in the logs.
+
+Note:
+“Groovy Sandbox is a security layer in Jenkins that only allows safe pipeline code to run. It blocks dangerous Groovy methods, prevents unauthorized system access, and requires admin approval for risky operations.”
+
  How to add a new worker node in Jenkins ?
 =========================================
  Log into the Jenkins master and navigate to Manage Jenkins > Manage Nodes > New Node. Enter a name for the new node and select Permanent Agent.
@@ -769,6 +780,7 @@ find /opt/backup -type f -mtime +30 -delete (For under /opt/backup
 directory)
 find /var/log -name "*.log" -type f -mtime +30 -delete (For files 
 matching the criteria)
+
 
 
 
