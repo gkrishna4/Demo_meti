@@ -1280,3 +1280,67 @@ Fix:
 
 ---
 
+##✅ How to Give Developers / QA / Ops Teams Permissions on Branches in GitHub.
+
+1. GitHub Teams + Repository Permissions
+2. Branch Protection Rules (to restrict actions per team)
+
+Note:- People with Admin or custom roles with “edit repository rules” can configure branch protection rules.
+
+## 🚀 Step-by-Step Guide
+### Step 1: Create Teams (Developers / QA / Ops)
+1.Go to your GitHub Organization → Teams
+2.Create three teams:
+ |-developers
+ |-qa
+ |-ops
+ 
+3.Add members to each team.
+  Teams allow you to assign repository permissions granularly.
+  
+### Step 2: Set Team Permissions at Repository Level
+Assign each team a repository role:
+| Team        | Recommended Permission | Why                                      |
+|-------------|------------------------|-------------------------------------------|
+| Developers  | Write                  | Can push to non-protected branches        |
+| QA          | Triage or Write        | Can review, test, and manage PRs/issues   |
+| Ops         | Maintain               | Can manage workflows, releases, and deployments |
+
+### Step 3: Configure Branch Protection Rules
+Branch Protection Rules let you control who can push, merge, or bypass rules for specific branches.
+These rules are configured inside the repository settings:
+Repo → Settings → Branches → Branch Protection Rules.
+
+## A. Protect the main Branch
+Create rule:
+ 1. Go to Repo Settings
+ 2. Click Branches
+ 3. Click Add rule
+ 4. Enter branch name: main
+ 5. Enable protection options like:
+       * Require pull request reviews
+       * Require status checks
+       * Restrict who can push to the branch
+
+## B. Protect release/* Branches
+   1. Add rule with pattern:
+        ## release/*
+   2. Enable:
+       * Require pull request reviews
+       * Require status checks
+       * Restrict pushes to Ops team only
+    GitHub allows wildcard patterns like release* or qa/* using fnmatch syntax.
+
+## C. Protect qa/* Branches
+    1. Add rule:
+       ## qa/*
+    2. Allow only QA team to push.
+    GitHub confirms patterns like qa/* match branches under QA workflow.
+
+### Step 4: Restrict Who Can Push to a Branch
+  In every branch protection rule, GitHub gives an option:
+  Restrict who can push to matching branches
+  This allows you to select specific users or teams who can push.
+
+
+
