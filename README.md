@@ -1282,14 +1282,17 @@ Fix:
 
 ### 🛠️ How to Create a Private GitHub Repository
   ## ✅ Method 1: Create a Private Repository (Web UI)
+  
       Log into GitHub
       Click the “+” icon → New repository
       Enter a repository name & Add the discripction related to that Repo
       Under Visibility, select Private
       Click Create repository.
+      
   ## ✅ Method 2: Create a Private Repository (GitHub CLI)
         GitHub CLI command:
             gh repo create <repository-name> --private
+
     | Purpose                                | Certificate / Method Supported               | Notes |
 |----------------------------------------|----------------------------------------------|-------|
 | Access private repo via HTTPS          | Access Token / Username+Password             | Recommended to use PAT |
@@ -1299,6 +1302,7 @@ Fix:
 
 ### 🧩 Should I Add Collaborators or Use Teams?
     If your repo is part of an organization, using Teams is recommended.
+    
     | Method            | Best For            | Why                                                 |
 |-------------------|---------------------|------------------------------------------------------|
 | Add Collaborators | Individuals         | Simple, direct access                                |
