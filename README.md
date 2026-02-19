@@ -1303,10 +1303,10 @@ Fix:
 ### 🧩 Should I Add Collaborators or Use Teams?
     If your repo is part of an organization, using Teams is recommended.
     
-   | Method            | Best For            | Why                                                 |
-    |-------------------|---------------------|------------------------------------------------------|
-    | Add Collaborators | Individuals         | Simple, direct access                                |
-    | Teams             | Dev/QE/Ops groups   | Centralized control, scalable, easier to manage permissions |
+ | Method            | Best For            | Why                                                          |
+|-------------------|---------------------|--------------------------------------------------------------|
+| Add Collaborators | Individuals         | Simple, direct access                                        |
+| Teams             | Dev/QE/Ops groups   | Centralized control, scalable, easier to manage permissions |
 
 ## ✅ How to Give Developers / QA / Ops Teams Permissions on Branches in GitHub.
 
@@ -1355,9 +1355,9 @@ Create rule:
    1. Add rule with pattern:
         ## release/*
    2. Enable:
-       * Require pull request reviews
-       * Require status checks
-       * Restrict pushes to Ops team only
+         * Require pull request reviews
+         * Require status checks
+         * Restrict pushes to Ops team only
     GitHub allows wildcard patterns like release* or qa/* using fnmatch syntax.
 
 ## C. Protect qa/* Branches
@@ -1375,17 +1375,17 @@ Create rule:
   ❌ No, they are related but NOT the same.
   ## ✔ Adding Collaborators / Teams
       Controls repository‑level permissions:
-         * Read
-         * Triage
-         * Write
-         * Maintain
-         * Admin
+           * Read
+           * Triage
+           * Write
+           * Maintain
+           * Admin
   ## ✔ Branch Protection Rules
       Control branch-level restrictions:
-         * Who can push
-         * Who can merge
-         * Required reviews
-         * Required CI checks
+           * Who can push
+           * Who can merge
+           * Required reviews
+           * Required CI checks
 
 ### How they work together:
 
@@ -1396,10 +1396,10 @@ Create rule:
 | Restrict push / merge           | Branch protection rules | Controls who can act on protected branches       |
 
 ## ✔ Final Summary
-   * Adding collaborators is step 1 (assign repo permissions).
-   * Branch protection rules are step 2 (control branch‑level rights).
-   * Together, they give Developers / QA / Ops proper access control.
-   * GitHub officially manages push/merge control only via branch protection.
+       * Adding collaborators is step 1 (assign repo permissions).
+       * Branch protection rules are step 2 (control branch‑level rights).
+       * Together, they give Developers / QA / Ops proper access control.
+       * GitHub officially manages push/merge control only via branch protection.
 
 
 
