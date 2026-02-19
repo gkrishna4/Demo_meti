@@ -1294,19 +1294,20 @@ Fix:
             gh repo create <repository-name> --private
 
     | Purpose                                | Certificate / Method Supported               | Notes |
-|----------------------------------------|----------------------------------------------|-------|
-| Access private repo via HTTPS          | Access Token / Username+Password             | Recommended to use PAT |
-| Access private repo via SSH            | SSH Public/Private Key Pair                  | Standard GitHub deploy key |
-| Mutual TLS auth for automation tools   | TLS Client Certificate (.crt) + Private Key  | Must be PEM; key must not be encrypted |
+    |----------------------------------------|----------------------------------------------|-------|
+    | Access private repo via HTTPS          | Access Token / Username+Password             | Recommended to use PAT |
+    | Access private repo via SSH            | SSH Public/Private Key Pair                  | Standard GitHub deploy key |
+    | Mutual TLS auth for automation tools   | TLS Client Certificate (.crt) + Private Key  | Must be PEM; key must not be encrypted |
 
 
 ### 🧩 Should I Add Collaborators or Use Teams?
     If your repo is part of an organization, using Teams is recommended.
     
     | Method            | Best For            | Why                                                 |
-|-------------------|---------------------|------------------------------------------------------|
-| Add Collaborators | Individuals         | Simple, direct access                                |
-| Teams             | Dev/QE/Ops groups   | Centralized control, scalable, easier to manage permissions |
+    |-------------------|---------------------|------------------------------------------------------|
+    | Add Collaborators | Individuals         | Simple, direct access                                |
+    | Teams             | Dev/QE/Ops groups   | Centralized control, scalable, easier to manage permissions |
+
 ## ✅ How to Give Developers / QA / Ops Teams Permissions on Branches in GitHub.
 
 1. GitHub Teams + Repository Permissions
@@ -1327,11 +1328,11 @@ Note:- People with Admin or custom roles with “edit repository rules” can co
   
 ### Step 2: Set Team Permissions at Repository Level
 Assign each team a repository role:
-| Team        | Recommended Permission | Why                                      |
-|-------------|------------------------|-------------------------------------------|
-| Developers  | Write                  | Can push to non-protected branches        |
-| QA          | Triage or Write        | Can review, test, and manage PRs/issues   |
-| Ops         | Maintain               | Can manage workflows, releases, and deployments |
+    | Team        | Recommended Permission | Why                                      |
+    |-------------|------------------------|-------------------------------------------|
+    | Developers  | Write                  | Can push to non-protected branches        |
+    | QA          | Triage or Write        | Can review, test, and manage PRs/issues   |
+    | Ops         | Maintain               | Can manage workflows, releases, and deployments |
 
 ### Step 3: Configure Branch Protection Rules
 Branch Protection Rules let you control who can push, merge, or bypass rules for specific branches.
@@ -1373,24 +1374,25 @@ Create rule:
   ❌ No, they are related but NOT the same.
   ## ✔ Adding Collaborators / Teams
       Controls repository‑level permissions:
-       * Read
-       * Triage
-       * Write
-       * Maintain
-       * Admin
+         * Read
+         * Triage
+         * Write
+         * Maintain
+         * Admin
   ## ✔ Branch Protection Rules
       Control branch-level restrictions:
-       * Who can push
-       * Who can merge
-       * Required reviews
-       * Required CI checks
+         * Who can push
+         * Who can merge
+         * Required reviews
+         * Required CI checks
 
 ### How they work together:
+
     | Action                     | Done In                | Purpose                                   |
-|----------------------------|-------------------------|-------------------------------------------|
-| Add collaborators or teams | Collaborators & teams   | Gives global repository access            |
-| Set role (Write / Maintain, etc.) | Collaborators & teams | Defines what users can do in the repository |
-| Restrict push / merge      | Branch protection rules | Controls who can act on protected branches |
+    |----------------------------|-------------------------|-------------------------------------------|
+    | Add collaborators or teams | Collaborators & teams   | Gives global repository access            |
+    | Set role (Write / Maintain, etc.) | Collaborators & teams | Defines what users can do in the repository |
+    | Restrict push / merge      | Branch protection rules | Controls who can act on protected branches |
 
 ## ✔ Final Summary
    * Adding collaborators is step 1 (assign repo permissions).
