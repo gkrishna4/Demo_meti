@@ -1290,6 +1290,7 @@ Fix:
       Click Create repository.
       
   ## ✅ Method 2: Create a Private Repository (GitHub CLI)
+  
         GitHub CLI command:
             gh repo create <repository-name> --private
 
@@ -1317,14 +1318,14 @@ Note:- People with Admin or custom roles with “edit repository rules” can co
 
 ## 🚀 Step-by-Step Guide
 ### Step 1: Create Teams (Developers / QA / Ops)
-1.Go to your GitHub Organization → Teams
-2.Create three teams:
- |-developers
- |-qa
- |-ops
- 
-3.Add members to each team.
-  Teams allow you to assign repository permissions granularly.
+
+    1.Go to your GitHub Organization → Teams
+    2.Create three teams:
+         * developers
+         * qa
+         * ops 
+    3.Add members to each team.
+      Teams allow you to assign repository permissions granularly.
   
 ### Step 2: Set Team Permissions at Repository Level
 Assign each team a repository role:
