@@ -1280,7 +1280,7 @@ Fix:
 
 ---
 
-##✅ How to Give Developers / QA / Ops Teams Permissions on Branches in GitHub.
+## ✅ How to Give Developers / QA / Ops Teams Permissions on Branches in GitHub.
 
 1. GitHub Teams + Repository Permissions
 2. Branch Protection Rules (to restrict actions per team)
@@ -1332,9 +1332,9 @@ Create rule:
     GitHub allows wildcard patterns like release* or qa/* using fnmatch syntax.
 
 ## C. Protect qa/* Branches
-    1. Add rule:
-       ## qa/*
-    2. Allow only QA team to push.
+  1. Add rule:
+      ## qa/*
+  2. Allow only QA team to push.
     GitHub confirms patterns like qa/* match branches under QA workflow.
 
 ### Step 4: Restrict Who Can Push to a Branch
