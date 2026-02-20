@@ -732,14 +732,35 @@ Delete----> when we delete  pvc. it will delete pv and also associated external 
 Recycle--->when we delete pvc it will not delete pv. but it will remove data from the storage.
 
 
-Here i have 2 persistent volumes when you are creating the PVC, what opctions/factors it will use to associate with PV? 
-======================================================================================================================
-it will match with  storageClassName
-                    accessmodes
-                    requests
-For example i am tryning to create a pvc with AccessMode ReadWriteOnce, suppose if i have a two volumes with ReadWriteOnce,
-here one is already claimed by some one else and one is avilable, here it will consider the volume which is not climed by any one 
+✅ How Kubernetes Matches a PVC to a PV?
+==========================================
+When you create a PVC, Kubernetes looks for a PV that satisfies ALL of these conditions:
+1. storageClassName must match
+         |- PVC can only bind to PVs with the same StorageClass (or both must be "" / null).
+2. accessModes must be compatible
+         |- PVC requested AccessMode must be supported by the PV.
+3. PV capacity must be >= requested size
+     |- PVC requesting 5Gi
+     |- PV of 10Gi → OK
+     |- PV of 4Gi → ❌ Not OK
+4. PV must be in the state Available
+      If PV is already bound (Bound) to another PVC → ❌ Cannot be used.
 
+Note:- Kubernetes never reuses a PV already bound to another PVC (unless Retain reclaim policy and you manually reset it).
+                EXAMPLE:
+                                   PVC deleted
+                                         ↓
+                                   ReclaimPolicy = Retain
+                                         ↓
+                                   PV → Released (cannot bind)
+                                         ↓
+                                   You manually:
+                                     - clean storage data
+                                     - delete claimRef
+                                         ↓
+                                   PV → Available
+                                         ↓
+                                   New PVC can bind again
 
 To use the provided deployment configuration for an NFS client provisioner, you need to ensure the following:
 ==============================================================================================================
