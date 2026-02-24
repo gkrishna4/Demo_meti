@@ -1319,7 +1319,16 @@ Note:- People with Admin or custom roles with “edit repository rules” can co
 ## 🚀 Step-by-Step Guide
 ### Step 1: Create Teams (Developers / QA / Ops)
 
-    1.Go to your GitHub Organization → Teams
+    1.Go to your GitHub Organization → Teams -> Click “New team”
+        |-On the Teams page, click the New team button.
+        |-This starts the team creation workflow 
+        Fill in Team Details:-
+            ✔ Team name (required)
+            ✔ Description (optional)
+            ✔ Visibility
+                Private (default): only visible to team members
+                Visible to the org
+            After filling this out, click Create team.
     2.Create three teams:
          * developers
          * qa
@@ -1328,7 +1337,17 @@ Note:- People with Admin or custom roles with “edit repository rules” can co
       Teams allow you to assign repository permissions granularly.
   
 ### Step 2: Set Team Permissions at Repository Level
-Assign each team a repository role:
+    To give your new team access to specific repositories:
+          ✔  Go to the repository you want to assign.
+          ✔ Click Settings → Manage access.
+          ✔ Click Collaborators and teams.
+          ✔ Click Add teams.
+    Select your newly created team and choose permission level:
+          ✔ Read
+          ✔ Triage
+          ✔ Write
+          ✔ Maintain
+          ✔Admin
 
 | Team        | Recommended Permission | Why                                                |
 |-------------|------------------------|-----------------------------------------------------|
