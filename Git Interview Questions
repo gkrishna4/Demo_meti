@@ -20,7 +20,20 @@ You will landed on to Repository Page, copy the HTTPS based link of that reposit
 Go to your local repo on VM
 Let's check the remote references
 
-git remote -v
+1) git remote: 
+We can use git remote command to configure remote repository to our local repository.  
+$ git remote add <alias_name>  remote_repository_url 
+ 
+Eg:     $ git remote add origin https://github.com/durgadevops88/github_project.git 
+ 
+Note:-
+Here, origin is alias name of the remote_repository_url. By using this alias name only we 
+can communicate with remote repository. Instead of origin we can use any name, but it is convention to use origin. 
+
+$ git remote 
+   It just provides the alias names of remote repositories 
+$ git remote -v 
+   It provides remote repository urls also.
 
 Let's add the remote reference now
 
@@ -29,6 +42,12 @@ git remote add origin paste_the_link_you_copied
 Now check the remote reference, you will see the reference now
 
 git remote -v
+
+2) git push: 
+We can use git push command to send our changes from local repository to remote 
+repository.
+            syntax:-   git push <remote_name>  <branch_name>  
+            Eg:-          git push origin master 
 
 
 Creating Personal Access Tokens
@@ -494,36 +513,90 @@ Personal access tokens (PATs) are an alternative to using passwords for authenti
 If you want to use a PAT to access resources owned by an organization that uses SAML SSO, you must authorize the PAT.
 
 =================================================================================================
-19) To grant access to a specific repository on GitHub for a new user, you typically need to follow these steps:
+19)what is Git reset?
+  It is opposite to git add command. 
+  There are 2 utilities of git reset command. 
+         Utility-1: To remove changes from staging area 
+         Utility-2: To undo commits at repository level
 
-Navigate to the Repository's Settings:
-Go to the repository on GitHub that you want to grant access to.
+Utility-1: To Remove Changes from staging Area
+------------------------------------------------
+We can use git reset to remove changes from staging area. 
+Changes already added to staging area, but if we don't want to commit, then to  remove such type of changes from staging area,
+then we should go for git reset. It will bring the changes from staging area back to working directory. 
 
-Access the Collaborators or Access Management Section:
-In the repository's settings, you should find a section called "Collaborators" or "Access" or something similar. Click on it.
+git rm --cached  vs git reset: 
+-------------------------------
+git rm --cached file1.txt 
+    The file will be removed completely from staging area. 
+git reset file1.txt 
+    The file won't be removed from staging area, but reset to previous state(one step back). 
 
-Add the New User:
-In the Collaborators or Access Management section, you should see a field to add collaborators or grant access. 
-Enter the GitHub username, email, or the name of the new user you want to add.
+Q) We modified the content of the file1.txt and added to staging area. But we want to ignore those changes in staging area 
+and in working directory. For this requirement which commands we required to use? 
+=================================================================================
+ 
+git reset file1.txt 
+     To ignore changes in staging area 
+git checkout -- file1.txt 
+     To ignore changes in working directory 
 
-Select Access Level (if applicable):
-Depending on your repository's settings, you may have the option to choose the level of access the new user will have.
-GitHub typically offers options like Read access, Write access, or Admin access. Choose the appropriate level for the new user.
+Utility-2: To undo Commits at Repository Level 
+==============================================
+We can also use reset to undo commits at repository level. 
 
-Send the Invitation:
-After entering the username or email of the new user and selecting the access level, there should be a button
-to send the invitation or add the user. Click on it.
+Syntax: git reset <mode> <commitid> 
+    Moves the HEAD to the specified commit, and all remaining recent commits will be removed. 
+    mode will decide whether these changes are going to remove from staging area and working directory or not. 
+ 
+    The allowed values for the mode are: 
+        --mixed 
+        --soft 
+        --hard 
+        --keep 
+        --merge 
+1) --mixed Mode: 
+It is the default mode. 
+To discard commits in the local repository and to discard changes in staging area we should use reset with --mixed option. 
+It won't touch working directory. 
 
-Confirmation by the New User:
-The new user will receive an email notification or GitHub notification informing them that they've been added as a collaborator 
-to the repository. They will need to accept the invitation.
 
-Confirmation by the Repository Owner/Admin:
-Once the invitation is accepted, the repository owner/admin (you) will receive a notification confirming that the new user
-has been added as a collaborator.
+2) reset with --soft Option: 
+It is exactly same as --mixed option, but changes are available in working directory as well as in staging area. 
+It won't touch staging area and working directory. 
+As changes already present in staging area, just we have to use commit to revert back. 
+Use Cases:
+-----------
+    1) If some files are missing in the last commit, then add those files and commit again. 
+    2) We forgot to add defect number in commit message. 
 
-Access Granted:
-Now, the new user should have access to the repository according to the access level you granted.
+3)reset with --hard: 
+It is exactly same as --mixed except that Changes will be removed from everywhere (local repository,staging area,working directory) 
+It is more dangerous command and it is destructive command. 
+It is impossible to revert back and hence while using hard reset we have to take special care. 
+
+Importent Topic-13: Git References (master and HEAD)
+=====================================================
+
+Find out who made which changes to a file in Git — even when multiple people have been working on the same file for days?
+============================================================================================================================
+✅ 1. Use git blame (Most Common & Real‑Time Tool)
+         This shows who last modified each line of a file.
+               Syntax:- git blame <filename>
+               example: git blame app.py
+
+              Output (example):
+             -------------------
+                     f32a1e2f (Rama 2024-02-21 15:22:10) def login():
+                     c17d9a5b (Krishna 2024-02-22 10:42:51)     return "success"
+            This tells you:
+            ---------------
+            1)The commit hash
+            2)Author name
+            3)Date
+            4)The exact line they changed
+            ✔ Perfect for seeing line‑by‑line ownership
+            ✔ Used heavily in code reviews/debugging
 
 
 Verify the installation by checking the version
@@ -634,147 +707,6 @@ Check the commit history
 git log
 
 
-
-Creating a new remote repo now
-===============================
-Open the page
-https://github.com/new
-There define a name for your repository
-Click on Create Repository button
-You will landed on to Repository Page, copy the HTTPS based link of that repository
-Go to your local repo on VM
-Let's check the remote references
-
-git remote -v
-
-Let's add the remote reference now
-
-git remote add origin paste_the_link_you_copied
-
-Now check the remote reference, you will see the reference now
-
-git remote -v
-
-
-Creating Personal Access Tokens
-===============================
-Open the page
-https://github.com/settings/profile
-Scroll down, in the left pane look for Developer Settings, click on that
-Click on Personal Access Tokens , in the left pane
-Click on Generate new token
-Provide a name, and click the checkbox along with repo over to provide repo push access
-Now click on Generate Token button at the bottom
-Copy the token generated and keep it safe  token------>  (  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  )
-Go to local repo on VM 
-
-let's push the code
---------------------
-git push origin master
-
-It will prompt you for username and password, just provide them. Remember, for password,
-you need to provide Personal Access Token which you generated right now
-
-
-Make sure you are in home directory
-
-cd ~
-
-Create a empty directory
-
-mkdir repo2
-cd repo2
-Initialise repo
-
-git init
-
-Check repo status
-git status
-
-Create some file in the directory
-vi somefile
-
-Check repo status, it will say something about Untracked files
-git status
-
-Let's add the file to staging area
-git add somefile
-
-Check repo status, it will say "Changes to be commited"
-git status
-
-Commit it
-git commit -m "First Commit"
-
-Check repo status, it will say "nothing to commit, working tree clean"
-git status
-
-Let's create remote repo first
-
-Creating a new remote repo now
-------------------------------
-Open the page
-https://github.com/new
-There define a name for your repository
-Click on Create Repository button
-You will landed on to Repository Page, copy the SSH based link of that repository
-Let's add other remote reference to repository
-
-Go to local repo
-
-git remote add ssh paste_your_copied_link
-
-To make pushes using SSH keys we need to key exchange, let's generate the keys in machine, and put it in Github Repo
-
-Generate KeyPair on the system
-
-ssh-keygen
-
-This will prompt you multiple times, just keep things default by pressing enter
-
-Once you will have your respective keys generated, in the output you will see the path for your Public key and private key.
-
-Now, let's get the content of public key copied, and get it added in the repository
-
-To get the content
-
------> $cat path_of_your_public_key
-
-You will get the content, copy it
-
-Let's add the copied key in Github repo
-
-Go to repo page
-
-Click on Settings -> Deploy Keys -> Add Deploy Key
-Define some name for reference of the key
-Paste the content over there
-Check the box stating "Allow Write Access"
-Click on Add Key
-Let's make push to remote repo now
-
-  ```git push ssh master```
-
-
-Creating a new remote repo now
-=================================
-
-Open the page https://github.com/new
-There define a name for your repository
-Choose access as private
-Click on Create Repository button
-You will landed on to Repository Page, copy the HTTPS based link of that repository
-Go to your VM
-
-Make sure you are in home directory
-
-cd ~
-
-Clone the new repo
-
-git clone paste_the_link_you_copied
-
-Now, you will see, while cloning it will prompt you credentials, just provide them and you will see repo getting cloned
 
 
 
