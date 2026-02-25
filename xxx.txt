@@ -55,10 +55,11 @@ How Many ways you can trigger the Build?
 ===========================================
 we can trigger the Build in 3 ways
   - Poll SCM: Jenkins can periodically check the repository for changes and automatically build if changes are detected. 
-              This can be configured in the "Build Triggers" section of a job.
-              
-  - Build Triggers: Jenkins can be configured to use the Git plugin, which allows you to specify a Git repository and branch to build. 
-              The plugin can be configured to automatically build when changes are pushed to the repository.
+              This can be configured in the "Build Triggers" section of a job.         
+   			  Build Triggers: Jenkins can be configured to use the Git plugin, which allows you to specify a Git repository and branch to build. 
+                              The plugin can be configured to automatically build when changes are pushed to the repository.
+  - Build Periodically(Cron job): Trigger job on a schedule.
+						Example: Every night at 2 AM----> 0 2 * * *
               
   - Webhooks: A webhook can be created in GitHub to notify Jenkins when changes are pushed to the repository. 
               Jenkins can then automatically build the updated code. This can be set up in the "Build Triggers" section of a job and in the GitHub repository settings.
@@ -780,6 +781,7 @@ find /opt/backup -type f -mtime +30 -delete (For under /opt/backup
 directory)
 find /var/log -name "*.log" -type f -mtime +30 -delete (For files 
 matching the criteria)
+
 
 
 
