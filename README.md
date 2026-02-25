@@ -11,6 +11,72 @@ Click "Upload".
 ### Restart Jenkins:
 After uploading, Jenkins might require a restart to enable the plugin. Follow the prompt to restart Jenkins.
 
+## Here i have 3 branches like dev,feature and release branches and have two test senarios like smoke and unit so for dev and frature branch unit test will run and comming to the relase branch this smoke test will run How?
+```
+pipeline {
+    agent any
+
+    stages {
+        stage('Run Tests') {
+            steps {
+                script {
+                    if (env.BRANCH_NAME == 'dev' || env.BRANCH_NAME.startsWith("feature")) {
+                        echo "Running UNIT tests..."
+                        sh "./run-unit-tests.sh"
+                    } else if (env.BRANCH_NAME.startsWith("release")) {
+                        echo "Running SMOKE tests..."
+                        sh "./run-smoke-tests.sh"
+                    }
+                }
+            }
+        }
+    }
+}
+
+```
+## GitHub Actions (Most Common)
+```
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - dev
+      - feature/**
+      - release/**
+  pull_request:
+    branches:
+      - dev
+      - feature/**
+      - release/**
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # -------------------------
+      # UNIT TESTS (dev + feature)
+      # -------------------------
+      - name: Run Unit Tests
+        if: startsWith(github.ref, 'refs/heads/dev') || startsWith(github.ref, 'refs/heads/feature/')
+        run: |
+          echo "Running UNIT Tests..."
+          ./run-unit-tests.sh
+
+      # -------------------------
+      # SMOKE TESTS (release)
+      # -------------------------
+      - name: Run Smoke Tests
+        if: startsWith(github.ref, 'refs/heads/release/')
+        run: |
+          echo "Running SMOKE Tests..."
+          ./run-smoke-tests.sh
+```
+
 ----------------------
 ##  Execute multiple stages in parallel within a single parent stage:
 In a Jenkins declarative pipeline, you can execute multiple stages in parallel within a single parent stage by using the `parallel directive`. 
