@@ -1486,8 +1486,61 @@ Create rule:
        * Branch protection rules are step 2 (control branch‑level rights).
        * Together, they give Developers / QA / Ops proper access control.
        * GitHub officially manages push/merge control only via branch protection.
+       
 
+## how you configure Jenkins with GitHub?
+🚀 Goal
+        Configure Jenkins so that:
+           * GitHub triggers Jenkins on every push / PR
+           * Jenkins pulls the code
+           * Jenkins runs pipelines (unit tests, build, deploy, etc.)
+✅ PART 1 — Prerequisites
+    You need:
+        ✔ Jenkins server (local or cloud, e.g., EC2)
+        ✔ GitHub repository
+        ✔ Web URL for Jenkins (http://<jenkins-server>:8080)
+        ✔ Jenkins plugins:
+           * GitHub Integration Plugin
+           * Git Plugin
+           * Pipeline Plugin (if using Jenkinsfile)
+           
+🛠️ PART 2 — Generate GitHub Personal Access Token (PAT)
+        This is required for Jenkins to access GitHub code.
+        Steps:
+           1 Go to GitHub → Settings
+           2 Developer settings
+           3 Personal access tokens → Tokens (classic)
+           4 Generate with scopes:
+               * repo
+               * admin:repo_hook
+           5 Copy the token.
 
+🧰 PART 3 — Add GitHub Credentials into Jenkins
+           1 Open Jenkins → Manage Jenkins
+           2 Go to Credentials
+           3 Add:
+               * Username: your GitHub username
+               * Password: GitHub Personal Access Token
+           4  Save as an ID, e.g., github-credentials.
+This allows Jenkins to authenticate to your repo.
 
-
-
+🔧 PART 4 — Install Required Plugins
+   Go to: Manage Jenkins → Manage Plugins → Available
+   Install:
+       1 Git plugin
+       2 GitHub plugin
+       3 GitHub Branch Source Plugin
+       4 Pipeline
+    Restart Jenkins.
+    
+🌐 PART 5 — Configure GitHub Webhook (MOST IMPORTANT)
+This is what triggers Jenkins automatically on every push.
+Steps:
+   1 Open your GitHub repo
+   2 Go to Settings → Webhooks → Add Webhook
+   3 Add the URL: http://<jenkins-server>:8080/github-webhook/
+   4 Select:
+        Content type: application/json
+        Trigger: Just the push event
+  Save.
+Now GitHub will notify Jenkins in real-time.
