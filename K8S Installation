@@ -191,6 +191,8 @@ kubectl explain repicaset
 kubectl explain replicationcontroller
 kubectl  explain deployment
 
+You can list all available API groups and versions in your cluster by running the command """ kubectl api-versions """
+
 Command to show the labels
 ==========================
 kubectl get pods --show-labels
