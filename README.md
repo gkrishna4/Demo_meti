@@ -1,3 +1,5 @@
+
+https://terraformguru.com/terraform-on-aws-eks-karpenter/
 ## Installing Plugins Manually:
 If you have a plugin in the `.hpi` or `.jpi` file format, you can install it manually:
 ### Download the Plugin:
