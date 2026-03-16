@@ -103,71 +103,98 @@ How we can change the hostname
 goto root user-----> sudo -i
 then after we can execute the command-----> hostname <name-of-the-host> && bash
 
+Installing the kubectl and eksctl
+==================================
+curl -LO https://s3.us-west-2.amazonaws.com/amazon-eks/1.35.2/2026-02-27/bin/linux/amd64/kubectl
+chmod +x kubectl
+mkdir -p $HOME/bin
+cp kubectl $HOME/bin/kubectl
+echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
+export PATH=$HOME/bin:$PATH
+kubectl version --client
+curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz"
+tar -xzf eksctl_Linux_amd64.tar.gz
+sudo mv eksctl /usr/local/bin/
+eksctl version
 
 
-https://raw.githubusercontent.com/vsaini44/KubernetesRepo/master/Docker-kuber1.21
-===================================================================================
-# by using the above link we can get the script place it in a file then after execute that file
-# for example the file name is ---->a 
-# so here we can execute that file by using the command------> bash a  (or) ./a.sh
-# after successful execution we can get the {-- 1 token --} in the master machine we can copy that token and execute over
-the Node machines
+# Create Cluster
+eksctl create cluster --name=eksdemo \
+                      --region=ap-southeast-2 \
+                      --zones=ap-southeast-2a,ap-southeast-2b \
+                      --without-nodegroup 
 
-# script we have to execute
-============================
-#!/bin/bash 
-sudo apt update
-
-sudo apt install apt-transport-https ca-certificates curl software-properties-common  -y
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
-sudo apt update
-apt-cache policy docker-ce -y
-sudo apt install docker-ce -y
-wget -q -O - https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-echo deb http://apt.kubernetes.io/ kubernetes-xenial main | sudo tee /etc/apt/sources.list.d/kubernetes.list
-apt update
-apt install kubelet=1.21.1-00 kubeadm=1.21.1-00 kubectl=1.21.1-00 -y
-sysctl net.bridge.bridge-nf-call-iptables=1
-
-#on master
-#kubeadm init --pod-network-cidr=10.244.0.0/16 >> cluster_initialized.txt
-kubeadm init --pod-network-cidr=192.168.0.0/16 >> cluster_initialized.txt
-mkdir /root/.kube
-cp /etc/kubernetes/admin.conf /root/.kube/config
-kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
-#kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-systemctl restart kubelet.service
-kubeadm token create --print-join-command
+# Get List of clusters
+eksctl get cluster
 
 
+# Replace with region & cluster name
+eksctl utils associate-iam-oidc-provider \
+    --region ap-southeast-2 \
+    --cluster  eksdemo\
+    --approve  
 
-# Script we have to execute in the Node machines
-=================================================
 
-#!/bin/bash 
-sudo apt update
+# Create Public Node Group   
+eksctl create nodegroup --cluster=eksdemo \
+                       --region=ap-southeast-2 \
+                       --name=eksdemo-ng-public1 \
+                       --node-type=t3.small \
+                       --nodes=2 \
+                       --nodes-min=2 \
+                       --nodes-max=4 \
+                       --node-volume-size=20 \
+                       --ssh-access \
+                       --ssh-public-key=K8S_Demo \
+                       --managed \
+                       --asg-access \
+                       --external-dns-access \
+                       --full-ecr-access \
+                       --appmesh-access \
+                       --alb-ingress-access 
 
-sudo apt install apt-transport-https ca-certificates curl software-properties-common  -y
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
-sudo apt update
-apt-cache policy docker-ce -y
-sudo apt install docker-ce -y
-wget -q -O - https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-echo deb http://apt.kubernetes.io/ kubernetes-xenial main | sudo tee /etc/apt/sources.list.d/kubernetes.list
-apt update
-apt install kubelet=1.21.1-00 kubeadm=1.21.1-00 kubectl=1.21.1-00 -y
-sysctl net.bridge.bridge-nf-call-iptables=1
+#Create EKS Node Group in Private Subnets 
+eksctl create nodegroup --cluster=eksdemo \
+                        --region=ap-southeast-2 \
+                        --name=eksdemo-ng-private1 \
+                        --node-type=t3.small \
+                        --nodes-min=2 \
+                        --nodes-max=4 \
+                        --node-volume-size=20 \
+                        --ssh-access \
+                        --ssh-public-key=K8S_Demo \
+                        --managed \
+                        --asg-access \
+                        --external-dns-access \
+                        --full-ecr-access \
+                        --appmesh-access \
+                        --alb-ingress-access \
+                        --node-private-networking                       
 
-=================================================================================
-or else we can execute the commands one by one
 
-to get libraries
-=================
-kubectl completion bash >> /tmp/abc
-source  /temp/abc
-kubectl <press tab two-times>
+eksctl utils describe-stacks --region ap-southeast-2 --cluster eksdemo   
+
+# List EKS clusters
+eksctl get cluster
+
+# List NodeGroups in a cluster
+eksctl get nodegroup --cluster=<clusterName>
+eksctl get nodegroup --cluster=eksdemo
+
+# List Nodes in current kubernetes cluster
+kubectl get nodes -o wide
+
+# Our kubectl context should be automatically changed to new cluster
+kubectl config view --minify  
+
+
+# Delete Node Group
+eksctl delete nodegroup --cluster=<clusterName> --name=<nodegroupName>
+eksctl delete nodegroup --cluster=eksdemo --name=eksdemo-ng-public1
+eksctl delete nodegroup --cluster=eksdemo --name=eksdemo-ng-private1
+
+eksctl delete nodegroup   --cluster=eksdemo   --name=eksdemo-ng-private1   --drain=false
+
 
 The command to get all the running pods:
 ------------------------------------------
