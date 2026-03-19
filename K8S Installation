@@ -1,3 +1,9 @@
+what is the diff b/w docker compose and K8s?
+===============================================
+Docker Compose is used to run multi‑container applications on a single machine. Kubernetes is used to manage
+and orchestrate containers across multiple machines (clusters) with advanced scaling, load balancing, self‑healing,
+and production‑grade features.
+
 What is a pod?
 ==============
 Pods are the smallest deployable units of computing that you can create and manage in Kubernetes.
@@ -102,6 +108,8 @@ How we can change the hostname
 ==============================
 goto root user-----> sudo -i
 then after we can execute the command-----> hostname <name-of-the-host> && bash
+
+https://kubernetes.github.io/ingress-nginx/deploy/
 
 Installing the kubectl and eksctl
 ==================================
