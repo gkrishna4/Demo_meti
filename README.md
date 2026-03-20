@@ -80,6 +80,132 @@ jobs:
 ```
 
 ----------------------
+## here in my ecr registry or docker registry i have an docker image versions called v1, v2, v3 how the jenkins pipeline will detect the latest v3 version docker image
+
+This AWS CLI command inspects all image versions in an ECR repository, sorts them by the timestamp they were pushed, takes the most recently pushed one, and extracts its tag. It’s commonly used in CI/CD pipelines to automatically detect the latest Docker image version.
+```
+aws ecr describe-images \
+  --repository-name my-app \
+  --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' \
+  --output text
+```
+## --query 'sort_by(imageDetails, &imagePushedAt)[-1].imageTags[0]'
+✔️ sort_by(imageDetails, &imagePushedAt)
+        Sorts all images by the time they were pushed
+        From oldest → newest
+        Example after sorting:
+                    v1 → v2 → v3
+✔️ [-1]
+This means:
+    👉 pick the last item in the sorted list
+    👉 which is the most recently pushed image
+    So it selects:
+            { "imageTags": ["v3"] }
+✔️ imageTags[0]
+Since an image can have multiple tags, this takes the first tag.
+Result becomes:
+                v3
+                
+from Docker registry
+```
+pipeline {
+    agent any
+
+    environment {
+        REGISTRY_URL = "registry.example.com"
+        IMAGE_NAME   = "myapp"
+        FULL_IMAGE   = "${REGISTRY_URL}/${IMAGE_NAME}"
+        K8S_DEPLOY   = "myapp"
+        K8S_NS       = "production"
+    }
+
+    stages {
+
+        stage('Detect Latest Image Version') {
+            steps {
+                script {
+                    echo "Fetching tags from Docker registry..."
+
+                    // Get tag list from registry API
+                    LATEST_TAG = sh(
+                        script: """
+                          curl -s https://${REGISTRY_URL}/v2/${IMAGE_NAME}/tags/list |
+                          jq -r '.tags[]' | grep -E '^v[0-9]+$' | sort -V | tail -1
+                        """,
+                        returnStdout: true
+                    ).trim()
+
+                    if (!LATEST_TAG) {
+                        LATEST_TAG = "v0"
+                    }
+
+                    echo "Latest existing tag: ${LATEST_TAG}"
+
+                    // Auto-increment
+                    def versionNum = LATEST_TAG.replace("v", "").toInteger() + 1
+                    NEW_TAG = "v${versionNum}"
+
+                    echo "New tag generated: ${NEW_TAG}"
+                }
+            }
+        }
+
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh """
+                      docker build -t ${FULL_IMAGE}:${NEW_TAG} .
+                    """
+                }
+            }
+        }
+
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Login to Docker Registry (modify for your registry)
+                    sh """
+                      echo "\$DOCKER_PASSWORD" | docker login ${REGISTRY_URL} -u "\$DOCKER_USERNAME" --password-stdin
+                      docker push ${FULL_IMAGE}:${NEW_TAG}
+                    """
+                }
+            }
+        }
+
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    sh """
+                      kubectl set image deployment/${K8S_DEPLOY} ${K8S_DEPLOY}=${FULL_IMAGE}:${NEW_TAG} -n ${K8S_NS}
+                      kubectl rollout status deployment/${K8S_DEPLOY} -n ${K8S_NS}
+                    """
+
+                    echo "Deployment updated to image tag: ${NEW_TAG}"
+                }
+            }
+        }
+    }
+}
+```
+## def versionNum = LATEST_TAG.replace("v", "").toInteger() + 1
+NEW_TAG = "v${versionNum}"
+1️⃣ LATEST_TAG.replace("v", "")
+    Assume the latest tag is:
+        LATEST_TAG = "v3"
+        replace("v", "") removes the letter v from the string: "v3" → "3"
+        This converts v3 into just 3 (a plain number string).
+2️⃣ .toInteger()
+    Now, we convert the string "3" into an integer:  "3".toInteger() → 3
+3️⃣ + 1 (Auto‑increment)
+    We increase the version number by 1: 3 + 1 = 4
+4️⃣ Store the result into versionNum
+    So now: versionNum = 4
+5️⃣ NEW_TAG = "v${versionNum}"
+    We format the new tag by putting the v back in front: "v${versionNum}" → "v4"
+
 ##  Execute multiple stages in parallel within a single parent stage:
 In a Jenkins declarative pipeline, you can execute multiple stages in parallel within a single parent stage by using the `parallel directive`. 
 Here’s an example that shows how you could structure a Jenkins pipeline to execute two stages in parallel within a single "wrapper" stage.
