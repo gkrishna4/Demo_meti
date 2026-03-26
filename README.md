@@ -1,5 +1,6 @@
 
 https://terraformguru.com/terraform-on-aws-eks-karpenter/
+https://kubernetes.io/docs/reference/kubectl/quick-reference/
 ## Installing Plugins Manually:
 If you have a plugin in the `.hpi` or `.jpi` file format, you can install it manually:
 ### Download the Plugin:
