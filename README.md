@@ -4,6 +4,9 @@ https://terraformguru.com/terraform-on-aws-eks-karpenter/
 ```
 https://kubernetes.io/docs/reference/kubectl/quick-reference/
 ```
+```
+https://www.linuxtechi.com/setup-nfs-server-on-centos-8-rhel-8/
+```
 
 ## Installing Plugins Manually:
 If you have a plugin in the `.hpi` or `.jpi` file format, you can install it manually:
