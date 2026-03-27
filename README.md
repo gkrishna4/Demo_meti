@@ -7,6 +7,9 @@ https://kubernetes.io/docs/reference/kubectl/quick-reference/
 ```
 https://www.linuxtechi.com/setup-nfs-server-on-centos-8-rhel-8/
 ```
+```
+https://www.linuxtechi.com/upgrade-rhel-9-to-rhel-10-step-by-step-guide/
+```
 
 ## Installing Plugins Manually:
 If you have a plugin in the `.hpi` or `.jpi` file format, you can install it manually:
