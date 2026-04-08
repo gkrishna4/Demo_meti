@@ -135,6 +135,10 @@ eksctl create cluster --name=eksdemo \
 # Get List of clusters
 eksctl get cluster
 
+Note:-
+   - with out OIDC, your pods of k8s can not communicate with other resources of aws
+   - This OIDC Provider usually takes care of associating your iam with service accounts, service accounts of K8s is binded with IAM, so that your
+     k8s pods using this service account can access other services of aws platform.
 
 # Replace with region & cluster name
 eksctl utils associate-iam-oidc-provider \
