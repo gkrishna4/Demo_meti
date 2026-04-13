@@ -1,4 +1,7 @@
 ```
+https://github.com/ansible/ansible/tree/stable-2.9/contrib/inventory
+```
+```
 https://terraformguru.com/terraform-on-aws-eks-karpenter/
 ```
 ```
