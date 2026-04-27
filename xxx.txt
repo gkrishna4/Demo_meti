@@ -71,6 +71,23 @@ secrect file
 User-name with Password
 ssh with privatekey
 
+✅ Step 2: Inject Secrets at Runtime in Pipeline
+🔹 Example: Inject Secret Text (API Token)
+pipeline {
+    agent any
+    stages {
+        stage('Use Secret') {
+            steps {
+                withCredentials([string(credentialsId: 'API_TOKEN', variable: 'TOKEN')]) {
+                    sh '''
+                        echo "Using token securely"
+                        curl -H "Authorization: Bearer $TOKEN" https://example.com
+                    '''
+                }
+            }
+        }
+    }
+}
 How do you store/secure/handle secrets in Jenkins?
 ==================================================
 there are multiple ways to achieve this:
