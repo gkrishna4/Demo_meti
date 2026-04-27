@@ -71,6 +71,10 @@ secrect file
 User-name with Password
 ssh with privatekey
 
+✅ Step 1: Store Secrets in Jenkins
+Go to:
+Manage Jenkins → Credentials → Add Credentials
+
 ✅ Step 2: Inject Secrets at Runtime in Pipeline
 🔹 Example: Inject Secret Text (API Token)
 pipeline {
