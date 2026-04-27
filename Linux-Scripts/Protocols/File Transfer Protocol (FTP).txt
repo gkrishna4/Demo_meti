@@ -1,0 +1,58 @@
+File Transfer Protocol (FTP):
+
+Note: Use same user account for both the servers [Client (Source) & Server (Destination)]
+
+FTP Server (Destination):
+
+Become root
+su -
+Password: xxxx
+rpm -qa | grep vsftpd
+ping www.google.com	(Check for internet connection)
+yum install vsftpd
+y
+rpm -qa | grep vsftpd
+cp /etc/vsftpd/vsftpd.conf /etc/vsftpd/vsftpd.conf_1
+vi /etc/vsftpd/vsftpd.conf
+Replace "anonymous_enable=YES" with "anonymous_enable=NO"						(Disable anonymous login)
+Replace "#ascii_upload_enable=YES" with "ascii_upload_enable=YES"					(Uncomment #)
+Replace "#ascii_download_enable=YES" with "ascii_download_enable=YES"					(Uncomment #)
+Replace "#ftpd_banner=Welcome to blah FTP service." with "ftpd_banner=Welcome to blah FTP service."	(Uncomment #)
+# Local Time												(Insert the last line in the file)
+use_localtime=YES											(Insert the last line in the file) & (Save the file)
+systemctl start vsftpd
+systemctl ebable vsftpd
+systemctl status vsftpd
+systemctl stop firewalld
+systemctl disable firewalld
+systemctl status firewalld
+exit
+
+FTP Client (Source):
+
+Become root
+su -
+Password: xxxx
+ftp			(Check for FTP exist or not)
+ping www.google.com	(Check for internet connection)
+yum install ftp
+y
+ftp			(Check for FTP exist or not)
+bye			(For exit from ftp)
+exit
+whoami
+pwd
+hostname
+ls -ltr
+touch war
+echo "war is the file of war" > war
+ls -ltr >> war
+cat war
+ls -ltr
+ftp 192.168.145.82	(FTP Server IP)
+Password: xxxx
+bin
+hash
+put war
+bye			(For exit from ftp)
+(Check in the Server war file will visible)

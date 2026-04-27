@@ -1,0 +1,67 @@
+Network file system (NFS):
+
+NFS Server (Source):
+
+Become root
+su -
+Password: xxxx
+rpm -qa | grep nfs
+yum install nfs-utils	(most likely default installed)
+systemctl enable rpcbind
+systemctl enable nfs-server
+systemctl start rpcbind
+systemctl start nfs-server
+systemctl start rpc-statd
+systemctl start nfs-idmapd
+systemctl status rpcbind
+systemctl status nfs-server
+systemctl status rpc-statd
+systemctl status nfs-idmapd
+cd /
+mkdir mydata
+ls -ltr
+chmod a+rwx mydata
+ls -ltr
+cd mydata
+ls -ltr
+touch a b c
+touch earth
+echo "This is earth file" > earth
+cat earth
+ls -ltr
+cp /etc/exports /etc/exports_1
+vi /etc/exports
+/mydata	*(rw,sync,no_root_squash)	(insert the line) (for everyone)
+exportfs -rv
+systemctl status firewalld
+systemctl stop firewalld
+systemctl disable firewalld
+systemctl status firewalld
+
+NFS Client (Destination):
+
+Become root
+su -
+Password: xxxx
+rpm -qa | grep nfs
+yum install nfs-utils (most likely default installed)
+systemctl start rpcbind
+systemctl status rpcbind
+ps -ef | egrep "firewall|iptable"
+systemctl status firewalld
+systemctl stop firewalld
+systemctl disable firewalld
+systemctl status firewalld
+showmount -e 192.168.145.82 (NFS Server IP)
+mkdir /mnt/core
+ls -l /mnt
+mount 192.168.145.82:/mydata /mnt/core
+df -h
+cd /mnt/core
+ls -ltr
+touch moon	(We are created here in Client side, it's automatically created in server side)
+ls -ltr
+cd
+df -h
+umount /mnt/core
+df -h

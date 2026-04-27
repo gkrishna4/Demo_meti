@@ -1,0 +1,92 @@
+Samba Installation and Configuration:
+
+(Server)
+Become root
+su -
+Password: xxxx
+
+yum install samba samba-client samba-common -y
+rpm -qa | grep samba
+
+firewall-cmd --permanent --zone=public --add-service=samba	 (if firewall running)
+firewall-cmd –reload
+
+systemctl status firewalld
+systemctl stop firewalld
+systemctl disable firewalld
+systemctl status firewalld
+
+mkdir -p /samba/mydata
+chmod a+rwx /samba/mydata	(or)
+chmod u+rwx,g+rwx,o+rwx /samba/mydata	(or)
+chmod 777 /samba/mydata
+cd /
+ls -ltr
+chown -R nobody:nobody /samba
+ls -ltr
+chcon -t samba_share_t /samba/mydata	(if SELinux enabled)
+sestatus
+vi /etc/selinux/config
+(Change SELINUX=enforcing To SELINUX=disabled)
+reboot (or) init 6
+
+Become root
+su -
+Password: xxxx
+
+sestatus
+cd /etc/samba
+ls -ltr
+cp smb.conf smb.conf-orig
+vi smb.conf
+(remove/delete existing data under [global] and paste there below data) 
+[global]
+	workgroup = WORKGROUP
+	netbios name = centos
+	security = user
+	map to guest = bad user
+	dns proxy = no
+[Anonymous]
+	path = /samba/mydata
+	browsable = yes
+	writable = yes
+	guest ok = yes
+	guest only = yes
+	read only = no
+
+testparm
+(Enter)
+systemctl enable smb
+systemctl enable nmb
+systemctl start smb
+systemctl start nmb
+systemctl status smb
+systemctl status nmb
+cd /samba/mydata
+ls -ltr
+touch shadow
+ls -ltr
+ifconfig | more
+\\192.168.252.82 (search in windows)
+User: xxxx	(Linux OS Credentials)
+Password: xxxx
+(Create a directory in windows like name (New directory))
+(Create a file in windows like name (New file))
+(Check in Linux server, showing files and directories created in windows)
+
+Open another Linux machine (Client)
+
+Become root
+su -
+Password: xxxx
+
+yum -y install cifs-utils samba-client
+mkdir /mnt/sambashare
+mount -t cifs //192.168.252.82/Anonymous /mnt/sambashare (server IP)
+(Enter)
+df -h
+cd /mnt/sambashare
+ls -ltr
+touch soon
+ls -ltr
+(Check in Linux server & Windows showing files and directories created in Client)
