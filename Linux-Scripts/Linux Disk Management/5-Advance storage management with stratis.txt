@@ -1,0 +1,39 @@
+Advance storage management with stratis:
+
+For RHEL 8: RHEL 8 introduces the next generation volume management solution called stratis
+Take Snapshot
+Add 2 disks
+Settings--->Storage--->Controller:SATA--->Adds new storage attachment--->Hard Disk--->Create--->VDI (Next)--->Dynamically allocated (Next)--->Choose a location, Name and select the size--->Create--->Select--->OK
+Start
+Become root
+su -
+Password: xxxx
+dnf install stratis-cli stratisd -y
+rpm -qa | grep stratis
+systemctl enable stratisd
+systemctl status stratisd
+systemctl start stratisd
+systemctl status stratisd
+lsblk
+stratis pool create pool1 /dev/sdb
+stratis pool list
+stratis pool add-data pool1 /dev/sdc
+stratis pool list
+stratis filesystem create pool1 fs1
+stratis filesystem list
+mkdir /bigdata
+mount /dev/stratis/pool1/fs1 /bigdata
+lsblk
+df -h
+stratis filesystem list
+stratis filesystem snapshot pool1 fs1 fs1-snap
+stratis filesystem list
+vi /etc/fstab
+UUID="xxxx-xxxx-"/bigdata	xfs	defaults,x-systemd.requires=stratisd.service	0	0	(insert the last line)
+init 6
+Become root
+su -
+Password: xxxx
+stratis filesystem list
+lsblk
+df -h

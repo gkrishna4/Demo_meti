@@ -1,0 +1,37 @@
+Add disk and create standard partition:
+
+Take Snapshot
+Settings--->Storage--->Controller:SATA--->Adds new storage attachment--->Hard Disk--->Create--->VDI (Next)--->Dynamically allocated (Next)--->Choose a location, Name and select the size--->Create--->Select--->OK
+Start
+Become root
+su -
+Password: xxxx
+df -h
+fdisk -l | more
+fdisk /dev/sdb
+help
+n (add a new partition)
+p (primary)
+(Enter) (default)
+(Enter) (default)
+(Enter) (default)
+help
+w (write table to disk and exit)
+fdisk -l
+mkfs.xfs /dev/sdb1
+mkdir /data
+cd /
+ls -ltr
+mount /dev/sdb1 /data
+df -h
+vi /etc/fstab
+/dev/sdb1	/data	xfs	defaults	0	0	(insert the last line)
+init 6
+Become root
+su -
+Password: xxxx
+df -h
+umount /data
+df -h
+mount -a
+df -h

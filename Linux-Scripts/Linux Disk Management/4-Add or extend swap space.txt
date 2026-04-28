@@ -1,0 +1,51 @@
+Add/Extend swap space:
+
+Recommended swap size=Twice the size of RAM
+	M=Amount of RAM in GB, and S=Amount of swap in GB, then
+	
+	If M<2
+	then	S=M*2
+	else	S=M+2
+
+Commands
+	dd
+	mkswap
+	swapon or swapoff
+
+Become root
+su -
+Password: xxxx
+df -h
+free -m
+dd if=/dev/zero of=/newswap bs=1M count=1024
+cd /
+ls -ltr
+chmod go-r newswap (or)
+chmod g-r,o-r newswap (or)
+chmod 600 newswap
+mkswap /newswap
+free -m
+swapon /newswap
+free -m
+vi /etc/fstab
+/newswap swap	swap	defaults	0	0	(insert the last line)
+free -m
+init 6
+Become root
+su -
+Password: xxxx
+free -m
+
+To delete swap space
+
+swapoff /newswap
+rm /newswap
+y
+cd /
+ls -ltr
+free -,
+free -m
+vi /etc/fstab
+/newswap swap	swap	defaults	0	0	(remove the last line)
+free -,
+free -m

@@ -1,0 +1,45 @@
+Make a Snapshot
+Open console and become root
+Settings--->Storage--->Controller: IDE--->Empty--->Choose a disk file--->Attach dvd.iso
+df -h
+cd /
+mkdir localrepo
+ls -ltr
+df -h
+cd /run/media/sreddy/RHEL-7.9\ Server.x86_64/	(use Tab key after cd for each entry)
+ls -ltr
+cd Packages/
+ls -ltr
+ls -ltr | wc -l
+du -sh .
+df -h
+cp -rv /run/media/sreddy/RHEL-7.9\ Server.x86_64/Packages/* /localrepo/
+ls -ltr | wc -l
+cd /etc/yum.repos.d/
+ls -ltr
+vi local.repo	(add and save below given content)
+
+[rhel7.9]
+name=rhel7.9
+baseurl=file:///localrepo/
+enabled=1
+gpgcheck=0
+
+createrepo /localrepo/
+yum clean all	(clear yum cache)
+yum repolist all
+yum install tomcat	(for testing)
+
+Configure online EPEL repository in RHEL 7:
+cd /tmp
+wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+yum install epel-release-latest-7.noarch.rpm
+yum repolist
+
+Configure online EPEL repository in CentOS 7:
+yum install epel-release
+yum repolist
+
+Disable warning message of Red Hat Subscription Management:
+vi /etc/yum/pluginconf.d/subscription-manager.conf
+replace "enabled=1" with "enabled=0"

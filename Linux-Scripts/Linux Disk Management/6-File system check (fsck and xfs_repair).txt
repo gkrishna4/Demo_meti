@@ -1,0 +1,31 @@
+File system check (fsck and xfs_repair):
+
+The following are the possible exit codes for fsck command
+
+0 - No errors
+1 - Filesystem errors corrected
+2 - System should be rebooted
+4 - Filesystem errors left uncorrected
+8 - Operational error
+16 - Usage or syntax error
+32 - fsck cancelled by user request
+128 - Shared-library error
+
+whoami
+hostname
+pwd
+Become root
+su -
+Password: xxxx
+df -h
+df -h | awk '{print $1}'
+df -T
+fsck /dev/sdb1
+xfs_repair /dev/sdb1
+df -T
+umount /data
+df -T
+xfs_repair /dev/sdb1
+echo $?
+mount /dev/sdb1 /data
+df -h

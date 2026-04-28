@@ -1,0 +1,49 @@
+Add disk and create LVM partition:
+
+Take Snapshot
+Settings--->Storage--->Controller:SATA--->Adds new storage attachment--->Hard Disk--->Create--->VDI (Next)--->Dynamically allocated (Next)--->Choose a location, Name and select the size--->Create--->Select--->OK
+Start
+Become root
+su -
+Password: xxxx
+fdisk -l | more
+fdisk /dev/sdb
+help
+n (add a new partition)
+p (primary)
+(Enter) (default)
+(Enter) (default)
+(Enter) (default)
+help
+p (print the partition table)
+help
+t (change a partition's system id) 
+L (list all codes)
+8e (Linux LVM)
+help
+p (print the partition table)
+help
+w (write table to disk and exit)
+pvcreate /dev/sdb1
+pvdisplay
+vgcreate vg1 /dev/sdb1
+vgdisplay
+lvcreate -n lv1 --size 1000M vg1
+lvdisplay
+mkfs.xfs /dev/vg1/lv1
+mkdir /data1
+cd /
+ls -ltr
+mount /dev/vg1/lv1 /data1
+df -h
+vi /etc/fstab
+/dev/vg1/lv1	/data1	xfs	defaults	0	0	(insert the last line)
+init 6
+Become root
+su -
+Password: xxxx
+df -h
+umount /data1
+df -h
+mount -a
+df -h

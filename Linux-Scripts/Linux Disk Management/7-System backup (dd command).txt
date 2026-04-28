@@ -1,0 +1,12 @@
+System backup (dd command):
+
+whoami
+hostname
+pwd
+Become root
+su -
+Password: xxxx
+df -h
+dd if=/dev/sdb1 of=/data/boot.img
+ls -l /data/boot.img
+dd if=/data/boot.img /dev/sdb1 (for restore)

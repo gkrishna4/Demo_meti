@@ -1,0 +1,50 @@
+Make a Snapshot
+Open console and become root
+Settings--->Storage--->Controller: IDE--->Empty--->Choose a disk file--->Attach dvd.iso
+df -h
+cd /
+mkdir localrepo
+ls -ltr
+df -h
+cd /run/media/sreddy/RHEL-8-0-0-BaseOS-x86_64/	(use Tab key after cd for each entry)
+ls -ltr
+cp -rv BaseOS /localrepo/
+cp -rv AppStream /localrepo/
+cd /etc/yum.repos.d/
+ls -ltr
+vi local.repo 	(add and save below given content)
+
+[BaseOS]
+name=RHEL8_BaseOS
+metadata_expire=-1
+gpgcheck=1
+enabled=1
+baseurl=file:///localrepo/BaseOS/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+
+[AppStream]
+name=RHEL8_AppStream
+metadata_expire=-1
+gpgcheck=1
+enabled=1
+baseurl=file:///localrepo/AppStream/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+
+yum clean all	(clear yum cache)
+yum repolist all
+yum install tomcat	(for testing)
+
+Configure online EPEL repository in RHEL 8:
+dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+rpm -qa | grep epel
+dnf --disablerepo="*" --enablerepo="epel" list available
+dnf --disablerepo="*" --enablerepo="epel" list available | grep htop
+dnf install htop	(for testing)
+
+Configure online EPEL repository in CentOS 8:
+yum install epel-release
+yum repolist
+
+Disable warning message of Red Hat Subscription Management:
+vi /etc/yum/pluginconf.d/subscription-manager.conf
+replace "enabled=1" with "enabled=0"
