@@ -61,7 +61,7 @@ Then open the file in an editor using `vi /etc/fstab` and carefully correct the 
 changes, verify again using `cat /etc/fstab`. Once everything looks correct, reboot the system using init 6 or reboot. If the entries
 are fixed properly, the system will boot normally without errors.
 
-## If a server shows a kernel panic error after reboot in Red Hat Enterprise Linux / CentOS
+## If you are getting a kernel panic error after rebooting one of the server, how will you look into this?
 🔍 1. Observe the error message
     
     Carefully read what is shown on screen
