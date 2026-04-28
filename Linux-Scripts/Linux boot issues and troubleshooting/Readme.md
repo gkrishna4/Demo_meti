@@ -138,3 +138,69 @@ dmesg
 exit
 reboot
 ```
+## how you will get that particular screen while booting?
+
+## How to access GRUB screen during boot (RHEL / CentOS)
+
+1. Restart the system.
+
+2. As soon as the system starts booting (right after BIOS/VM logo), press and hold the `Shift` key (for BIOS systems)  
+   OR repeatedly press the `Esc` key (common in VMs / UEFI systems).
+
+3. This will bring up the GRUB menu screen where all available kernels are listed.
+
+4. From this screen, you can:
+   - Select an older kernel
+   - Press `e` to edit boot parameters (for troubleshooting)
+   - Choose rescue or recovery options
+
+5. If the menu does not appear:
+   - It may be hidden (GRUB timeout = 0)
+   - Try pressing `Esc` multiple times quickly during boot
+  
+## How to enter Rescue Mode after powering on the server
+
+1. Power on or restart the server.
+
+2. As soon as the system starts booting, press `Esc` (or `Shift` in some systems) to open the GRUB menu.
+
+3. From the GRUB menu, use arrow keys to select:
+   Troubleshooting
+
+4. Press `Enter`.
+
+5. Then select:
+   Rescue a Red Hat Enterprise Linux system
+
+6. Press `Enter`.
+
+7. Choose:
+   1) Continue
+
+8. Press `Enter`.
+
+9. The system will mount your OS under:
+   /mnt/sysimage
+
+10. To work inside your system, run:
+    chroot /mnt/sysimage
+
+## How to enter BIOS (Basic Input/Output System)
+
+1. Power on or restart the server.
+
+2. Immediately start pressing one of the following keys (depends on system vendor):
+   - `Del` (Delete)
+   - `F2`
+   - `F10`
+   - `F12`
+   - `Esc`
+
+3. Keep pressing the key repeatedly as soon as the system starts (before OS begins to load).
+
+4. The BIOS/UEFI setup screen will appear.
+
+5. From BIOS, you can:
+   - Change boot order
+   - Enable/disable hardware
+   - Configure system settings
