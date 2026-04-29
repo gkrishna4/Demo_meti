@@ -1,1 +1,83 @@
+🚨 1. Patch Identification (Where it starts)
+      ✔ A patch usually appears because of:
+              👉  A security advisory from Red Hat (RHSA)
+              👉  Internal security team alert
+              👉  Vulnerability scan (e.g., OpenSSL, kernel CVE)
+      👉 Example:
+              Critical OpenSSL vulnerability announced
+              Red Hat releases: RHSA-2026:xxxx
+
+🌐 2. Where the Patch Actually Lives
+        👉 Important concept:
+               ✔ The patch is not in Satellite yet
+        👉 It exists in:
+               ✔ Red Hat CDN (online repositories)
+
+🔄 3. Sync: Bringing Patch into Satellite
+       * Sync = downloading content from Red Hat CDN into Satellite
+          Step:1 Inside Content → Red Hat Repositories:
+               * Expand the Product (e.g., Red Hat Enterprise Linux 8)
+                   ✔ Find required repos:
+                         * BaseOS RPMs
+                         * AppStream RPMs
+                   ✔ Toggle them to Enabled
+                   ✔ Click Save
+         step:2  Go to Sync Screen
+                👉 Navigate to: Content → Sync Status
+                   ✔ You will see a list of:
+                        * Products
+                        * Repositories under each product
+                        * Last sync status
+                👉 This is the only place where sync is triggered
+
+         Step 3 — Select Exact Repository
+                👉 In Sync Status:
+                       * Expand the Product
+                       * Locate the exact repository, for example: RHEL 8 for x86_64 – BaseOS RPMs
+                       * Select that specific repository
+
+
+       * Includes:
+           >> RPM packages
+           >> Errata (patch metadata like RHSA, RHBA)
+           >> Dependency info
+
+        🧩 What Happens During Sync
+                  Red Hat CDN
+                       ↓
+                  Satellite downloads:
+                       ✔ New RPMs
+                       ✔ New errata (RHSA)
+                       ✔ Metadata
+                       ↓
+                  Stored in "Library"
+
+        📊 What You See After Sync
+                After sync completes: 
+                  ✔  New errata appears in:  Content → Errata
+                      Example:
+                          RHSA-2026:1234 (OpenSSL fix)
+                 then You can inspect:
+                     * Severity (Critical/Important)
+                     * Affected packages
+                     * CVEs
+🧠 Observe:
+        Red Hat releases patch
+                ↓
+        Satellite syncs it
+                ↓
+        Patch sits in Library (waiting)
+======================================================================================
+🚨 2. Content View & Lifecycle Promotion
+          In Satellite, patches are never directly applied to production.
+
+          🔁 Goal: Move a patch safely:
+                        👉  Library → Dev → Test → UAT → Prod
+              Publish a New Version:
+                              Path: 
+                                  👉 Content → Content Views → [Your CV] → Publish New Version
+                              This creates:
+                                    Version 1.0 → old
+                                    Version 2.0 → new (with patches)
+
 
