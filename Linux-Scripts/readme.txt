@@ -16,6 +16,9 @@ https://www.linuxtechi.com/top-command-monitor-linux-server/
 ```
 https://www.linuxtechi.com/setup-nfs-server-on-centos-8-rhel-8/
 ```
+```
+https://www.linuxtechi.com/configure-dhcp-server-on-rhel-rockylinux/
+```
 
 
 GIT
