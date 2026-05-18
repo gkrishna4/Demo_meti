@@ -1,3 +1,9 @@
+version 7.9 ------ end-of-life(july-2024)
+present version 8.10 --------- end-of-life(2028)
+
+
+Example:
+=========
 How I would upgrade RHEL version from one to another
 -----------------------------------------------------
 I would use the Leapp utility, which is Red Hat’s supported in-place upgrade framework for major version upgrades
@@ -21,5 +27,70 @@ I also verify whether applications support RHEL 10 because some drivers or packa
 2. Take backup and rollback plan
 =================================
 Before any major upgrade, I ensure rollback capability.
-For VMs:  Take VMware/Hyper-V snapshot
-For physical servers: Take filesystem backup using rsync/tar or enterprise backup tools
+        For VMs:  Take VMware/Hyper-V snapshot
+        For physical servers: Take filesystem backup using rsync/tar or enterprise backup tools
+Example:    tar -cvpzf backup.tar.gz /etc /var/www /home
+I also validate that recovery actually works.
+
+3. Update existing RHEL 9 system
+=================================
+I first patch the current OS fully because Red Hat recommends upgrading from the latest supported minor release.
+
+sudo dnf update -y
+sudo reboot
+
+Then cleanup unused packages and old kernels:
+
+sudo dnf clean all
+sudo dnf autoremove
+
+4. Install Leapp utility
+==========================
+Then I install the Leapp upgrade tool:  
+                                    sudo dnf install -y leapp-upgrade
+
+5. Run pre-upgrade assessment
+==============================
+This is the most important phase.
+                                sudo leapp preupgrade --target 10.0
+Leapp generates reports under:
+                                /var/log/leapp/leapp-report.txt
+
+I analyze:
+        Unsupported packages
+        Deprecated drivers
+        Removed kernel modules
+        SELinux issues
+        Repository conflicts
+
+Then I remediate all inhibitors before proceeding.
+
+6. Perform the upgrade
+=======================
+Once the precheck passes:       sudo leapp upgrade --target 10.0
+
+After packages are downloaded, I reboot the server:   sudo reboot
+
+The system boots into a special upgrade initramfs environment and completes the migration automatically.
+
+
+7. Post-upgrade validation
+===========================
+After reboot, I validate:   
+                        cat /etc/redhat-release
+                        uname -r
+                        systemctl --failed
+
+I also verify:
+          Application services
+          Network connectivity
+          SELinux status
+          Mount points
+          Subscription status
+
+Example:
+      sestatus
+      df -h
+      ip a
+
+
