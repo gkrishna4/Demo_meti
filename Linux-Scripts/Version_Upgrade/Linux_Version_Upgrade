@@ -1,1 +1,25 @@
+How I would upgrade RHEL version from one to another
+-----------------------------------------------------
+I would use the Leapp utility, which is Red Hat’s supported in-place upgrade framework for major version upgrades
+from RHEL 9 to RHEL 10
 
+1. First, I verify prerequisites
+=================================
+Before starting the upgrade, I check:
+                                Current OS version
+                                Active Red Hat subscription
+                                Repository availability
+                                Hardware and application compatibility
+                                Third-party packages and kernel modules
+                      Example commands:
+                                        cat /etc/redhat-release
+                                        subscription-manager status
+                                        dnf repolist
+                                        uname -r
+I also verify whether applications support RHEL 10 because some drivers or packages may not be compatible after upgrade.
+
+2. Take backup and rollback plan
+=================================
+Before any major upgrade, I ensure rollback capability.
+For VMs:  Take VMware/Hyper-V snapshot
+For physical servers: Take filesystem backup using rsync/tar or enterprise backup tools
