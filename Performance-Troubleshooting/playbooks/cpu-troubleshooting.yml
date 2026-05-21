@@ -1,0 +1,237 @@
+---
+# CPU Performance Troubleshooting Playbook
+# Usage: ansible-playbook playbooks/cpu-troubleshooting.yml -i inventory/hosts.yml
+
+- name: CPU Performance Troubleshooting
+  hosts: all
+  become: yes
+  gather_facts: yes
+  
+  vars:
+    cpu_alert_threshold: 80
+    monitoring_interval: 1
+    monitoring_duration: 10
+  
+  tasks:
+    - name: Display CPU troubleshooting header
+      debug:
+        msg: |
+          ═══════════════════════════════════════════════════════
+          CPU PERFORMANCE TROUBLESHOOTING
+          ═══════════════════════════════════════════════════════
+          Host: {{ inventory_hostname }}
+          CPU Cores: {{ ansible_processor_vcpus }}
+          ═══════════════════════════════════════════════════════
+    
+    # =====================================
+    # 1. GET CURRENT CPU STATUS
+    # =====================================
+    
+    - name: Get current CPU usage
+      shell: "top -bn1 | grep 'Cpu(s)' | sed 's/.*, *\([0-9.]*\)%* id.*/\1/' | awk '{print 100 - $1}'"
+      register: current_cpu
+      changed_when: false
+    
+    - name: Get CPU breakdown
+      shell: |
+        top -bn1 | grep 'Cpu(s)' | awk -F'[,%]' '{print "User: " $1 "%\nSystem: " $3 "%\nI/O Wait: " $8 "%\nIdle: " $10 "%"}'
+      register: cpu_breakdown
+      changed_when: false
+    
+    - name: Display CPU Status
+      debug:
+        msg: |
+          CURRENT CPU STATUS:
+          Total Usage: {{ current_cpu.stdout }}%
+          Breakdown:
+          {{ cpu_breakdown.stdout }}
+    
+    # =====================================
+    # 2. IDENTIFY TOP CPU PROCESSES
+    # =====================================
+    
+    - name: Get top 10 CPU consuming processes
+      shell: "ps aux --sort=-%cpu | head -11"
+      register: top_cpu_processes
+      changed_when: false
+    
+    - name: Display Top CPU Processes
+      debug:
+        msg: |
+          TOP 10 CPU CONSUMING PROCESSES:
+          {{ top_cpu_processes.stdout }}
+    
+    # =====================================
+    # 3. DETAILED ANALYSIS OF TOP PROCESS
+    # =====================================
+    
+    - name: Extract top process PID
+      shell: "ps aux --sort=-%cpu | awk 'NR==2 {print $2}'"
+      register: top_process_pid
+      changed_when: false
+    
+    - name: Get detailed process info
+      shell: "ps -p {{ top_process_pid.stdout }} -o pid,cmd,etime,%cpu,%mem,rss,vsz 2>/dev/null"
+      register: process_details
+      changed_when: false
+      when: top_process_pid.stdout != ''
+    
+    - name: Check process system calls (strace)
+      shell: "timeout 3 strace -p {{ top_process_pid.stdout }} -c 2>&1 || true"
+      register: strace_output
+      changed_when: false
+      when: top_process_pid.stdout != ''
+      ignore_errors: yes
+    
+    - name: Display Process Analysis
+      debug:
+        msg: |
+          DETAILED PROCESS ANALYSIS (Top Process: {{ top_process_pid.stdout }}):
+          {{ process_details.stdout }}
+          
+          System Call Analysis:
+          {{ strace_output.stdout_lines | first(10) | join('\n') }}
+      when: top_process_pid.stdout != ''
+    
+    # =====================================
+    # 4. LOAD AVERAGE ANALYSIS
+    # =====================================
+    
+    - name: Get load average and CPU info
+      shell: "uptime && echo 'CPU Cores:' && nproc"
+      register: load_info
+      changed_when: false
+    
+    - name: Calculate load average ratio
+      shell: |
+        LOAD=$(cat /proc/loadavg | awk '{print $1}')
+        CORES=$(nproc)
+        RATIO=$(echo "scale=2; $LOAD / $CORES" | bc)
+        echo "Load: $LOAD"
+        echo "Cores: $CORES"
+        echo "Load/Core Ratio: $RATIO"
+        if (( $(echo "$RATIO > 1.5" | bc -l) )); then
+          echo "Status: HIGH - System is overloaded"
+        else
+          echo "Status: OK - System has capacity"
+        fi
+      register: load_ratio
+      changed_when: false
+    
+    - name: Display Load Analysis
+      debug:
+        msg: |
+          LOAD AVERAGE ANALYSIS:
+          {{ load_info.stdout }}
+          
+          Load Ratio Analysis:
+          {{ load_ratio.stdout }}
+    
+    # =====================================
+    # 5. CONTEXT SWITCH ANALYSIS
+    # =====================================
+    
+    - name: Monitor context switches
+      shell: "vmstat {{ monitoring_interval }} {{ monitoring_duration }} 2>/dev/null | tail -5"
+      register: vmstat_output
+      changed_when: false
+    
+    - name: Display Context Switches
+      debug:
+        msg: |
+          CONTEXT SWITCHES (vmstat output):
+          {{ vmstat_output.stdout }}
+          
+          Key Metrics:
+          - cs: Context switches (high = CPU thrashing)
+          - in: Interrupts
+          - us: User CPU time
+          - sy: System CPU time
+          - id: Idle time
+    
+    # =====================================
+    # 6. THREAD ANALYSIS
+    # =====================================
+    
+    - name: Get thread statistics
+      shell: "ps -eLf | wc -l && echo 'Total threads'"
+      register: thread_count
+      changed_when: false
+    
+    - name: Get processes with many threads
+      shell: "ps -eLf | awk '{print $2, $NF}' | sort | uniq -c | sort -rn | head -10"
+      register: threads_per_process
+      changed_when: false
+    
+    - name: Display Thread Analysis
+      debug:
+        msg: |
+          THREAD ANALYSIS:
+          Total threads: {{ thread_count.stdout_lines[0] }}
+          
+          Processes with most threads:
+          {{ threads_per_process.stdout }}
+    
+    # =====================================
+    # 7. CPU FREQUENCY ANALYSIS
+    # =====================================
+    
+    - name: Check CPU frequency
+      shell: "cat /proc/cpuinfo | grep 'cpu MHz' | head -1"
+      register: cpu_freq
+      changed_when: false
+    
+    - name: Display CPU Frequency
+      debug:
+        msg: |
+          CPU FREQUENCY:
+          {{ cpu_freq.stdout }}
+    
+    # =====================================
+    # 8. RECOMMENDATIONS
+    # =====================================
+    
+    - name: Generate CPU troubleshooting recommendations
+      debug:
+        msg: |
+          ═══════════════════════════════════════════════════════
+          RECOMMENDATIONS:
+          ═══════════════════════════════════════════════════════
+          
+          {% if current_cpu.stdout | float > cpu_alert_threshold %}
+          🔴 HIGH CPU USAGE DETECTED:
+          1. Identify the problematic process: ps aux --sort=-%cpu
+          2. Check process details: ps -p <PID> -o cmd,etime,%cpu
+          3. Analyze system calls: strace -p <PID> -e trace=file
+          4. Review application logs
+          5. Consider:
+             - Scaling horizontally (add more servers)
+             - Optimizing code (remove loops, use caching)
+             - Upgrading to faster CPU
+             - Load balancing across multiple processes
+          {% else %}
+          ✓ CPU usage normal
+          {% endif %}
+          
+          DIAGNOSTIC COMMANDS:
+          # Real-time CPU monitoring
+          watch -n 1 'top -bn1 | head -12'
+          
+          # CPU per process
+          ps aux --sort=-%cpu
+          
+          # Process details
+          ps -p <PID> -o pid,cmd,etime,%cpu,%mem
+          
+          # Context switches
+          vmstat 1 10
+          
+          # CPU throttling
+          cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+          
+          COMMON CAUSES:
+          1. Runaway process (infinite loop)
+          2. Memory leak causing excessive GC
+          3. Database query without indexes
+          4. High number of threads/context switches
+          5. Inefficient algorithm

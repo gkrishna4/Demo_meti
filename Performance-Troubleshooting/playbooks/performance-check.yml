@@ -1,0 +1,342 @@
+---
+# Comprehensive Performance Health Check Playbook
+# Usage: ansible-playbook playbooks/performance-check.yml -i inventory/hosts.yml
+
+- name: Advanced Performance Troubleshooting - Complete Health Check
+  hosts: all
+  become: yes
+  gather_facts: yes
+  
+  vars:
+    monitoring_interval: 5
+    monitoring_duration: 30
+    cpu_alert_threshold: 80
+    memory_alert_threshold: 85
+    disk_alert_threshold: 85
+    io_wait_threshold: 20
+    load_threshold: "{{ ansible_processor_vcpus * 1.5 }}"
+    report_dir: "/tmp/performance-reports"
+    timestamp: "{{ ansible_date_time.iso8601_basic_short }}"
+  
+  pre_tasks:
+    - name: Create report directory
+      file:
+        path: "{{ report_dir }}"
+        state: directory
+        mode: '0755'
+    
+    - name: Display performance check header
+      debug:
+        msg: |
+          ═══════════════════════════════════════════════════════
+          PERFORMANCE HEALTH CHECK
+          ═══════════════════════════════════════════════════════
+          Host: {{ inventory_hostname }}
+          Time: {{ ansible_date_time.iso8601 }}
+          OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          CPU Cores: {{ ansible_processor_vcpus }}
+          Total Memory: {{ ansible_memtotal_mb }}MB
+          ═══════════════════════════════════════════════════════
+  
+  tasks:
+    # =====================================
+    # 1. SYSTEM LEVEL CHECKS
+    # =====================================
+    
+    - name: Get system uptime
+      command: uptime
+      register: uptime_output
+      changed_when: false
+    
+    - name: Get load average
+      shell: cat /proc/loadavg
+      register: load_avg
+      changed_when: false
+    
+    - name: Parse load average
+      set_fact:
+        load_1min: "{{ load_avg.stdout.split()[0] | float }}"
+        load_5min: "{{ load_avg.stdout.split()[1] | float }}"
+        load_15min: "{{ load_avg.stdout.split()[2] | float }}"
+        cpu_cores: "{{ ansible_processor_vcpus }}"
+    
+    - name: Display load average
+      debug:
+        msg: |
+          LOAD AVERAGE:
+          1-minute:  {{ load_1min }} (threshold: {{ load_threshold }})
+          5-minute:  {{ load_5min }}
+          15-minute: {{ load_15min }}
+          Status: {% if load_1min > load_threshold | float %}⚠️ HIGH{% else %}✓ OK{% endif %}
+    
+    # =====================================
+    # 2. CPU ANALYSIS
+    # =====================================
+    
+    - name: Get CPU usage with top
+      shell: "top -bn1 | grep 'Cpu(s)' | awk '{print $2}' | cut -d'%' -f1"
+      register: cpu_usage
+      changed_when: false
+    
+    - name: Get top 5 CPU consuming processes
+      shell: "ps aux --sort=-%cpu | head -6 | tail -5 | awk '{print $2, $3, $11}'"
+      register: top_cpu_procs
+      changed_when: false
+    
+    - name: Display CPU Analysis
+      debug:
+        msg: |
+          CPU ANALYSIS:
+          Current Usage: {{ cpu_usage.stdout }}%
+          Alert Threshold: {{ cpu_alert_threshold }}%
+          Status: {% if cpu_usage.stdout | float > cpu_alert_threshold %}⚠️ HIGH{% else %}✓ OK{% endif %}
+          
+          Top CPU Processes:
+          {{ top_cpu_procs.stdout }}
+    
+    # =====================================
+    # 3. MEMORY ANALYSIS
+    # =====================================
+    
+    - name: Get memory statistics
+      shell: "free -h | tail -2"
+      register: memory_info
+      changed_when: false
+    
+    - name: Get memory percentage
+      shell: "free | grep Mem | awk '{printf(\"%.2f\", ($3/$2)*100)}'"
+      register: memory_percent
+      changed_when: false
+    
+    - name: Get top 5 memory consuming processes
+      shell: "ps aux --sort=-%mem | head -6 | tail -5 | awk '{print $2, $4, $11}'"
+      register: top_mem_procs
+      changed_when: false
+    
+    - name: Check swap usage
+      shell: "free -h | grep Swap"
+      register: swap_info
+      changed_when: false
+    
+    - name: Display Memory Analysis
+      debug:
+        msg: |
+          MEMORY ANALYSIS:
+          Usage: {{ memory_percent.stdout }}%
+          Alert Threshold: {{ memory_alert_threshold }}%
+          Status: {% if memory_percent.stdout | float > memory_alert_threshold %}⚠️ HIGH{% else %}✓ OK{% endif %}
+          
+          Memory Details:
+          {{ memory_info.stdout }}
+          
+          Swap Usage:
+          {{ swap_info.stdout }}
+          
+          Top Memory Processes:
+          {{ top_mem_procs.stdout }}
+    
+    # =====================================
+    # 4. DISK SPACE ANALYSIS
+    # =====================================
+    
+    - name: Get disk space usage
+      shell: "df -h | grep -v '^Filesystem\|tmpfs\|cdrom' | awk '{print $1, $5}' | column -t"
+      register: disk_usage
+      changed_when: false
+    
+    - name: Check for high disk usage
+      shell: "df -h | awk 'NR>1 && !/tmpfs/ {gsub(\"%\",\"\"); if($5>85) print $1 \":\" $5 \"% - CRITICAL\"}'" 
+      register: disk_critical
+      changed_when: false
+    
+    - name: Get disk usage by directory
+      shell: "du -sh /* 2>/dev/null | sort -rh | head -10"
+      register: disk_by_dir
+      changed_when: false
+    
+    - name: Display Disk Analysis
+      debug:
+        msg: |
+          DISK SPACE ANALYSIS:
+          {{ disk_usage.stdout }}
+          
+          Critical Partitions (>85%):
+          {% if disk_critical.stdout %}{{ disk_critical.stdout }}{% else %}None - ✓ OK{% endif %}
+          
+          Top 10 Directories by Size:
+          {{ disk_by_dir.stdout }}
+    
+    # =====================================
+    # 5. DISK I/O ANALYSIS
+    # =====================================
+    
+    - name: Check if iostat is available
+      command: which iostat
+      register: iostat_check
+      changed_when: false
+      ignore_errors: yes
+    
+    - name: Get iostat metrics
+      shell: "iostat -x {{ monitoring_interval }} 3 2>/dev/null | tail -15"
+      register: iostat_output
+      changed_when: false
+      when: iostat_check.rc == 0
+    
+    - name: Display I/O Analysis
+      debug:
+        msg: |
+          DISK I/O ANALYSIS:
+          {% if iostat_check.rc == 0 %}
+          {{ iostat_output.stdout }}
+          
+          Key Metrics:
+          - %util: Device utilization (>80% = bottleneck)
+          - await: Average I/O completion time (>50ms = slow)
+          - r/s: Read operations per second
+          - w/s: Write operations per second
+          {% else %}
+          iostat not available - install sysstat package
+          {% endif %}
+    
+    # =====================================
+    # 6. NETWORK ANALYSIS
+    # =====================================
+    
+    - name: Get network interface statistics
+      shell: "ip -s link | grep -A1 'link/ether\|RX bytes\|TX bytes' | head -20"
+      register: net_stats
+      changed_when: false
+    
+    - name: Get network connection summary
+      shell: |
+        echo "TCP Established: $(netstat -an 2>/dev/null | grep ESTABLISHED | wc -l)"
+        echo "TCP TIME_WAIT: $(netstat -an 2>/dev/null | grep TIME_WAIT | wc -l)"
+        echo "TCP CLOSE_WAIT: $(netstat -an 2>/dev/null | grep CLOSE_WAIT | wc -l)"
+      register: net_connections
+      changed_when: false
+    
+    - name: Display Network Analysis
+      debug:
+        msg: |
+          NETWORK ANALYSIS:
+          {{ net_connections.stdout }}
+          
+          Interface Statistics:
+          {{ net_stats.stdout | truncate(500) }}
+    
+    # =====================================
+    # 7. RUNNING SERVICES
+    # =====================================
+    
+    - name: Get failed systemd services
+      shell: "systemctl --failed --no-pager | grep -E 'failed|FAILED|●' || echo 'No failed services'"
+      register: failed_services
+      changed_when: false
+    
+    - name: Display Service Status
+      debug:
+        msg: |
+          SYSTEMD SERVICES:
+          Failed Services:
+          {{ failed_services.stdout }}
+    
+    # =====================================
+    # 8. SYSTEM LOGS CHECK
+    # =====================================
+    
+    - name: Get recent system errors
+      shell: "tail -20 /var/log/messages 2>/dev/null | grep -i 'error\|warning\|critical' | tail -5 || echo 'No recent errors'"
+      register: system_errors
+      changed_when: false
+    
+    - name: Display System Logs
+      debug:
+        msg: |
+          RECENT SYSTEM ERRORS:
+          {{ system_errors.stdout }}
+    
+    # =====================================
+    # 9. COLLECT DATA FOR REPORTING
+    # =====================================
+    
+    - name: Create performance data structure
+      set_fact:
+        performance_data:
+          hostname: "{{ inventory_hostname }}"
+          timestamp: "{{ ansible_date_time.iso8601 }}"
+          uptime: "{{ uptime_output.stdout }}"
+          load_1min: "{{ load_1min }}"
+          load_5min: "{{ load_5min }}"
+          load_15min: "{{ load_15min }}"
+          cpu_usage: "{{ cpu_usage.stdout }}"
+          memory_usage: "{{ memory_percent.stdout }}"
+          disk_usage: "{{ disk_usage.stdout }}"
+          cpu_cores: "{{ ansible_processor_vcpus }}"
+          total_memory: "{{ ansible_memtotal_mb }}"
+    
+    - name: Save performance data to JSON
+      copy:
+        content: "{{ performance_data | to_nice_json }}"
+        dest: "{{ report_dir }}/performance-{{ inventory_hostname }}-{{ timestamp }}.json"
+      delegate_to: localhost
+      become: no
+    
+    # =====================================
+    # 10. ALERTS AND RECOMMENDATIONS
+    # =====================================
+    
+    - name: Generate alerts
+      set_fact:
+        alerts: []
+    
+    - name: Add CPU alert
+      set_fact:
+        alerts: "{{ alerts + ['⚠️  HIGH CPU USAGE: ' + cpu_usage.stdout + '%'] }}"
+      when: cpu_usage.stdout | float > cpu_alert_threshold
+    
+    - name: Add Memory alert
+      set_fact:
+        alerts: "{{ alerts + ['⚠️  HIGH MEMORY USAGE: ' + memory_percent.stdout + '%'] }}"
+      when: memory_percent.stdout | float > memory_alert_threshold
+    
+    - name: Add Load alert
+      set_fact:
+        alerts: "{{ alerts + ['⚠️  HIGH LOAD AVERAGE: ' + load_1min | string] }}"
+      when: load_1min > load_threshold | float
+    
+    - name: Add disk critical alert
+      set_fact:
+        alerts: "{{ alerts + ['🔴 CRITICAL DISK USAGE: ' + item] }}"
+      loop: "{{ disk_critical.stdout_lines }}"
+      when: disk_critical.stdout_lines | length > 0
+    
+    - name: Display alerts
+      debug:
+        msg: |
+          ═══════════════════════════════════════════════════════
+          ALERTS & RECOMMENDATIONS
+          ═══════════════════════════════════════════════════════
+          {% if alerts | length > 0 %}
+          {{ alerts | join('\n') }}
+          {% else %}
+          ✓ No critical alerts - System healthy
+          {% endif %}
+          
+          RECOMMENDATIONS:
+          1. Monitor load average continuously
+          2. Review top CPU/Memory consuming processes
+          3. Archive old logs if disk usage > 85%
+          4. Investigate I/O wait if > 20%
+          5. Check failed services immediately
+    
+  post_tasks:
+    - name: Display summary
+      debug:
+        msg: |
+          ═══════════════════════════════════════════════════════
+          PERFORMANCE CHECK COMPLETE
+          ═══════════════════════════════════════════════════════
+          Host: {{ inventory_hostname }}
+          Results saved to: {{ report_dir }}
+          Timestamp: {{ ansible_date_time.iso8601 }}
+          ═══════════════════════════════════════════════════════

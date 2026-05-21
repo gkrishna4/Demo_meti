@@ -1,0 +1,267 @@
+---
+# Memory Performance Troubleshooting Playbook
+# Usage: ansible-playbook playbooks/memory-troubleshooting.yml -i inventory/hosts.yml
+
+- name: Memory Performance Troubleshooting
+  hosts: all
+  become: yes
+  gather_facts: yes
+  
+  vars:
+    memory_alert_threshold: 85
+    swap_alert_threshold: 50
+  
+  tasks:
+    - name: Display memory troubleshooting header
+      debug:
+        msg: |
+          ═══════════════════════════════════════════════════════
+          MEMORY PERFORMANCE TROUBLESHOOTING
+          ═══════════════════════════════════════════════════════
+          Host: {{ inventory_hostname }}
+          Total Memory: {{ ansible_memtotal_mb }}MB
+          ═══════════════════════════════════════════════════════
+    
+    # =====================================
+    # 1. MEMORY OVERVIEW
+    # =====================================
+    
+    - name: Get memory usage overview
+      shell: "free -h"
+      register: memory_overview
+      changed_when: false
+    
+    - name: Get memory percentage
+      shell: "free | grep Mem | awk '{printf(\"%.2f\", ($3/$2)*100)}'"
+      register: memory_percent
+      changed_when: false
+    
+    - name: Display Memory Overview
+      debug:
+        msg: |
+          MEMORY USAGE:
+          {{ memory_overview.stdout }}
+          
+          Usage: {{ memory_percent.stdout }}%
+          Status: {% if memory_percent.stdout | float > memory_alert_threshold %}⚠️ HIGH{% else %}✓ OK{% endif %}
+    
+    # =====================================
+    # 2. SWAP ANALYSIS
+    # =====================================
+    
+    - name: Get swap usage
+      shell: "free | grep Swap | awk '{if($2>0) printf(\"%.2f\", ($3/$2)*100); else print 0}'"
+      register: swap_percent
+      changed_when: false
+    
+    - name: Get swap details
+      shell: "swapon -s 2>/dev/null || echo 'No swap configured'"
+      register: swap_details
+      changed_when: false
+    
+    - name: Display Swap Analysis
+      debug:
+        msg: |
+          SWAP ANALYSIS:
+          Usage: {{ swap_percent.stdout }}%
+          Status: {% if swap_percent.stdout | float > swap_alert_threshold %}⚠️ HIGH - System may have run out of RAM{% else %}✓ OK{% endif %}
+          
+          Swap Details:
+          {{ swap_details.stdout }}
+    
+    # =====================================
+    # 3. TOP MEMORY CONSUMING PROCESSES
+    # =====================================
+    
+    - name: Get top 10 memory consuming processes
+      shell: "ps aux --sort=-%mem | head -11"
+      register: top_memory_processes
+      changed_when: false
+    
+    - name: Display Top Memory Processes
+      debug:
+        msg: |
+          TOP 10 MEMORY CONSUMING PROCESSES:
+          {{ top_memory_processes.stdout }}
+    
+    # =====================================
+    # 4. DETAILED PROCESS ANALYSIS
+    # =====================================
+    
+    - name: Extract top memory process PID
+      shell: "ps aux --sort=-%mem | awk 'NR==2 {print $2}'"
+      register: top_mem_pid
+      changed_when: false
+    
+    - name: Get detailed memory info for top process
+      shell: "ps -p {{ top_mem_pid.stdout }} -o pid,cmd,rss,vsz,etime | tail -1 2>/dev/null"
+      register: process_memory_details
+      changed_when: false
+      when: top_mem_pid.stdout != ''
+    
+    - name: Analyze memory growth trend
+      shell: |
+        PID={{ top_mem_pid.stdout }}
+        echo "Collecting memory data over 30 seconds..."
+        for i in {1..3}; do
+          ps -p $PID -o rss= 2>/dev/null && sleep 10
+        done
+      register: memory_trend
+      changed_when: false
+      when: top_mem_pid.stdout != ''
+    
+    - name: Display Process Memory Analysis
+      debug:
+        msg: |
+          PROCESS MEMORY ANALYSIS (PID: {{ top_mem_pid.stdout }}):
+          {{ process_memory_details.stdout }}
+          
+          Memory Growth Trend (30s interval):
+          {% if memory_trend.stdout_lines %}
+          {{ memory_trend.stdout_lines | join(' KB\n') }} KB
+          Analysis: {% if (memory_trend.stdout_lines[-1] | int) > (memory_trend.stdout_lines[0] | int) %}🔴 GROWING - Possible memory leak{% else %}✓ Stable{% endif %}
+          {% endif %}
+      when: top_mem_pid.stdout != ''
+    
+    # =====================================
+    # 5. PAGE CACHE ANALYSIS
+    # =====================================
+    
+    - name: Get page cache information
+      shell: "cat /proc/meminfo | grep -E '^Cached|^Buffers|^MemAvailable|^MemFree'"
+      register: page_cache
+      changed_when: false
+    
+    - name: Display Page Cache Analysis
+      debug:
+        msg: |
+          PAGE CACHE ANALYSIS:
+          {{ page_cache.stdout }}
+    
+    # =====================================
+    # 6. JAVA HEAP ANALYSIS (if Java present)
+    # =====================================
+    
+    - name: Find Java processes
+      shell: "pgrep -f java || echo 'No Java processes'"
+      register: java_pids
+      changed_when: false
+    
+    - name: Analyze Java heap
+      shell: "jmap -heap $(pgrep -f java | head -1) 2>/dev/null || echo 'jmap not available'"
+      register: java_heap
+      changed_when: false
+      ignore_errors: yes
+      when: java_pids.stdout != 'No Java processes'
+    
+    - name: Display Java Heap Analysis
+      debug:
+        msg: |
+          JAVA HEAP ANALYSIS:
+          {% if java_heap.stdout != '' and 'jmap not available' not in java_heap.stdout %}
+          {{ java_heap.stdout | truncate(1000) }}
+          {% else %}
+          No Java processes or jmap not available
+          {% endif %}
+      when: java_pids.stdout != 'No Java processes'
+    
+    # =====================================
+    # 7. MEMORY FRAGMENTATION
+    # =====================================
+    
+    - name: Check system memory fragmentation
+      shell: "cat /proc/buddyinfo 2>/dev/null || echo 'Buddy info not available'"
+      register: buddy_info
+      changed_when: false
+    
+    # =====================================
+    # 8. OOM KILLER CHECK
+    # =====================================
+    
+    - name: Check for OOM killer events
+      shell: "dmesg | grep -i 'oom\|out of memory\|killed process' | tail -5 || echo 'No OOM events found'"
+      register: oom_events
+      changed_when: false
+    
+    - name: Display OOM Analysis
+      debug:
+        msg: |
+          OOM (Out of Memory) KILLER ANALYSIS:
+          {% if 'No OOM events found' not in oom_events.stdout %}
+          ⚠️ OOM EVENTS DETECTED:
+          {{ oom_events.stdout }}
+          {% else %}
+          ✓ No recent OOM events
+          {% endif %}
+    
+    # =====================================
+    # 9. MEMORY PRESSURE
+    # =====================================
+    
+    - name: Check memory pressure
+      shell: "cat /proc/pressure/memory 2>/dev/null || echo 'PSI not available'"
+      register: memory_pressure
+      changed_when: false
+    
+    # =====================================
+    # 10. RECOMMENDATIONS
+    # =====================================
+    
+    - name: Generate memory troubleshooting recommendations
+      debug:
+        msg: |
+          ═══════════════════════════════════════════════════════
+          RECOMMENDATIONS:
+          ═══════════════════════════════════════════════════════
+          
+          {% if memory_percent.stdout | float > memory_alert_threshold %}
+          🔴 HIGH MEMORY USAGE DETECTED:
+          1. Identify memory consumer: ps aux --sort=-%mem
+          2. Check if growth is continuous (memory leak)
+          3. Check page cache: cat /proc/meminfo
+          4. Monitor swap usage: swapon -s
+          5. Actions:
+             - Reduce application heap size
+             - Increase available memory
+             - Optimize database queries
+             - Implement caching strategy
+             - Archive old data
+          {% else %}
+          ✓ Memory usage normal
+          {% endif %}
+          
+          {% if swap_percent.stdout | float > swap_alert_threshold %}
+          ⚠️ HIGH SWAP USAGE:
+          System has run out of physical memory
+          1. Check which process is using memory
+          2. Restart high-memory process
+          3. Add more physical RAM
+          4. Optimize application
+          {% endif %}
+          
+          DIAGNOSTIC COMMANDS:
+          # Real-time memory monitoring
+          watch -n 1 'free -h'
+          
+          # Memory per process
+          ps aux --sort=-%mem
+          
+          # Memory details
+          cat /proc/meminfo
+          
+          # Java heap analysis
+          jmap -heap <PID>
+          jstat -gc <PID> 1000
+          
+          # Check for memory leaks
+          ps -p <PID> -o rss,vsz (run periodically)
+          
+          # OOM events
+          dmesg | grep -i oom
+          
+          COMMON CAUSES:
+          1. Application memory leak
+          2. Unbounded cache/buffer
+          3. Large data structure not released
+          4. Swap thrashing (slow I/O)
+          5. Page cache not released

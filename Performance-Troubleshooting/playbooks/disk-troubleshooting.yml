@@ -1,0 +1,276 @@
+---
+# Disk Performance Troubleshooting Playbook
+# Usage: ansible-playbook playbooks/disk-troubleshooting.yml -i inventory/hosts.yml
+
+- name: Disk Performance Troubleshooting
+  hosts: all
+  become: yes
+  gather_facts: yes
+  
+  vars:
+    disk_alert_threshold: 85
+    io_wait_threshold: 20
+  
+  tasks:
+    - name: Display disk troubleshooting header
+      debug:
+        msg: |
+          ═══════════════════════════════════════════════════════
+          DISK PERFORMANCE TROUBLESHOOTING
+          ═══════════════════════════════════════════════════════
+          Host: {{ inventory_hostname }}
+          ═══════════════════════════════════════════════════════
+    
+    # =====================================
+    # 1. DISK SPACE ANALYSIS
+    # =====================================
+    
+    - name: Get disk space usage
+      shell: "df -h | grep -v '^Filesystem\|tmpfs\|cdrom'"
+      register: disk_usage
+      changed_when: false
+    
+    - name: Check for full partitions
+      shell: "df -h | awk 'NR>1 && !/tmpfs/ {gsub(\"%\",\"\"); if($5>=90) print $1 \":\" $5 \"% - CRITICAL\" ; else if($5>=85) print $1 \":\" $5 \"% - WARNING\"}'" 
+      register: full_partitions
+      changed_when: false
+    
+    - name: Display Disk Space Status
+      debug:
+        msg: |
+          DISK SPACE USAGE:
+          {{ disk_usage.stdout }}
+          
+          Critical/Warning Partitions:
+          {% if full_partitions.stdout %}{{ full_partitions.stdout }}{% else %}None - ✓ OK{% endif %}
+    
+    # =====================================
+    # 2. DISK USAGE BY DIRECTORY
+    # =====================================
+    
+    - name: Get top 15 directories by size
+      shell: "du -sh /* 2>/dev/null | sort -rh | head -15"
+      register: dir_usage
+      changed_when: false
+    
+    - name: Check root partition details
+      shell: "du -sh /var/* /home/* /opt/* /tmp/* 2>/dev/null | sort -rh | head -10"
+      register: system_dir_usage
+      changed_when: false
+    
+    - name: Display Directory Usage
+      debug:
+        msg: |
+          TOP 15 DIRECTORIES BY SIZE:
+          {{ dir_usage.stdout }}
+          
+          System Directory Details:
+          {{ system_dir_usage.stdout }}
+    
+    # =====================================
+    # 3. LOG FILE ANALYSIS
+    # =====================================
+    
+    - name: Check log files size
+      shell: "du -sh /var/log/* 2>/dev/null | sort -rh | head -10"
+      register: log_size
+      changed_when: false
+    
+    - name: Find largest single log files
+      shell: "find /var/log -type f -printf '%s %p\n' 2>/dev/null | sort -rn | head -10 | awk '{printf \"%.0f MB  %s\\n\", $1/1024/1024, $2}'"
+      register: largest_logs
+      changed_when: false
+    
+    - name: Display Log Analysis
+      debug:
+        msg: |
+          LOG FILE ANALYSIS:
+          {{ log_size.stdout }}
+          
+          Largest Log Files:
+          {{ largest_logs.stdout }}
+    
+    # =====================================
+    # 4. DISK I/O PERFORMANCE
+    # =====================================
+    
+    - name: Check if iostat available
+      command: which iostat
+      register: iostat_check
+      changed_when: false
+      ignore_errors: yes
+    
+    - name: Get iostat metrics
+      shell: "iostat -x 1 5 2>/dev/null"
+      register: iostat_output
+      changed_when: false
+      when: iostat_check.rc == 0
+    
+    - name: Display I/O Metrics
+      debug:
+        msg: |
+          DISK I/O PERFORMANCE:
+          {% if iostat_check.rc == 0 %}
+          {{ iostat_output.stdout }}
+          
+          KEY METRICS:
+          - r/s: Read operations/sec
+          - w/s: Write operations/sec
+          - rMB/s: Read throughput
+          - wMB/s: Write throughput
+          - await: Average I/O completion time (ms)
+          - %util: Device utilization %
+          
+          INTERPRETATION:
+          - await > 50ms: Disk is slow
+          - %util > 80%: Disk is bottleneck
+          - %util > 90%: CRITICAL - Disk saturation
+          {% else %}
+          iostat not available - Install sysstat package
+          {% endif %}
+    
+    # =====================================
+    # 5. DISK HEALTH CHECK
+    # =====================================
+    
+    - name: Check smartctl availability
+      command: which smartctl
+      register: smartctl_check
+      changed_when: false
+      ignore_errors: yes
+    
+    - name: Get disk health status
+      shell: "smartctl -H /dev/sda 2>/dev/null | grep -i 'test result\|health status' || echo 'SMART info not available'"
+      register: disk_health
+      changed_when: false
+      ignore_errors: yes
+      when: smartctl_check.rc == 0
+    
+    - name: Display Disk Health
+      debug:
+        msg: |
+          DISK HEALTH STATUS:
+          {{ disk_health.stdout }}
+    
+    # =====================================
+    # 6. INODE ANALYSIS
+    # =====================================
+    
+    - name: Get inode usage
+      shell: "df -i | grep -v '^Filesystem'"
+      register: inode_usage
+      changed_when: false
+    
+    - name: Display Inode Usage
+      debug:
+        msg: |
+          INODE USAGE:
+          {{ inode_usage.stdout }}
+          
+          Alert: If inode usage > 85%, many small files or missing cleanup
+    
+    # =====================================
+    # 7. OPEN FILES ANALYSIS
+    # =====================================
+    
+    - name: Get open file count
+      shell: "lsof 2>/dev/null | wc -l || echo 'lsof not available'"
+      register: open_files_count
+      changed_when: false
+    
+    - name: Get process with most open files
+      shell: "lsof 2>/dev/null -p "$(ps aux --sort=-%mem | awk 'NR==2 {print $2}')" 2>/dev/null | wc -l || echo 'N/A'"
+      register: max_open_files
+      changed_when: false
+    
+    - name: Display Open Files
+      debug:
+        msg: |
+          OPEN FILES ANALYSIS:
+          Total open files: {{ open_files_count.stdout }}
+          Max per process: {{ max_open_files.stdout }}
+    
+    # =====================================
+    # 8. FILE SYSTEM CHECK
+    # =====================================
+    
+    - name: Check file system type
+      shell: "df -T | grep -v '^Filesystem'"
+      register: fs_type
+      changed_when: false
+    
+    - name: Display File System Info
+      debug:
+        msg: |
+          FILE SYSTEM TYPES:
+          {{ fs_type.stdout }}
+    
+    # =====================================
+    # 9. MOUNT POINT ANALYSIS
+    # =====================================
+    
+    - name: Check mount options
+      shell: "mount | grep -E '^/dev' | head -10"
+      register: mount_options
+      changed_when: false
+    
+    - name: Display Mount Status
+      debug:
+        msg: |
+          MOUNT POINTS:
+          {{ mount_options.stdout }}
+    
+    # =====================================
+    # 10. RECOMMENDATIONS
+    # =====================================
+    
+    - name: Generate disk troubleshooting recommendations
+      debug:
+        msg: |
+          ═══════════════════════════════════════════════════════
+          RECOMMENDATIONS:
+          ═══════════════════════════════════════════════════════
+          
+          {% if full_partitions.stdout %}
+          🔴 CRITICAL - DISK SPACE LOW:
+          1. Identify large directories: du -sh /*
+          2. Check logs: du -sh /var/log/*
+          3. Cleanup options:
+             - Rotate old logs: logrotate -f /etc/logrotate.conf
+             - Compress logs: gzip /var/log/*.log
+             - Delete old files: find /dir -type f -mtime +30 -delete
+             - Archive to external storage
+          4. Increase disk capacity if needed
+          {% else %}
+          ✓ Disk space available
+          {% endif %}
+          
+          DIAGNOSTIC COMMANDS:
+          # Disk usage
+          df -h
+          du -sh /*
+          
+          # Find large files
+          find / -type f -size +100M -exec ls -lh {} \;
+          
+          # I/O performance
+          iostat -x 1 10
+          
+          # Disk health
+          smartctl -H /dev/sda
+          
+          # Open files
+          lsof | head -20
+          
+          # File system check
+          df -T
+          fsck (requires unmounting)
+          
+          COMMON ISSUES:
+          1. Unrotated log files consuming space
+          2. Temporary files accumulating in /tmp
+          3. Old backup files not deleted
+          4. Database query logs
+          5. Docker container layers
+          6. Disk I/O bottleneck (slow storage)
+          7. Bad sectors causing slowdown
