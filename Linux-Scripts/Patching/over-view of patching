@@ -235,3 +235,60 @@ Note:-
            * A system is newly built (new VM / server)
            * A system was previously connected to CDN and now moved to Satellite
 =======================================================================================================================================
+
+Steps to create a new repository in Red Hat Satellite
+------------------------------------------------------
+1. Login to Satellite UI
+	Open your Satellite server:   https://<satellite-server>
+	Go to: Content → Products
+
+2. Create a Product (if not already present)
+   A repository must belong to a Product.
+	Click Create Product
+	Enter:
+		1 Name → Example: Custom-RHEL9
+		2 Label → auto-generated
+		3 Organization
+		4 Description
+	Save it.
+
+3. Create Repository
+      Go to: Content → Products → Select Product → Repositories → Create Repository
+Fill details:
+-----------------------------------------------------
+| Field           | Example                         |
+| --------------- | ------------------------------- |
+| Name            | RHEL9-BaseOS                    |
+| Type            | yum                             |
+| URL             | Red Hat CDN / internal repo URL |
+| Download Policy | Immediate / On Demand           |
+| Mirror on Sync  | Yes                             |
+-----------------------------------------------------
+
+Example Patching Flow
+-----------------------
+                  For a RHEL 8 server:
+                  
+                  Red Hat CDN
+                        ↓
+                  Satellite Repository
+                        ↓
+                  Content View
+                        ↓
+                  Lifecycle Environment (DEV)
+                        ↓
+                  Server Registration
+                        ↓
+                  yum/dnf update
+
+	
+why we need repository?
+------------------------
+In Red Hat Satellite, we create a repository because Satellite itself does not contain packages or patches by default.
+A repository is the source location where Satellite stores and manages software content (RPMs, patches, errata, updates).
+
+
+
+
+
+
