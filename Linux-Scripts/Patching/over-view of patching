@@ -287,6 +287,47 @@ why we need repository?
 In Red Hat Satellite, we create a repository because Satellite itself does not contain packages or patches by default.
 A repository is the source location where Satellite stores and manages software content (RPMs, patches, errata, updates).
 
+===========================================================================================================================
+How you perform the patching?
+
+In my organization, patching is performed through a planned maintenance window and approved change management process.
+
+Before starting patching activities, I perform pre-health checks such as CPU utilization, memory usage, disk space validation,
+service status verification, backup confirmation, and application accessibility checks.
+
+In High Availability (HA) environments, we follow a rolling patching approach to avoid production downtime.
+First, we remove one server from the load balancer, verify that traffic is drained successfully, and then proceed with
+patching activities on that particular server.
+
+For patch deployment, we use automation tools like Ansible in large-scale environments to ensure consistency and reduce manual 
+effort across multiple servers.
+
+Once patching is completed, if kernel updates are applied, we reboot the server and perform post-validation checks such as:
+							* kernel version verification,
+							* service health checks,
+							* application functionality validation,
+							* monitoring alert verification,
+							* and log analysis.
+
+After successful validation, the server is added back to the load balancer, and the same process is repeated for remaining servers.
+If any issue occurs after patching, we follow rollback procedures using VM snapshots, package rollback methods, or backup restoration.
+Finally, we update patch compliance reports, document the activity in the change ticket, and formally close the maintenance task.
+
+=============================================================================================================================
+How Many Servers Have You Patched?
+
+I have handled patching activities for both standalone and clustered production servers, including web servers, 
+application servers, and database-supporting Linux systems in scheduled maintenance windows.
+============================================================================================================================
+What Is the Biggest Challenge in Patching?
+
+One of the biggest challenges in patching is avoiding production impact and ensuring application stability after updates.
+
+Sometimes issues like kernel boot failures, package dependency conflicts, insufficient space in the /boot partition,
+or application compatibility problems can occur after patching or reboot.
+
+To minimize risks, I always perform proper pre-validation checks, maintain rollback plans, verify backups and snapshots, 
+and follow staged or rolling patching approaches in production environments.
 
 
 
