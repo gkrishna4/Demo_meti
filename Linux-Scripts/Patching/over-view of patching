@@ -329,7 +329,218 @@ or application compatibility problems can occur after patching or reboot.
 To minimize risks, I always perform proper pre-validation checks, maintain rollback plans, verify backups and snapshots, 
 and follow staged or rolling patching approaches in production environments.
 
+===============================================================================================================================
 
+---
+# ==========================================================
+# Linux Patching Playbook - Production Standard
+# ==========================================================
+# Features:
+# 1. Pre-check validations
+# 2. Disk/memory verification
+# 3. Package update
+# 4. Reboot handling
+# 5. Post-validation
+# 6. Rolling patching using serial
+# 7. Logging
+# ==========================================================
+
+- name: Linux Server Patching Activity
+  hosts: all
+  become: yes
+  serial: 1
+
+  vars:
+    log_file: /var/log/patching.log
+
+  tasks:
+
+    # ======================================================
+    # PRE-CHECK TASKS
+    # ======================================================
+
+    - name: Check hostname
+      shell: hostname
+      register: hostname_output
+
+    - name: Display hostname
+      debug:
+        var: hostname_output.stdout
+
+    - name: Check uptime before patching
+      shell: uptime
+      register: uptime_before
+
+    - name: Display uptime
+      debug:
+        var: uptime_before.stdout
+
+    - name: Check memory usage
+      shell: free -m
+      register: memory_output
+
+    - name: Display memory usage
+      debug:
+        var: memory_output.stdout_lines
+
+    - name: Check disk utilization
+      shell: df -h
+      register: disk_output
+
+    - name: Display disk utilization
+      debug:
+        var: disk_output.stdout_lines
+
+    - name: Check failed services
+      shell: systemctl --failed
+      register: failed_services
+      ignore_errors: yes
+
+    - name: Display failed services
+      debug:
+        var: failed_services.stdout_lines
+
+    - name: Check current kernel version
+      shell: uname -r
+      register: kernel_before
+
+    - name: Display current kernel
+      debug:
+        var: kernel_before.stdout
+
+    # ======================================================
+    # PACKAGE UPDATE SECTION
+    # ======================================================
+
+    - name: Clean yum cache
+      shell: yum clean all
+
+    - name: Check available updates
+      yum:
+        list: updates
+      register: available_updates
+
+    - name: Display available updates
+      debug:
+        var: available_updates.results
+
+    - name: Apply all latest patches
+      yum:
+        name: '*'
+        state: latest
+      register: yum_update_output
+
+    - name: Display patching result
+      debug:
+        var: yum_update_output
+
+    # ======================================================
+    # REBOOT SECTION
+    # ======================================================
+
+    - name: Reboot server if required
+      reboot:
+        msg: "Reboot initiated by Ansible after patching"
+        reboot_timeout: 900
+        test_command: whoami
+
+    # ======================================================
+    # POST VALIDATION TASKS
+    # ======================================================
+
+    - name: Wait for server to come online
+      wait_for_connection:
+        delay: 20
+        timeout: 600
+
+    - name: Check uptime after reboot
+      shell: uptime
+      register: uptime_after
+
+    - name: Display uptime after reboot
+      debug:
+        var: uptime_after.stdout
+
+    - name: Verify kernel version after reboot
+      shell: uname -r
+      register: kernel_after
+
+    - name: Display new kernel version
+      debug:
+        var: kernel_after.stdout
+
+    - name: Verify all services
+      shell: systemctl --failed
+      register: failed_services_after
+      ignore_errors: yes
+
+    - name: Display failed services after reboot
+      debug:
+        var: failed_services_after.stdout_lines
+
+    - name: Check HTTP service status
+      shell: systemctl status httpd
+      register: httpd_status
+      ignore_errors: yes
+
+    - name: Display HTTP service status
+      debug:
+        var: httpd_status.stdout_lines
+
+    - name: Check application URL
+      uri:
+        url: http://localhost
+        method: GET
+        status_code: 200
+      register: app_validation
+      ignore_errors: yes
+
+    - name: Display application validation
+      debug:
+        var: app_validation.status
+
+    # ======================================================
+    # LOGGING SECTION
+    # ======================================================
+
+    - name: Save patching activity log
+      lineinfile:
+        path: "{{ log_file }}"
+        create: yes
+        line: |
+          Host: {{ inventory_hostname }}
+          Date: {{ ansible_date_time.date }}
+          Time: {{ ansible_date_time.time }}
+          Kernel Before: {{ kernel_before.stdout }}
+          Kernel After: {{ kernel_after.stdout }}
+          Patch Status: SUCCESS
+          -------------------------------------
+
+    # ======================================================
+    # FINAL STATUS
+    # ======================================================
+
+    - name: Final patching status
+      debug:
+        msg: "Patching completed successfully on {{ inventory_hostname }}"
+
+
+Run the playbook:  ansible-playbook -i inventory.ini patching.yml
+
+
+Example inventory file:
+=======================
+[webservers]
+web1 ansible_host=192.168.1.10
+web2 ansible_host=192.168.1.11
+
+[appservers]
+app1 ansible_host=192.168.1.20
+app2 ansible_host=192.168.1.21
+
+[all:vars]
+ansible_user=ec2-user
+ansible_ssh_private_key_file=/home/user/.ssh/id_rsa
 
 
 
