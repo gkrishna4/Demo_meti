@@ -213,6 +213,127 @@ reboot
    - `Esc`
 
 3. Keep pressing the key repeatedly as soon as the system starts (before OS begins to load).
+## What are the possible causes of a Linux server crash, and how would you troubleshoot and recover the server in a production environment?
+if a Linux server crashes, my first approach is to identify whether the issue is related to hardware, operating system, kernel, storage, memory, 
+application failure, or resource exhaustion.
+
+Some common causes of Linux server crashes are:
+
+* high CPU or memory utilization,
+* kernel panic,
+* disk space full,
+* filesystem corruption,
+* hardware failure,
+* OOM (Out Of Memory) killer,
+* storage/network issues,
+* application crashes,
+* or failed system updates.
+  
+First, I verify whether the server is reachable through:
+
+```bash id="v8n2qx"
+ping
+ssh
+```
+
+If the server is accessible, I immediately check:
+
+```bash id="u3m7kd"
+uptime
+top
+free -m
+df -h
+```
+
+This helps identify:
+
+* high load,
+* memory exhaustion,
+* swap usage,
+* or disk space issues.
+
+Then I check system logs:
+
+```bash id="r6p1wx"
+journalctl -xe
+dmesg
+tail -f /var/log/messages
+```
+
+These logs help identify:
+
+* kernel panic,
+* hardware errors,
+* filesystem issues,
+* driver failures,
+* or service crashes.
+
+If I suspect memory-related crashes, I verify OOM events:
+
+```bash id="x5k4nv"
+dmesg | grep -i oom
+```
+
+For disk or storage-related issues:
+
+```bash id="m2q8tr"
+iostat -xz 5
+smartctl -a /dev/sda
+```
+
+I analyze:
+
+* disk latency,
+* failed sectors,
+* storage errors,
+* and I/O wait.
+
+If the server is completely down and not booting:
+
+* I check console logs through iLO/iDRAC/VM console,
+* verify boot errors,
+* rescue mode access,
+* filesystem corruption,
+* and GRUB/kernel issues.
+
+Filesystem checks may include:
+
+```bash id="t9v6pc"
+fsck
+```
+
+If kernel panic occurs, I analyze:
+
+```bash id="b4r2mz"
+/var/crash
+kdump logs
+```
+
+In virtualized environments, I also verify:
+
+* hypervisor alerts,
+* VM resource limits,
+* snapshots,
+* and infrastructure-level issues.
+
+In production environments, I coordinate with:
+
+* storage teams,
+* network teams,
+* database teams,
+* or application teams depending on the root cause.
+
+After identifying the issue, I restore the service by:
+
+* restarting failed services,
+* freeing resources,
+* fixing filesystem issues,
+* restoring backups,
+* rolling back changes,
+* or rebooting the server if required.
+
+Finally, I perform RCA (Root Cause Analysis) and implement preventive measures to avoid recurrence.
+
 
 4. The BIOS/UEFI setup screen will appear.
 
