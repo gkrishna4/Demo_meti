@@ -1,3 +1,27 @@
+## You are unable to connect to a server using its hostname, but you can connect successfully using the IP address. 
+## What could be the issue, and how would you troubleshoot it?
+
+I would first validate DNS using `nslookup` or `dig`, then check `/etc/resolv.conf` for correct nameserver entries and search domains.
+I would verify `/etc/hosts` for static mappings, test hostname resolution using `ping hostname`, check `/etc/nsswitch.conf` to ensure
+DNS lookup is enabled, and confirm DNS server reachability. Usually, the issue is DNS misconfiguration, missing hostname entries,
+or an unreachable DNS server.
+
+## So what is the service that we use to join to the domain?
+
+we generally use `SSSD` for authentication and identity management to integrate Linux with Active Directory. We use the 
+`realm join` command through realmd to join the server to the domain, and sssd handles authentication and user lookup.
+I verify the join using realm list and ensure the sssd service is running.
+
+                Common domain join command:-       realm join <domain-name> -U <username>
+                Verify domain join:-               realm list
+                Check SSSD service:-               systemctl status sssd
+                Configuration file:-               /etc/sssd/sssd.conf
+
+## What service runs after domain join?
+The primary service is sssd, which handles authentication, caching, and communication with Active Directory.
+
+
+
 ## Samba Server
 Samba is a free and open‑source software that helps different operating systems share files, folders, and printers with 
 each other.
