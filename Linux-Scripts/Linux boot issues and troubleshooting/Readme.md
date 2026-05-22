@@ -1,3 +1,18 @@
+## Linux Boot Process/Sequence 
+    BIOS: Basic Input/Output System executes MBR 
+    MBR: Master Boot Record executes GRUB 
+    GRUB: Grand Unified Bootloader executes Kernel 
+    Kernel: Kernel executes /sbin/init 
+    Init: Init executes Runlevel programs 
+    Runlevel: Runlevel programs are executed from /etc/rc.d/rc*.d/ 
+##  What are the 6 run levels of Linux? 
+        • init 0 - shut down (or halt) the system 
+        • init 1 - single-user mode; usually aliased as s or S 
+        • init 2 - multi-user mode without networking 
+        • init 3 - multi-user mode with networking 
+        • init 5 - multi-user mode with networking and GUI 
+        • init 6 - reboot the system 
+Note: init 4 - Not used/Un defined (User-definable)
 ## /boot partition is completely wiped out or corrupted in RHEL
 If the /boot partition is corrupted or wiped in Red Hat Enterprise Linux, attach the installation ISO to the VM and boot
 into `Troubleshooting → Rescue Mode`, then `select option 1 (Continue)` so the system mounts your Linux installation 
