@@ -5,6 +5,7 @@
     Kernel: Kernel executes /sbin/init 
     Init: Init executes Runlevel programs 
     Runlevel: Runlevel programs are executed from /etc/rc.d/rc*.d/ 
+Note: refer page no:24
 ##  What are the 6 run levels of Linux? 
         • init 0 - shut down (or halt) the system 
         • init 1 - single-user mode; usually aliased as s or S 
