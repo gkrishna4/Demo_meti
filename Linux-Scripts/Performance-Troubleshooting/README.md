@@ -1,3 +1,9 @@
+## cpu bound issue and memory bound issue?
+CPU-bound means performance is limited by CPU processing power. I typically see high CPU utilization and load average, and I check it using `top` or `sar -u`.
+
+Memory-bound means the bottleneck is RAM availability, where the server starts using swap or experiences memory pressure. I validate it using `free -h`, `vmstat`
+and `sar -r`. In both cases, I identify the resource bottleneck first before taking action
+
 ## What happens when the server load is very high, but CPU utilization remains low? How do you identify and troubleshoot that situation?
 
 if the server load average is high but CPU utilization is low, I understand that the issue is usually not CPU-related. In Linux, load average includes not only CPU usage but also processes waiting for resources like disk I/O, storage, network, or filesystem operations.
@@ -77,6 +83,115 @@ These commands help identify whether the issue is related to high CPU usage, mem
 I also analyze logs and monitoring dashboards using tools like Grafana and Nagios.
 
 Once the bottleneck is identified, I perform tuning or coordinate with the respective teams to resolve the issue.”
+
+## A Linux server is responding very slowly, but CPU and memory utilization appear normal. What could be the possible causes, and how would you troubleshoot the issue?
+if a Linux server becomes very slow while CPU and memory utilization are normal, I understand that the issue is likely related to resources other than CPU or RAM.
+
+In real-world production environments, slow server response with normal CPU and memory is commonly caused by:
+
+* high disk I/O wait,
+* storage latency,
+* network issues,
+* NFS mount delays,
+* filesystem problems,
+* DNS resolution delays,
+* application hangs,
+* database locks,
+* or blocked processes.
+
+My troubleshooting approach is systematic.
+
+First, I verify the overall server load and I/O wait:
+
+```bash
+top
+uptime
+vmstat 5
+```
+
+Even if CPU usage is low, a high load average or high `wa` (I/O wait) indicates storage or disk-related bottlenecks.
+
+Then I analyze disk performance:
+
+```bash
+iostat -xz 5
+iotop
+df -h
+```
+
+I check for:
+
+* high await times,
+* disk queue delays,
+* storage latency,
+* and filesystem usage.
+
+In production environments, storage issues are one of the most common reasons for slow server performance.
+
+Next, I verify whether any processes are stuck in D state:
+
+```bash
+ps -eo state,pid,cmd | grep "^D"
+```
+
+Processes in D state usually indicate they are waiting for disk or storage operations.
+
+I also check:
+
+* NFS mount availability,
+* SAN/storage connectivity,
+* backup jobs,
+* or hung application processes.
+
+For network-related delays:
+
+```bash
+sar -n DEV
+iftop
+netstat -i
+```
+
+Sometimes DNS delays can also slow applications:
+
+```bash
+nslookup
+dig
+```
+
+Then I analyze system and application logs:
+
+```bash
+journalctl -xe
+dmesg
+tail -f /var/log/messages
+```
+
+This helps identify:
+
+* filesystem errors,
+* storage disconnections,
+* network problems,
+* or application failures.
+
+In real-time environments, I also correlate findings with monitoring tools like:
+
+* Nagios for infrastructure and service monitoring
+
+* Grafana dashboards for performance visualization
+
+* Prometheus for collecting server and application metrics
+
+Once the root cause is identified, I take corrective actions such as:
+
+* resolving storage latency,
+* restarting hung services,
+* clearing stuck mounts,
+* coordinating with storage/network teams,
+* tuning applications,
+* or optimizing filesystem performance.
+
+In my experience, when CPU and memory are normal but the server is slow, the issue is usually related to disk I/O wait, storage latency, or blocked processes rather than compute resources.
+
 
 
 ## How do you troubleshoot to SELinux issues?
@@ -166,4 +281,6 @@ setenforce 1
 
 In production environments, I avoid disabling SELinux permanently. Instead, I implement proper policies, file contexts, booleans, or port labeling to 
 maintain system security while resolving the issue.
+
+
 
