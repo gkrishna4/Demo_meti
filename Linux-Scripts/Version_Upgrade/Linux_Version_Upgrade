@@ -12,6 +12,10 @@ from RHEL 9 to RHEL 10
 1. First, I verify prerequisites
 =================================
 Before starting the upgrade, I check:
+                                /var must have 10GB free(leap stores the data in /var/lib/leapp)
+                                / must have 4 - 5 GB free
+                                /tmp must be mount with exec
+                                Backups are mandatory(Recommended RedHat)
                                 Current OS version
                                 Active Red Hat subscription
                                 Repository availability
