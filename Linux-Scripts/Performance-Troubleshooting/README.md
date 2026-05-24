@@ -1,3 +1,18 @@
+## suppose customer faces one issue in performance of one of the Linux server. So how do troubleshoot that?
+
+When a customer reports performance issues on a Linux server, I start by checking the system load and resource utilization to 
+find the bottleneck. 
+I run `uptime` first to see the `load average` over the last `1, 5, and 15 minutes` — that tells me if the server is
+CPU-bound right now or if it was stressed earlier. 
+Then I check `top` or `htop` to see which processes are consuming the most `CPU and memory`. From there, I check `free -h` 
+to see available memory, `iostat` or `iotop` to identify disk I/O issues, and `netstat` or `ss` to look for network bottlenecks
+or connection issues.
+
+From the `uptime` command specifically, I look at whether the `load average` is higher than the `number of CPU cores` — that tells me 
+the server is under real stress. If load is high but CPU usage is low, it usually points to I/O wait or a process stuck in disk
+operations. I also check the timestamp to see when the issue started, then cross-reference with logs in /var/log — syslog, application 
+logs — to narrow down what happened around that time.
+
 ## cpu bound issue and memory bound issue?
 CPU-bound means performance is limited by CPU processing power. I typically see high CPU utilization and load average, and I check it using `top` or `sar -u`.
 
