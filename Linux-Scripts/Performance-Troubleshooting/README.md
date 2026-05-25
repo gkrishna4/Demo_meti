@@ -34,7 +34,12 @@ top
 uptime
 vmstat 5
 ```
+Note:
 
+  `vmstat` → Reports virtual memory, CPU, processes, I/O, and system activity.
+  
+  `5` → Refresh interval in seconds.
+  
 If CPU idle is high and load average is still increasing, I check the I/O wait value because high I/O wait generally indicates storage or disk bottlenecks.
 
 Then I analyze disk performance using:
