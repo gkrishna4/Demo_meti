@@ -1,7 +1,7 @@
 ## suppose customer faces one issue in performance of one of the Linux server. So how do troubleshoot that?
 
-When a customer reports performance issues on a Linux server, I start by checking the system load and resource utilization to 
-find the bottleneck. 
+When a customer reports performance issues on a Linux server, I start by checking the `system load` and `resource utilization` to 
+find the `bottleneck`. 
 I run `uptime` first to see the `load average` over the last `1, 5, and 15 minutes` — that tells me if the server is
 CPU-bound right now or if it was stressed earlier. 
 Then I check `top` or `htop` to see which processes are consuming the most `CPU and memory`. From there, I check `free -h` 
