@@ -20,6 +20,17 @@ I verify the join using realm list and ensure the sssd service is running.
 ## What service runs after domain join?
 The primary service is sssd, which handles authentication, caching, and communication with Active Directory.
 
+## What is Packet Droping?
+Linux server or network device does not accept or send some network packets and removes them instead of processing them. 
+This can happen when the server is busy, network traffic is too high, firewall rules block traffic, memory or buffers are 
+full, or there are network/interface problems.
+
+Check whether the issue is at OS, NIC, network, firewall, or application level. I usually start with interface statistics
+using `ip -s link` or `ethtool -S`, then verify CPU, memory, and load using `top`, `sar`, and `vmstat`. I check for 
+`RX/TX drops`, `kernel-level drops` through `netstat -s`, firewall drops through `iptables` or `firewalld logs`, and
+finally validate connectivity using `tcpdump` for packet-level analysis. If required, I coordinate with the network team
+to verify switch port errors, MTU mismatch, or bandwidth saturation.
+
 
 
 ## Samba Server
