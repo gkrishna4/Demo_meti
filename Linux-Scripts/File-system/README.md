@@ -31,3 +31,33 @@ Extend the Filesystem for XFS:
 Extend the Filesystem For EXT4:
 `resize2fs /dev/vg_data/lv_app`
 
+## you see that temp is full, then what will you do? What is the command you are executing there?
+
+I check the filesystem usage to identify what is consuming the space, using: `df -h /tmp`
+
+Then I move inside the /tmp directory and identify large files or directories using: `du -sh /tmp/*`
+
+After identifying unnecessary or old temporary files, I verify whether they are actively being used by any application or process.
+I check open files using: `lsof /tmp`
+
+If the files are no longer required, I remove them safely using: `rm -rf <file_or_directory>`
+
+If cleanup is not sufficient and the filesystem still requires additional space, then depending on the environment, I either extend 
+the filesystem using LVM or coordinate with the storage/VM team for additional storage allocation. Finally, I verify the free space
+again using df -h and ensure applications are functioning normally.
+
+
+## Suppose one file system got full, what will you do next?
+
+If a filesystem becomes full, I verify the filesystem usage using: `df -h`
+
+After identifying which mount point is full, I check what is consuming the space by using: `du -sh /*`
+or, if it is a specific filesystem:` du -sh /path/* | sort -hr` This helps identify large files or directories. Then I check
+whether unnecessary logs, temporary files, old backups, or application dump files are occupying the space. I also verify deleted 
+but still open files using: `lsof | grep deleted`
+
+If cleanup is possible, I remove unnecessary files safely after confirming they are not actively used by applications. If the filesystem
+still requires more space, I check whether it is configured with LVM. In most production environments, I extend the filesystem online by
+extending the LUN from the storage side, rescanning the disk, extending the Physical Volume, Logical Volume, and finally the filesystem
+using `xfs_growfs` or `resize2fs` depending on the filesystem type.then I validate using `df -h`, `lvs`, and ensure applications are 
+functioning normally with minimal or no downtime.
