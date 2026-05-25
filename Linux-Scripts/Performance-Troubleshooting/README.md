@@ -1,3 +1,7 @@
+## bottleneck means
+bottleneck is the component (CPU, memory, disk, network,database,application,gpu,etc.) that is causing the system to perform 
+slowly because it has reached its limit.
+
 ## suppose customer faces one issue in performance of one of the Linux server. So how do troubleshoot that?
 
 When a customer reports performance issues on a Linux server, I start by checking the `system load` and `resource utilization` to 
