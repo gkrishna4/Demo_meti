@@ -61,3 +61,21 @@ still requires more space, I check whether it is configured with LVM. In most pr
 extending the LUN from the storage side, rescanning the disk, extending the Physical Volume, Logical Volume, and finally the filesystem
 using `xfs_growfs` or `resize2fs` depending on the filesystem type.then I validate using `df -h`, `lvs`, and ensure applications are 
 functioning normally with minimal or no downtime.
+
+## What is LUN?
+
+A LUN (Logical Unit Number) is a logical storage device created on a SAN/storage array and presented to a server as a disk.
+
+In Linux, once the storage team presents the LUN to the server, the OS detects it as a block device such as: `/dev/sdb`,`/dev/sdc`.
+it appears like a physical disk to the server, the storage is actually coming from centralized enterprise storage.
+
+Simple Flow
+```
+1.Storage team creates storage on SAN.
+2.They assign/present it to the VM or server.
+3.Linux detects it as a new disk.
+4.Linux administrator:
+         * Creates partition
+         * Configures LVM/filesystem
+         * Mounts it for application use
+```
