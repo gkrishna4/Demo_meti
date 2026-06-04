@@ -1,3 +1,30 @@
+##  Linux Architecture 
+<img width="601" height="482" alt="image" src="https://github.com/user-attachments/assets/dee492e5-d95d-4f39-b4f8-1de07e0d8846" />
+
+Hardware: 
+
+    •	Hardware is CPU, Memory, RAM, HD…etc.
+    •	Hardware knows ‘0101’ language
+
+Kernel:
+
+    •	Kernel is interface between hardware and software
+    •	Kernel communicates with hardware through ‘C’ language program
+
+Shell:
+
+    •	Shell is interface between users and kernel/OS
+    •	Shell communicates with kernel through CLI, GUI, bash, csh…etc.
+
+Applications:
+
+    •	Applications are browser, send mail…etc.
+
+Users:
+
+    •	Users browsing Wikipedia, Daily News, Cricket, Music…etc.
+
+
 ## Linux Boot Process/Sequence 
     BIOS: Basic Input/Output System executes MBR 
     MBR: Master Boot Record executes GRUB 
