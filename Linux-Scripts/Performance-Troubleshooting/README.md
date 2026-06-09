@@ -23,72 +23,6 @@ CPU-bound means performance is limited by CPU processing power. I typically see 
 Memory-bound means the bottleneck is RAM availability, where the server starts using swap or experiences memory pressure. I validate it using `free -h`, `vmstat`
 and `sar -r`. In both cases, I identify the resource bottleneck first before taking action
 
-## What happens when the server load is very high, but CPU utilization remains low? How do you identify and troubleshoot that situation?
-
-if the server load average is high but CPU utilization is low, I understand that the issue is usually not CPU-related. In Linux, load average includes not only CPU usage but also processes waiting for resources like disk I/O, storage, network, or filesystem operations.
-
-My first step is to verify the server load and CPU utilization using commands like:
-
-```bash id="t7k2xp"
-top
-uptime
-vmstat 5
-```
-Note:
-
-  `vmstat` → Reports virtual memory, CPU, processes, I/O, and system activity.
-  
-  `5` → Refresh interval in seconds.
-  
-If CPU idle is high and load average is still increasing, I check the I/O wait value because high I/O wait generally indicates storage or disk bottlenecks.
-
-Then I analyze disk performance using:
-
-```bash id="v4m9qd"
-iostat -xz 5
-iotop
-```
-
-I verify:
-
-* disk latency,
-* high await times,
-* queue utilization,
-* and heavy read/write operations.
-
-I also check whether any processes are stuck in D state:
-
-```bash id="p6w1rz"
-ps -eo state,pid,cmd | grep "^D"
-```
-
-This usually indicates processes waiting for disk or storage operations.
-
-In production environments, I also verify:
-
-* NFS mount delays,
-* backup jobs,
-* database locks,
-* filesystem issues,
-* or storage latency problems.
-
-Additionally, I check logs using:
-
-```bash id="m8x3cn"
-journalctl -xe
-dmesg
-```
-
-Based on the findings, I take corrective actions such as:
-
-* stopping heavy I/O processes,
-* coordinating with storage teams,
-* optimizing application performance,
-* increasing resources,
-* or resolving storage/network issues.
-
-In my experience, high load with low CPU usage is commonly related to disk I/O wait or blocked processes rather than actual CPU bottlenecks.
-
 ## How do you identify bottlenecks?
 “I identify bottlenecks by checking CPU, memory, disk I/O, network, and application performance using Linux monitoring tools.
 
@@ -108,115 +42,29 @@ I also analyze logs and monitoring dashboards using tools like Grafana and Nagio
 
 Once the bottleneck is identified, I perform tuning or coordinate with the respective teams to resolve the issue.”
 
+## What happens when the server load is very high, but CPU utilization remains low? How do you identify and troubleshoot that situation?
 ## A Linux server is responding very slowly, but CPU and memory utilization appear normal. What could be the possible causes, and how would you troubleshoot the issue?
-if a Linux server becomes very slow while CPU and memory utilization are normal, I understand that the issue is likely related to resources other than CPU or RAM.
-
-In real-world production environments, slow server response with normal CPU and memory is commonly caused by:
-
-* high disk I/O wait,
-* storage latency,
-* network issues,
-* NFS mount delays,
-* filesystem problems,
-* DNS resolution delays,
-* application hangs,
-* database locks,
-* or blocked processes.
-
-My troubleshooting approach is systematic.
-
-First, I verify the overall server load and I/O wait:
-
-```bash
-top
-uptime
-vmstat 5
+I verify the overall server load and I/O wait by running commands like `top`, `uptime`, and `vmstat 5`. Even if CPU usage is low, a high load average or high wa (I/O wait) column indicates storage or disk-related bottlenecks.
+This is the most common cause I see in production environments.
 ```
-
-Even if CPU usage is low, a high load average or high `wa` (I/O wait) indicates storage or disk-related bottlenecks.
-
-Then I analyze disk performance:
-
-```bash
-iostat -xz 5
-iotop
-df -h
+uptime          # Load average vs CPU cores
+vmstat 5        # See %wa (I/O wait) - this is KEY
+top             # Quick visual check
 ```
-
-I check for:
-
-* high await times,
-* disk queue delays,
-* storage latency,
-* and filesystem usage.
-
-In production environments, storage issues are one of the most common reasons for slow server performance.
-
-Next, I verify whether any processes are stuck in D state:
-
-```bash
-ps -eo state,pid,cmd | grep "^D"
+Then I analyze disk performance using `iostat -xz 5` and `iotop` to check for high await times, disk queue delays, storage latency, and heavy read/write operations. I also check whether any processes are stuck in  `D state` using
+`ps -eo state,pid,cmd | grep '^D'`. Processes in `D state` usually indicate they are waiting for disk or storage operations, which is a clear sign the disk is the bottleneck.
 ```
-
-Processes in D state usually indicate they are waiting for disk or storage operations.
-
-I also check:
-
-* NFS mount availability,
-* SAN/storage connectivity,
-* backup jobs,
-* or hung application processes.
-
-For network-related delays:
-
-```bash
-sar -n DEV
-iftop
-netstat -i
+iostat -xz 5    # Check disk latency and queue depth
+iotop           # See which process is hammering the disk
+ps -eo state,pid,cmd | grep "^D"  # Find stuck processes
 ```
-
-Sometimes DNS delays can also slow applications:
-
-```bash
-nslookup
-dig
+Next, I verify NFS mount availability, SAN/storage connectivity, backup jobs, or hung application processes. For network-related delays, I run `sar -n DEV`, `iftop`, and `netstat -i`. Sometimes DNS delays can also slow applications, 
+so I check with `nslookup` and `dig`. I also analyze system and application logs using `journalctl -xe`, `dmesg`, and tail logs to identify filesystem errors, storage disconnections, network problems, or application failures.
 ```
-
-Then I analyze system and application logs:
-
-```bash
-journalctl -xe
-dmesg
-tail -f /var/log/messages
+sar -n DEV      # Network stats
+iftop           # Real-time traffic
+netstat -i      # Interface errors/drops
 ```
-
-This helps identify:
-
-* filesystem errors,
-* storage disconnections,
-* network problems,
-* or application failures.
-
-In real-time environments, I also correlate findings with monitoring tools like:
-
-* Nagios for infrastructure and service monitoring
-
-* Grafana dashboards for performance visualization
-
-* Prometheus for collecting server and application metrics
-
-Once the root cause is identified, I take corrective actions such as:
-
-* resolving storage latency,
-* restarting hung services,
-* clearing stuck mounts,
-* coordinating with storage/network teams,
-* tuning applications,
-* or optimizing filesystem performance.
-
-In my experience, when CPU and memory are normal but the server is slow, the issue is usually related to disk I/O wait, storage latency, or blocked processes rather than compute resources.
-
-
 
 ## How do you troubleshoot to SELinux issues?
 my first step is to identify whether SELinux is actually blocking the application or service.
